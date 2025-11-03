@@ -1,5 +1,6 @@
 import ButtonTest from "@/components/test/ui/button/ButtonTest";
 import CardForTest from "@/components/test/ui/card/CardForTest";
+import InputTest from "@/components/test/ui/input/InputTest";
 
 export default function DesignSystemDemo() {
   return (
@@ -9,7 +10,8 @@ export default function DesignSystemDemo() {
       <section className="w-full h-full flex items-center justify-center px-6">
         {/* 버튼 고정폭 래퍼: ButtonTest 내부가 w-[327px] 여도 정확히 맞음 */}
         <div className="w-[375px]">
-          <ButtonTest />
+          <InputTest/>
+          {/**<ButtonTest />*/}
         </div>
       </section>
     </div>
