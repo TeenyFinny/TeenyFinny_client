@@ -47,8 +47,8 @@ export function TinyButton({ label, onClick }: CustomButtonProps) {
       className="
         relative flex items-center justify-center
         w-[59px] h-[31px] p-0
-        rounded-[15px] bg-[#0067AC]
-        text-[#F6F7F8] text-[14px] leading-[17px] font-semibold tracking-[-0.6px]
+        rounded-[15px] bg-primary-1
+        text-neutral-6 text-body-07 leading-[17px] font-semibold tracking-[-0.6px]
         whitespace-pre-line
       "
       style={{ fontFamily: 'Pretendard' }}

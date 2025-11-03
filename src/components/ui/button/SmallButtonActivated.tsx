@@ -49,7 +49,7 @@ export function SmallButtonActivated({ label, onClick }: CustomButtonProps) {
         w-[159px] h-[56px] p-0
         rounded-[15px] bg-primary-1
         shadow-[0_8px_16px_-6px_rgba(0,82,103,0.32)]
-        text-neutral-6 text-head-04 leading-[19px] font-semibold tracking-[-0.6px]
+        text-neutral-6 text-body-06 leading-[19px] font-semibold tracking-[-0.6px]
         whitespace-pre-line
       "
       style={{ fontFamily: "Pretendard" }}

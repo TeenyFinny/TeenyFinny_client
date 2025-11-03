@@ -1,11 +1,11 @@
 "use client"
 
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
-import { BigButtonInactivated } from "@/components/ui/button/BigButtonInactivated"
+import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled"
 import { MiddleButtonActivated } from "@/components/ui/button/MiddleButtonActivated" 
-import { MiddleButtonInactivated } from "@/components/ui/button/MiddleButtonInactivated"
+import { MiddleButtonDisabled } from "@/components/ui/button/MiddleButtonDisabled"
 import { SmallButtonActivated } from "@/components/ui/button/SmallButtonActivated" 
-import { SmallButtonInactivated } from "@/components/ui/button/SmallButtonInactivated"
+import { SmallButtonDisabled } from "@/components/ui/button/SmallButtonDisabled"
 import { TinyButton } from "@/components/ui/button/TinyButton"
 
 export default function ButtonTest() {
@@ -25,9 +25,9 @@ export default function ButtonTest() {
                     비활성화된 버튼 테스트
                 </div>
                 <div className="flex flex-col gap-5 justify-center item">
-                    <BigButtonInactivated label="Big Button Label" onClick={() => alert("버튼 클릭됨!")} />
-                    <MiddleButtonInactivated label="Middle Button Label" onClick={() => alert("버튼 클릭됨!")} />
-                    <SmallButtonInactivated label="Small Button Label" onClick={() => alert("버튼 클릭됨!")} />
+                    <BigButtonDisabled label="Big Button Label" onClick={() => alert("버튼 클릭됨!")} />
+                    <MiddleButtonDisabled label="Middle Button Label" onClick={() => alert("버튼 클릭됨!")} />
+                    <SmallButtonDisabled label="Small Button Label" onClick={() => alert("버튼 클릭됨!")} />
                 </div>
 
                 <div className="mb-10 mt-10 text-head-01">

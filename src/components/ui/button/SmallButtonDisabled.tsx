@@ -40,15 +40,15 @@ interface CustomButtonProps {
  * />
  * ```
  */
-export function BigButtonInactivated({ label, onClick }: CustomButtonProps) {
+export function SmallButtonDisabled({ label, onClick }: CustomButtonProps) {
   return (
     <button
       onClick={onClick}
       className="
         relative flex items-center justify-center
-        w-[327px] h-[56px] p-0
+        w-[159px] h-[56px] p-0
         rounded-[15px] bg-neutral-6
-        text-neutral-2 text-head-04 leading-[19px] font-semibold tracking-[-0.6px]
+        text-neutral-2 text-body-06 leading-[19px] font-semibold tracking-[-0.6px]
         whitespace-pre-line
       "
       disabled={true}
