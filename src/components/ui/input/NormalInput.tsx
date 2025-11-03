@@ -18,7 +18,7 @@ interface TextInputProps {
 }
 
 /**
- * TextInput
+ * NormalInput
  *
  * 사용자가 텍스트를 입력할 수 있는 입력 필드 컴포넌트입니다.
  *
@@ -74,8 +74,7 @@ export function NormalInput({ label, placeholder, value, onChange }: TextInputPr
         className="left-0 right-0 top-0 bottom-0 w-[320px] h-[64px] rounded-[6px] 
             bg-neutral-7 shadow-[0_8px_24px_-6px_rgba(0,0,0,0.04)] px-[16px] 
             text-body-01 leading-[19px] tracking-[-0.6px] text-neutral-1 
-            placeholder:text-neutral-3 focus:border-primary-1
-            focus:outline-none focus-within:ring-2 focus-within:ring-[#0067ac]"
+            placeholder:text-neutral-3 focus:outline-none focus-within:ring-2 focus-within:ring-primary-1"
       />
     </div>
   )

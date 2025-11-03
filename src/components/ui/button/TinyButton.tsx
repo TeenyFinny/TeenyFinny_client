@@ -51,7 +51,6 @@ export function TinyButton({ label, onClick }: CustomButtonProps) {
         text-neutral-6 text-body-07 leading-[17px] font-semibold tracking-[-0.6px]
         whitespace-pre-line
       "
-      style={{ fontFamily: 'Pretendard' }}
     >
       {label}
     </button>

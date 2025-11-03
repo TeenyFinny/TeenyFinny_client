@@ -52,7 +52,6 @@ export function MiddleButtonActivated({ label, onClick }: CustomButtonProps) {
         text-neutral-6 text-body-06 leading-[19px] font-semibold tracking-[-0.6px]
         whitespace-pre-line
       "
-      style={{ fontFamily: "Pretendard" }}
     >
       {label}
     </button>

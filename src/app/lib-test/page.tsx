@@ -10,8 +10,8 @@ export default function DesignSystemDemo() {
       <section className="w-full h-full flex items-center justify-center px-6">
         {/* 버튼 고정폭 래퍼: ButtonTest 내부가 w-[327px] 여도 정확히 맞음 */}
         <div className="w-[375px]">
-          <InputTest/>
-          {/**<ButtonTest />*/}
+          *<InputTest/>
+          {/* *<ButtonTest /> */}
         </div>
       </section>
     </div>

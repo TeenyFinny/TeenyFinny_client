@@ -18,7 +18,7 @@ interface LabeledInputProps {
 }
 
 /**
- * LabeledInput
+ * NormalInput2
  *
  * 레이블과 함께 제공되는 재사용 가능한 입력 필드 컴포넌트입니다.
  *

@@ -52,7 +52,6 @@ export function SmallButtonDisabled({ label, onClick }: CustomButtonProps) {
         whitespace-pre-line
       "
       disabled={true}
-      style={{ fontFamily: "Pretendard" }}
     >
       {label}
     </button>
