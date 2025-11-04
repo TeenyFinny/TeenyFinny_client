@@ -1,4 +1,5 @@
 "use client"
+import Image from "next/image"
 
 /**
  * StockPurchaseSheet
@@ -28,27 +29,27 @@
  */
 export function StockPurchaseSheet() {
   return (
-    <div className="w-full max-w-[768px] rounded-t-[20px] bg-[#ffffff] px-6 pb-8 pt-3">
+    <div className="w-full max-w-[768px] rounded-t-[20px] bg-(--color-neutral-6) px-6 pb-8 pt-3">
       {/** Handle bar */}
       <div className="mb-8 flex justify-center">
-        <div className="h-1 w-12 rounded-full bg-[#cacaca]" />
+        <div className="h-1 w-12 rounded-full bg-(--color-neutral-4)" />
       </div>
 
       {/** Title */}
-      <h1 className="text-head-03 mb-6 text-center text-[#000000] whitespace-pre-line">주식 사기</h1>
+      <h1 className="text-head-03 mb-6 text-center text-(--color-neutral-1) whitespace-pre-line">주식 사기</h1>
 
       {/** Purchase Price Card */}
-      <div className="mb-4 rounded-[16px] bg-[#e8ebee] px-6 py-5">
-        <p className="text-body-05 mb-2 text-[#000000] whitespace-pre-line">구매할 가격</p>
-        <p className="text-head-01 mb-1 text-[#000000] whitespace-pre-line">280,000원</p>
-        <p className="text-body-07 text-[#989898] whitespace-pre-line">예상 체결가 281,000원</p>
+      <div className="mb-4 rounded-[16px] bg-(--color-primary-1)/[0.08] px-6 py-5">
+        <p className="text-body-02 mb-2 text-(--color-neutral-1) whitespace-pre-line">구매할 가격</p>
+        <p className="text-head-01 mb-1 text-(--color-neutral-1) whitespace-pre-line">280,000원</p>
+        <p className="text-body-07 text-(--color-neutral-3) whitespace-pre-line">예상 체결가 281,000원</p>
       </div>
 
       {/** Quantity Input Card */}
-      <div className="mb-6 rounded-[16px] bg-[#e8ebee] px-6 py-5">
-        <p className="text-body-05 mb-2 text-[#000000] whitespace-pre-line">수량</p>
-        <p className="text-head-01 mb-1 text-[#cacaca] whitespace-pre-line">몇 주 구매할까요?</p>
-        <p className="text-body-07 text-[#989898] whitespace-pre-line">구매가능 0원 · 최대 0주</p>
+      <div className="mb-6 rounded-[16px] bg-(--color-primary-1)/[0.08] px-6 py-5">
+        <p className="text-body-02 mb-2 text-(--color-neutral-1) whitespace-pre-line">수량</p>
+        <p className="text-head-01 mb-1 text-(--color-neutral-4) whitespace-pre-line">몇 주 구매할까요?</p>
+        <p className="text-body-07 text-(--color-neutral-3) whitespace-pre-line">구매가능 0원 · 최대 0주</p>
       </div>
 
       {/** Number Keypad */}
@@ -56,19 +57,19 @@ export function StockPurchaseSheet() {
         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
           <button
             key={num}
-            className="flex h-14 items-center justify-center rounded-lg text-[2.5rem] font-medium text-[#bcbcbc] transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]"
+            className="flex h-14 items-center justify-center rounded-lg text-head-00 text-(--color-neutral-2) transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]"
           >
             {num}
           </button>
         ))}
-        <button className="flex h-14 items-center justify-center rounded-lg text-[2.5rem] font-medium text-[#bcbcbc] transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]">
+        <button className="flex h-14 items-center justify-center rounded-lg text-head-00 text-(--color-neutral-2) transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]">
           00
         </button>
-        <button className="flex h-14 items-center justify-center rounded-lg text-[2.5rem] font-medium text-[#bcbcbc] transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]">
+        <button className="flex h-14 items-center justify-center rounded-lg text-head-00 text-(--color-neutral-2) transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]">
           0
         </button>
         <button className="flex h-14 items-center justify-center rounded-lg transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M28 8H11.4142L4 15.4142L11.4142 22.8284H28V8Z"
               stroke="#bcbcbc"
@@ -83,10 +84,10 @@ export function StockPurchaseSheet() {
 
       {/** Action Buttons */}
       <div className="flex gap-3">
-        <button className="text-body-04 flex-1 rounded-lg bg-[#f6f7f8] py-4 font-medium text-[#898989] transition-colors hover:bg-[#e8ebee] active:bg-[#cacaca] whitespace-pre-line">
+        <button className="text-body-04 flex-1 rounded-lg bg-[#f6f7f8] py-4 font-medium text-(--color-neutral-2) transition-colors hover:bg-[#e8ebee] active:bg-(--color-neutral-4) whitespace-pre-line">
           취소
         </button>
-        <button className="text-body-04 flex-1 rounded-lg bg-[#0067ac] py-4 font-medium text-[#ffffff] transition-colors hover:bg-[#005a96] active:bg-[#004d80] whitespace-pre-line">
+        <button className="text-body-04 flex-1 rounded-lg bg-(--color-primary-1) py-4 font-medium text-(--color-neutral-6) transition-colors hover:bg-[#005a96] active:bg-[#004d80] whitespace-pre-line">
           사기
         </button>
       </div>
