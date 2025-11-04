@@ -18,7 +18,7 @@ export default function InputTest() {
   return (
     <div className="min-h-screen bg-[#fafcff] p-8">
       <div className="mx-auto max-w-md space-y-6">
-        <h1 className="text-head-02 text-[#343434] mb-10 mt-20">테스트1</h1>
+        <h1 className="text-head-02 text-[#343434] mb-10">테스트1</h1>
         <NormalInput label="텍스트를 입력하세요" placeholder="플레이스 홀더입니다." value={text} onChange={setText} />
 
         <div className="rounded-lg border border-[#e0e0e0] bg-[#ffffff] p-4">
