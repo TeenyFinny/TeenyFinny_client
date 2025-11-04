@@ -1,40 +1,56 @@
 "use client"
 
+import { Dialog, DialogContent } from "@/components/ui/dialog"
+
 interface ConfirmationDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
   title?: string
   description?: string
   confirmText?: string
   onConfirm?: () => void
-  className?: string
 }
 
 export function ConfirmationDialog({
+  open,
+  onOpenChange,
   title = "확인하셨나요?",
   description = "삭제하면 되돌릴 수 없어요",
   confirmText = "확인",
   onConfirm,
-  className = "",
 }: ConfirmationDialogProps) {
+  const handleConfirm = () => {
+    onConfirm?.()
+    onOpenChange(false)
+  }
+
   return (
-    <div
-      className={`flex flex-col items-start bg-[#FFFFFF] rounded-[14px] backdrop-blur-[27.18px] overflow-hidden ${className}`}
-    >
-      {/* Content Section */}
-      <div className="flex flex-col items-center gap-0.4 px-6 pt-5 pb-6 w-full h-[76px]">
-        <h2 className="text-head-06 text-neutral-1 text-center">{title}</h2>
-        <p className="text-body-07 text-neutral-3 text-center">{description}</p>
-      </div>
-
-      {/* Divider */}
-      <div className="w-full h-[1px] bg-[#E0E0E0]" />
-
-      {/* Confirm Button */}
-      <button
-        onClick={onConfirm}
-        className="w-full h-[44px] py-3 text-head-06 text-info hover:bg-[#F7F9F9] transition-colors"
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        className="max-w-[270px] gap-0 p-0 rounded-[14px] border-0"
+        showCloseButton={false}
+        onInteractOutside={(e) => e.preventDefault()}
       >
-        {confirmText}
-      </button>
-    </div>
+        <div className="flex flex-col items-start w-full min-h-[138px] rounded-[14px]">
+          <div className="flex flex-col items-center w-full min-h-[94px] pt-6 pb-5 px-4 gap-[14px]">
+            <h2 className="text-head-06 text-neutral-1 text-center">
+              {title}
+            </h2>
+            <p className="text-body-07 text-neutral-3 text-center">
+              {description}
+            </p>
+          </div>
+
+          <div className="flex items-center justify-center w-full h-[44px]">
+            <button
+              onClick={handleConfirm}
+              className="text-body-04 text-primary-1 text-center"
+              >
+              {confirmText}
+            </button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
