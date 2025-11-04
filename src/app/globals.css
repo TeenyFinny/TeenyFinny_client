@@ -137,6 +137,7 @@
   --font-sans: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 
   /* Typography - Font Sizes */
+  --font-size-head-00: 1.625rem; /* 26px 추가 */ 
   --font-size-head-01: 1.5rem; /* 24px */
   --font-size-head-02: 1.25rem; /* 20px */
   --font-size-head-03: 1.125rem; /* 18px */
@@ -178,6 +179,14 @@
 
 /* Custom Typography Classes */
 @layer utilities {
+
+  .text-head-00 {
+    font-size: var(--font-size-head-00);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-tight);
+    line-height: normal;
+  }
+
   .text-head-01 {
     font-size: var(--font-size-head-01);
     font-weight: var(--font-weight-bold);
