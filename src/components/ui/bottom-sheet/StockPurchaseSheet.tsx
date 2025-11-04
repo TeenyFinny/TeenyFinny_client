@@ -69,16 +69,7 @@ export function StockPurchaseSheet() {
           0
         </button>
         <button className="flex h-14 items-center justify-center rounded-lg transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M28 8H11.4142L4 15.4142L11.4142 22.8284H28V8Z"
-              stroke="#bcbcbc"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path d="M18 12L24 18M24 12L18 18" stroke="#bcbcbc" strokeWidth="2" strokeLinecap="round" />
-          </svg>
+            <Image src="/icons/delete_arrow.svg" alt="삭제" width={30} height={30} className="scale-x-[-1] opacity-60" />
         </button>
       </div>
 
