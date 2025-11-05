@@ -75,7 +75,7 @@ export function StockPurchaseSheet() {
 
       {/** Action Buttons */}
       <div className="flex gap-3">
-        <button className="text-body-04 flex-1 rounded-lg bg-[#f6f7f8] py-4 font-medium text-(--color-neutral-2) transition-colors hover:bg-[#e8ebee] active:bg-(--color-neutral-4) whitespace-pre-line">
+        <button className="text-body-04 flex-1 rounded-lg bg-[#e8ebee] py-4 font-medium text-(--color-neutral-2) transition-colors hover:bg-[#f6f7f8] active:bg-(--color-neutral-4) whitespace-pre-line">
           취소
         </button>
         <button className="text-body-04 flex-1 rounded-lg bg-(--color-primary-1) py-4 font-medium text-(--color-neutral-6) transition-colors hover:bg-[#005a96] active:bg-[#004d80] whitespace-pre-line">
