@@ -126,6 +126,8 @@
   --color-neutral-4: #cacaca;
   --color-neutral-5: #e0e0e0;
   --color-neutral-6: #ffffff;
+  --color-monochrome-gray: #E8EBEE;
+  --color-monochrome-lightgray: #F6F7F8;
 
   /* Semantic Colors */
   --color-error: #ef4c4a;
@@ -179,7 +181,7 @@
 
 /* Custom Typography Classes */
 @layer utilities {
-
+  /* 26px 헤더용 폰트 스타일 추가 */
   .text-head-00 {
     font-size: var(--font-size-head-00);
     font-weight: var(--font-weight-bold);

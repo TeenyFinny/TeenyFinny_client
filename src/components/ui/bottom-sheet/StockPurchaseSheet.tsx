@@ -102,25 +102,25 @@ export function StockPurchaseSheet() {
         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
           <button
             key={num}
-            className="flex h-14 items-center justify-center rounded-lg text-head-00 text-(--color-neutral-2) transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]"
+            className="flex h-14 items-center justify-center rounded-lg text-head-00 text-(--color-neutral-2) transition-colors hover:bg-(--color-monochrome-lightgray) active:bg-(--color-monochrome-gray)"
             onClick={() => handleNumberClick(String(num))}
           >
             {num}
           </button>
         ))}
         <button
-          className="flex h-14 items-center justify-center rounded-lg text-head-00 text-(--color-neutral-2) transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]"
+          className="flex h-14 items-center justify-center rounded-lg text-head-00 text-(--color-neutral-2) transition-colors hover:bg-(--color-monochrome-lightgray) active:bg-(--color-monochrome-gray)"
           onClick={() => handleNumberClick(String("00"))}
         >
           00
         </button>
         <button
-          className="flex h-14 items-center justify-center rounded-lg text-head-00 text-(--color-neutral-2) transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]"
+          className="flex h-14 items-center justify-center rounded-lg text-head-00 text-(--color-neutral-2) transition-colors hover:bg-(--color-monochrome-lightgray) active:bg-(--color-monochrome-gray)"
           onClick={() => handleNumberClick(String("0"))}
         >
           0
         </button>
-        <button className="flex h-14 items-center justify-center rounded-lg transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]"
+        <button className="flex h-14 items-center justify-center rounded-lg transition-colors hover:bg-(--color-monochrome-lightgray) active:bg-(--color-monochrome-gray)"
         onClick = { () => handleDelete()}>
           <Image
             src="/icons/delete_arrow.svg"
@@ -134,7 +134,7 @@ export function StockPurchaseSheet() {
 
       {/** Action Buttons */}
       <div className="flex gap-3">
-        <button className="text-body-04 flex-1 rounded-lg bg-[#e8ebee] py-4 font-medium text-(--color-neutral-2) transition-colors hover:bg-[#f6f7f8] active:bg-(--color-neutral-4) whitespace-pre-line">
+        <button className="text-body-04 flex-1 rounded-lg bg-(--color-monochrome-gray) py-4 font-medium text-(--color-neutral-2) transition-colors hover:bg-(--color-monochrome-lightgray) active:bg-(--color-neutral-4) whitespace-pre-line">
           취소
         </button>
         <button className="text-body-04 flex-1 rounded-lg bg-(--color-primary-1) py-4 font-medium text-(--color-neutral-6) transition-colors hover:bg-[#005a96] active:bg-[#004d80] whitespace-pre-line">
