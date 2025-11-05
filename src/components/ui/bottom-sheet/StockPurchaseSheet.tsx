@@ -92,7 +92,7 @@ export function StockPurchaseBottomSheet({
       onClick={handleBackdropClick}
     >
       <div
-        className="w-full max-w-[480px] rounded-t-[24px] bg-(--color-neutral-6) pb-8 shadow-lg transition-transform duration-300"
+        className="w-full max-w-[480px] h-[85vh] rounded-t-[24px] bg-(--color-neutral-6) pb-6 shadow-lg transition-transform duration-300 overflow-hidden"
         style={sheetStyle}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -104,12 +104,12 @@ export function StockPurchaseBottomSheet({
         </div>
 
         {/* 제목 */}
-        <h2 className="text-head-03 text-(--color-neutral-1) text-center mb-6">
+        <h2 className="text-head-03 text-(--color-neutral-1) text-center mb-5">
           주식 사기
         </h2>
 
         {/* 구매할 가격 카드 */}
-        <div className="mx-5 mb-4 rounded-[16px] bg-(--color-primary-1)/[0.08] px-5 py-4 text-left">
+        <div className="mx-5 mb-3 rounded-[16px] bg-(--color-primary-1)/[0.08] px-4 py-[14px] text-left">
           <p className="text-body-07 text-(--color-neutral-1) mb-2">구매할 가격</p>
           <p className="text-head-01 text-(--color-neutral-1) mb-1">
             {formatNumber(price)}원
@@ -120,7 +120,7 @@ export function StockPurchaseBottomSheet({
         </div>
 
         {/* 수량 입력 카드 */}
-        <div className="mx-5 mb-8 rounded-[16px] bg-(--color-primary-1)/[0.08] px-5 py-4 text-left">
+        <div className="mx-5 mb-6 rounded-[16px] bg-(--color-primary-1)/[0.08] px-4 py-[14px] text-left">
           <p className="text-body-07 text-(--color-neutral-1) mb-2">수량</p>
           <p
             className={`text-head-01 mb-1 ${
@@ -135,38 +135,38 @@ export function StockPurchaseBottomSheet({
         </div>
 
         {/* 숫자 키패드 */}
-        <div className="mx-5 mb-8 grid grid-cols-3 gap-4">
+        <div className="mx-5 mb-5 grid grid-cols-3 gap-x-4 gap-y-[12px] py-[7px]">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
             <button
               key={num}
               onClick={() => handleNumberClick(num.toString())}
-              className="h-[60px] text-head-00 text-(--color-neutral-2) rounded-[12px] hover:bg-(--color-monochrome-lightgray) active:bg-(--color-monochrome-gray) transition-colors"
+              className="h-[40px] text-head-00 text-(--color-neutral-2) rounded-[12px] hover:bg-(--color-monochrome-lightgray) active:bg-(--color-monochrome-gray) transition-colors"
             >
               {num}
             </button>
           ))}
           <button
             onClick={() => handleNumberClick("00")}
-            className="h-[60px] text-head-00 text-(--color-neutral-2) rounded-[12px] hover:bg-(--color-monochrome-lightgray) active:bg-(--color-monochrome-gray) transition-colors"
+            className="h-[40px] text-head-00 text-(--color-neutral-2) rounded-[12px] hover:bg-(--color-monochrome-lightgray) active:bg-(--color-monochrome-gray) transition-colors"
           >
             00
           </button>
           <button
             onClick={() => handleNumberClick("0")}
-            className="h-[60px] text-head-00 text-(--color-neutral-2) rounded-[12px] hover:bg-(--color-monochrome-lightgray) active:bg-(--color-monochrome-gray) transition-colors"
+            className="h-[40px] text-head-00 text-(--color-neutral-2) rounded-[12px] hover:bg-(--color-monochrome-lightgray) active:bg-(--color-monochrome-gray) transition-colors"
           >
             0
           </button>
           <button
             onClick={handleBackspace}
-            className="h-[60px] flex items-center justify-center rounded-[12px] text-(--color-neutral-2) hover:bg-(--color-monochrome-lightgray) active:bg-(--color-monochrome-gray)"
+            className="h-[40px] flex items-center justify-center rounded-[12px] text-(--color-neutral-2) hover:bg-(--color-monochrome-lightgray) active:bg-(--color-monochrome-gray)"
           >
-            <ArrowLeft className="w-7 h-7" />
+            <ArrowLeft className="w-6 h-6" />
           </button>
         </div>
 
         {/* 하단 버튼 */}
-        <div className="mx-5 flex gap-4">
+        <div className="mx-5 flex gap-3">
           <button
             onClick={handleCancel}
             className="flex-1 h-[56px] rounded-[16px] bg-(--color-monochrome-gray) text-body-04 text-(--color-neutral-1) hover:bg-(--color-monochrome-lightgray) active:bg-(--color-neutral-5)"
