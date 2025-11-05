@@ -51,7 +51,7 @@ export function HeaderBar({ onBackClick, onNotificationClick }: HeaderBarProps) 
           aria-label="뒤로가기"
         >
           <Image
-            src="/icons/back.png"
+            src="/icons/left-errow.png"
             alt="뒤로가기"
             width={24}
             height={24}

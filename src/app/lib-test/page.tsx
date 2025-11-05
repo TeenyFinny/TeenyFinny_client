@@ -16,7 +16,8 @@ export default function DesignSystemDemo() {
         <div className="w-[375px]">
           {/* *<InputTest/> */}
           {/* *<ButtonTest /> */}
-          <ModalTest />
+          {/* <ModalTest /> */}
+          <BadgeTest />
         </div>
       </section>
     </div>
