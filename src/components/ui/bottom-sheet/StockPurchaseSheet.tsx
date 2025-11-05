@@ -1,5 +1,6 @@
-"use client"
-import Image from "next/image"
+"use client";
+import Image from "next/image";
+import { useState } from "react";
 
 /**
  * StockPurchaseSheet
@@ -28,6 +29,32 @@ import Image from "next/image"
  * ```
  */
 export function StockPurchaseSheet() {
+  const [quantity, setQuantity] = useState(""); // 주식 구매 수량
+
+  const pricePerShare = 281000; // 예상 체결가
+  const calculateTotalPrice = () => {
+    // 주식 구매 수량에 따른 총 금액 계산
+    const qty = Number.parseInt(quantity) || 0;
+    return qty * pricePerShare;
+  };
+
+  const formatNumber = (num: number) => {
+    return num.toLocaleString("ko-KR");
+  };
+
+  /**
+   * 숫자 버튼 클릭 시 수량에 숫자를 추가하는 핸들러
+   * @param {string} value - 추가할 숫자 값 ("1"-"9", "0", "00")
+   */
+  const handleNumberClick = (value: String) => {
+    setQuantity((prev) => prev + value);
+  };
+  /**
+   * 삭제 버튼 클릭 시 마지막 숫자를 제거하는 핸들러
+   */
+  const handleDelete = () => {
+    setQuantity((prev) => prev.slice(0, -1));
+  };
   return (
     <div className="w-full max-w-[768px] rounded-t-[20px] bg-(--color-neutral-6) px-6 pb-8 pt-3">
       {/** Handle bar */}
@@ -36,20 +63,38 @@ export function StockPurchaseSheet() {
       </div>
 
       {/** Title */}
-      <h1 className="text-head-03 mb-6 text-center text-(--color-neutral-1) whitespace-pre-line">주식 사기</h1>
+      <h1 className="text-head-03 mb-6 text-center text-(--color-neutral-1) whitespace-pre-line">
+        주식 사기
+      </h1>
 
       {/** Purchase Price Card */}
       <div className="mb-4 rounded-[16px] bg-(--color-primary-1)/[0.08] px-6 py-5">
-        <p className="text-body-02 mb-2 text-(--color-neutral-1) whitespace-pre-line">구매할 가격</p>
-        <p className="text-head-01 mb-1 text-(--color-neutral-1) whitespace-pre-line">280,000원</p>
-        <p className="text-body-07 text-(--color-neutral-3) whitespace-pre-line">예상 체결가 281,000원</p>
+        <p className="text-body-02 mb-2 text-(--color-neutral-1) whitespace-pre-line">
+          구매할 가격
+        </p>
+        <p className="text-head-01 mb-1 text-(--color-neutral-1) whitespace-pre-line">
+          280,000원
+        </p>
+        <p className="text-body-07 text-(--color-neutral-3) whitespace-pre-line">
+          예상 체결가 {formatNumber(calculateTotalPrice() || pricePerShare)}원
+        </p>
       </div>
 
       {/** Quantity Input Card */}
       <div className="mb-6 rounded-[16px] bg-(--color-primary-1)/[0.08] px-6 py-5">
-        <p className="text-body-02 mb-2 text-(--color-neutral-1) whitespace-pre-line">수량</p>
-        <p className="text-head-01 mb-1 text-(--color-neutral-4) whitespace-pre-line">몇 주 구매할까요?</p>
-        <p className="text-body-07 text-(--color-neutral-3) whitespace-pre-line">구매가능 0원 · 최대 0주</p>
+        <p className="text-body-02 mb-2 text-(--color-neutral-1) whitespace-pre-line">
+          수량
+        </p>
+        <p
+          className={`text-head-01 mb-1 whitespace-pre-line ${
+            quantity ? "text-(--color-neutral-1)" : "text-(--color-neutral-4)"
+          }`}
+        >
+          {quantity || "몇 주 구매할까요?"}
+        </p>
+        <p className="text-body-07 text-(--color-neutral-3) whitespace-pre-line">
+          구매가능 0원 · 최대 0주
+        </p>
       </div>
 
       {/** Number Keypad */}
@@ -58,18 +103,32 @@ export function StockPurchaseSheet() {
           <button
             key={num}
             className="flex h-14 items-center justify-center rounded-lg text-head-00 text-(--color-neutral-2) transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]"
+            onClick={() => handleNumberClick(String(num))}
           >
             {num}
           </button>
         ))}
-        <button className="flex h-14 items-center justify-center rounded-lg text-head-00 text-(--color-neutral-2) transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]">
+        <button
+          className="flex h-14 items-center justify-center rounded-lg text-head-00 text-(--color-neutral-2) transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]"
+          onClick={() => handleNumberClick(String("00"))}
+        >
           00
         </button>
-        <button className="flex h-14 items-center justify-center rounded-lg text-head-00 text-(--color-neutral-2) transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]">
+        <button
+          className="flex h-14 items-center justify-center rounded-lg text-head-00 text-(--color-neutral-2) transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]"
+          onClick={() => handleNumberClick(String("0"))}
+        >
           0
         </button>
-        <button className="flex h-14 items-center justify-center rounded-lg transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]">
-            <Image src="/icons/delete_arrow.svg" alt="삭제" width={30} height={30} className="scale-x-[-1] opacity-60" />
+        <button className="flex h-14 items-center justify-center rounded-lg transition-colors hover:bg-[#f6f7f8] active:bg-[#e8ebee]"
+        onClick = { () => handleDelete()}>
+          <Image
+            src="/icons/delete_arrow.svg"
+            alt="삭제"
+            width={30}
+            height={30}
+            className="scale-x-[-1] opacity-60"
+          />
         </button>
       </div>
 
@@ -83,5 +142,5 @@ export function StockPurchaseSheet() {
         </button>
       </div>
     </div>
-  )
+  );
 }
