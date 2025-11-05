@@ -1,5 +1,5 @@
 import {Button} from "@/components/ui/button"
-import CardForTest from "@/components/ui/lib-test/CardForTest";
+import CardForTest from "@/components/test/ui/card/CardForTest";
 
 export default function Home() {
   return (
