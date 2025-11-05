@@ -1,7 +1,10 @@
+import BadgeTest from "@/components/test/ui/badge/BadgeTest";
 import ButtonTest from "@/components/test/ui/button/ButtonTest";
 import CardForTest from "@/components/test/ui/card/CardForTest";
+import HeaderBarTest from "@/components/test/ui/headerbar/HeaderBarTest";
 import InputTest from "@/components/test/ui/input/InputTest";
 import NoticeTest from "@/components/test/ui/notice/NoticeTest";
+
 
 export default function DesignSystemDemo() {
   return (
@@ -14,6 +17,7 @@ export default function DesignSystemDemo() {
           {/* *<InputTest/> */}
           {/* *<ButtonTest /> */}
           <NoticeTest />
+
         </div>
       </section>
     </div>
