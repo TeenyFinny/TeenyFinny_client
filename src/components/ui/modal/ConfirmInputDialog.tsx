@@ -48,37 +48,39 @@ export function ConfirmInputDialog({
       <AlertDialogContent className="w-[270px] p-0 gap-0 rounded-[14px] backdrop-blur-[27px]">
         <AlertDialogHeader className="px-5 pt-4.5 pb-4 space-y-3 text-center">
           <AlertDialogTitle className="text-center">
-            <span className="text-head-06 text-(--color-neutral-1) ">{title}</span>
+            <span className="text-head-06 text-(--color-neutral-1)">{title}</span>
             </AlertDialogTitle>
         </AlertDialogHeader>
           {/* Form Content */}
         <div className="w-full px-4 pb-4.5 flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <label className="text-neutral-3 text-body-07">{lab1}</label>
+            <label htmlFor="input-1" className="text-neutral-3 text-body-07">{lab1}</label>
             <input
+              id="input-1"
               type="text"
               value={value1}
               onChange={(e) => setValue1(e.target.value)}
-              className="w-full px-4 py-3 bg-(--color-neutral-7) rounded-[6px] text-body-08 text-neutral-3 border-1 border-(--color-neutral-3)"
+              className="w-full px-4 py-3 bg-(--color-neutral-7) rounded-[6px] text-body-08 text-neutral-1 border-1 border-(--color-neutral-3)"
               placeholder="이만큼 더 필요해요."
             />
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-neutral-3 text-body-07">{lab2}</label>
+            <label htmlFor="input-2" className="text-neutral-3 text-body-07">{lab2}</label>
             <input
+              id="input-2"
               type="text"
               value={value2}
               onChange={(e) => setValue2(e.target.value)}
               placeholder="필요한 이유를 입력해 주세요."
-              className="w-full px-4 py-3 bg-(--color-neutral-7) rounded-[6px] text-body-08 text-neutral-3 border-1 border-(--color-neutral-3)  "
+              className="w-full px-4 py-3 bg-(--color-neutral-7) rounded-[6px] text-body-08 text-neutral-1 border-1 border-(--color-neutral-3)"
             />
           </div>
         </div>
         <AlertDialogFooter className="flex-row p-0 m-0 gap-0">
           <AlertDialogAction
             onClick={handleButtonClick}
-            className="flex-1 m-0 h-12 rounded-[14px]  border-0  hover:bg-transparent transition-colors bg-(--color-neutral-7)"
+            className="flex-1 m-0 h-12 rounded-[14px] border-0 hover:bg-transparent transition-colors bg-(--color-neutral-7)"
           >
             <span className="text-body-04 text-(--color-info)">{btnText}</span>
           </AlertDialogAction>
