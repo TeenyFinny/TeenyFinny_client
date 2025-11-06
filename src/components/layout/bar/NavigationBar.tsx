@@ -133,10 +133,6 @@ export function NavigationBar({
           })}
         </div>
 
-        {/* 하단 회색 Base + Home Indicator */}
-        <div className="absolute bottom-0 left-0 right-0 h-[30px] bg-[#f8f8f8]">
-          <div className="absolute bottom-[8px] left-1/2 -translate-x-1/2 w-[134px] h-[5px] bg-black rounded-full" />
-        </div>
       </div>
     </nav>
   )

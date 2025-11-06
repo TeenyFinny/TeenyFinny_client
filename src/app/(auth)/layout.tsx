@@ -1,6 +1,6 @@
-// app/saving/layout.tsx
+// app/(auth)/layout.tsx
 "use client"
-import { NavigationBar } from "@/components/layout/bar/NavigationBar";
+
 import HeaderbarWrapper from "@/components/layout/headerbar/HeaderbarWrapper";
 import { useUserStore } from "@/store/userStore";
 import React from "react"
@@ -17,19 +17,15 @@ export default function MainLayout({
         <div className="w-full h-full bg-neutral-3 flex justify-center">
             <div className="w-[375px] h-dvh bg-neutral-7 grid grid-rows-[56px_1fr] overflow-hidden">
                 {/* Row 1: 헤더 */}
-                <div className="w-full">
-                    <div className="w-full flex justify-center">
-                        <div className="w-[375px]">
-                            <HeaderbarWrapper />
-                        </div>
+                <div className="w-full flex justify-center">
+                    <div className="w-full">
+                        <HeaderbarWrapper />
                     </div>
                 </div>
                 {/* Row 2: 컨텐츠 */}
-                <section className="overflow-y-auto">
-                    <div className="w-full flex justify-center px-6">
-                        <div className="w-[375px]">
-                            {children}
-                        </div>
+                <section className="w-full flex justify-center overflow-y-auto">
+                    <div className="w-full">
+                        {children}
                     </div>
                 </section>
             </div>

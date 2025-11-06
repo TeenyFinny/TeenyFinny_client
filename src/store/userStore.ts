@@ -10,14 +10,14 @@ import { persist, createJSONStorage } from "zustand/middleware"
  * @property {string} userName - 사용자 표시 이름
  * @property {string | null} token - 인증 토큰 (로그인 시 설정)
  * @property {"parent" | "child"} userType - 사용자 유형
- * @property {(userName: string, token: string, userType: "parent" | "child") => void} setUser - 사용자 정보를 설정합니다.
+ * @property {(userName: string, token: string, userType: "parent" | "child" | "admin" | null) => void} setUser - 사용자 정보를 설정합니다.
  * @property {() => void} clearUser - 사용자 정보를 초기화(로그아웃)합니다.
  */
 interface UserState {
   userName: string
   token: string | null
-  userType: "parent" | "child"
-  setUser: (userName: string, token: string, userType: "parent" | "child") => void
+  userType: "parent" | "child" | "admin" | null
+  setUser: (userName: string, token: string, userType: "parent" | "child" | "admin" | null) => void
   clearUser: () => void
 }
 
@@ -33,7 +33,7 @@ export const useUserStore = create<UserState>()(
     (set) => ({
       userName: "",
       token: null,
-      userType: "parent",
+      userType: null,
 
       /**
        * 사용자 정보를 설정합니다.
