@@ -10,7 +10,7 @@ import Image from "next/image"
  * @property {boolean} [disabled] - 네비게이션 바의 활성화 여부입니다. `true`일 경우 표시되지 않습니다.
  */
 interface NavigationBarProps {
-  userType: "parent" | "child"
+  userType: "parent" | "child" | "admin" | null
   onNavigate?: (page: string) => void
   disabled?: boolean
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { NavigationBar } from "@/components/layout/bar/NavigationBar"
+import { NavigationBar } from "@/components/layout/bar/NavigationBar" 
 
 export default function TestPage() {
   const [userType, setUserType] = useState<"parent" | "child">("child")
