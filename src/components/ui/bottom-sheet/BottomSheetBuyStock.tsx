@@ -211,52 +211,52 @@ export function BottomSheetBuyStock({
   return (
     // 전체 화면을 덮는 배경 (backdrop)
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-(--color-neutral-1)/50"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-neutral-1/50"
       onClick={handleBackdropClick}
     >
       {/* 바텀시트 컨테이너 */}
       <div
-        className="w-full max-w-[480px] h-[85vh] rounded-t-[24px] bg-(--color-neutral-6) pb-6 shadow-lg transition-transform duration-300 overflow-hidden"
+        className="w-full max-w-[480px] h-[85vh] rounded-t-[24px] bg-neutral-6 pb-[24px] shadow-lg transition-transform duration-300 overflow-hidden"
         style={sheetStyle}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         {/* 상단 핸들바 (드래그 인디케이터) */}
-        <div className="flex justify-center pt-3 pb-5">
-          <div className="h-[5px] w-[60px] rounded-full bg-(--color-neutral-4)" />
+        <div className="flex justify-center pt-[12px] pb-[20px]">
+          <div className="h-[5px] w-[60px] rounded-full bg-neutral-4" />
         </div>
 
         {/* 제목 */}
-        <h2 className="text-head-03 text-(--color-neutral-1) text-center mb-5">주식 사기</h2>
+        <h2 className="text-head-03 text-neutral-1 text-center mb-[20px]">주식 사기</h2>
 
         {/* 구매할 가격 정보 카드 */}
-        <div className="mx-5 mb-3 rounded-[16px] bg-(--color-primary-1)/[0.08] px-4 py-[14px] text-left">
-          <p className="text-body-07 text-(--color-neutral-1) mb-2">구매할 가격</p>
-          <p className="text-head-01 text-(--color-neutral-1) mb-1">{formatNumber(price)}원</p>
-          <p className="text-body-08 text-(--color-neutral-3)">예상 체결가 {formatNumber(expectedPrice)}원</p>
+        <div className="mx-[20px] mb-[12px] rounded-[16px] bg-primary-1/8 px-4 py-[14px] text-left">
+          <p className="text-body-07 textneutral-1 mb-[8px]">구매할 가격</p>
+          <p className="text-head-01 textneutral-1 mb-1">{formatNumber(price)}원</p>
+          <p className="text-body-08 text-neutral-3">예상 체결가 {formatNumber(expectedPrice)}원</p>
         </div>
 
         {/* 수량 입력 카드 */}
-        <div className="mx-5 mb-6 rounded-[16px] bg-(--color-primary-1)/[0.08] px-4 py-[14px] text-left">
-          <p className="text-body-07 text-(--color-neutral-1) mb-2">수량</p>
+        <div className="mx-[20px] mb-[24px] rounded-[16px] bg-primary-1/8 px-[16px] py-[14px] text-left">
+          <p className="text-body-07 text-neutral-1 mb-[8px]">수량</p>
           {/* 수량이 입력되지 않았을 때 플레이스홀더 표시 */}
-          <p className={`text-head-01 mb-1 ${quantity ? "text-(--color-neutral-1)" : "text-(--color-neutral-4)"}`}>
+          <p className={`text-head-01 mb-[4px] ${quantity ? "text-neutral-1" : "text-neutral-4"}`}>
             {quantity || "몇 주 구매할까요?"}
           </p>
-          <p className="text-body-08 text-(--color-neutral-3)">
+          <p className="text-body-08 text-neutral-3">
             구매가능 {formatNumber(availableStocks)}원 · 최대 {maxQuantity}주
           </p>
         </div>
 
         {/* 숫자 키패드 (1-9, 00, 0, 백스페이스) */}
-        <div className="mx-5 mb-5 grid grid-cols-3 gap-x-4 gap-y-[12px] py-[7px]">
+        <div className="mx-[20px] mb-[20px] grid grid-cols-3 gap-x-[16px] gap-y-[12px] py-[7px]">
           {/* 1-9 숫자 버튼 */}
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
             <button
               key={num}
               onClick={() => handleNumberClick(num.toString())}
-              className="h-[40px] text-head-00 text-(--color-neutral-2) rounded-[12px] hover:bg-(--color-monochrome-lightgray) active:bg-(--color-monochrome-gray) transition-colors"
+              className="h-[40px] text-head-00 text-neutral-2 rounded-[12px] hover:bg-monochrome-lightgray active:bg-monochrome-gray transition-colors"
             >
               {num}
             </button>
@@ -264,21 +264,21 @@ export function BottomSheetBuyStock({
           {/* 00 버튼 */}
           <button
             onClick={() => handleNumberClick("00")}
-            className="h-[40px] text-head-00 text-(--color-neutral-2) rounded-[12px] hover:bg-(--color-monochrome-lightgray) active:bg-(--color-monochrome-gray) transition-colors"
+            className="h-[40px] text-head-00 text-neutral-2 rounded-[12px] hover:bg-monochrome-lightgray active:bg-monochrome-gray transition-colors"
           >
             00
           </button>
           {/* 0 버튼 */}
           <button
             onClick={() => handleNumberClick("0")}
-            className="h-[40px] text-head-00 text-(--color-neutral-2) rounded-[12px] hover:bg-(--color-monochrome-lightgray) active:bg-(--color-monochrome-gray) transition-colors"
+            className="h-[40px] text-head-00 text-neutral-2 rounded-[12px] hover:bg-monochrome-lightgray active:bg-monochrome-gray transition-colors"
           >
             0
           </button>
           {/* 백스페이스 버튼 */}
           <button
             onClick={handleBackspace}
-            className="h-[40px] flex items-center justify-center rounded-[12px] text-(--color-neutral-2) hover:bg-(--color-monochrome-lightgray) active:bg-(--color-monochrome-gray)"
+            className="h-[40px] flex items-center justify-center rounded-[12px] text-neutral-2 hover:bg-monochrome-lightgray active:bg-monochrome-gray"
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
@@ -289,7 +289,7 @@ export function BottomSheetBuyStock({
           {/* 취소 버튼 */}
           <button
             onClick={handleCancel}
-            className="flex-1 h-[56px] rounded-[16px] bg-(--color-monochrome-gray) text-body-04 text-(--color-neutral-1) hover:bg-(--color-monochrome-lightgray) active:bg-(--color-neutral-5)"
+            className="flex-1 h-[56px] rounded-[16px] bg-monochrome-gray text-body-04 text-neutral-1 hover:bg-monochrome-lightgray active:bg-neutral-5"
           >
             취소
           </button>
@@ -297,7 +297,7 @@ export function BottomSheetBuyStock({
           <button
             onClick={handleConfirm}
             disabled={!quantity || Number.parseInt(quantity) === 0}
-            className="flex-1 h-[56px] rounded-[16px] bg-(--color-primary-1) text-body-04 text-(--color-neutral-6) hover:bg-[#005a96] active:bg-[#004d80] disabled:opacity-50"
+            className="flex-1 h-[56px] rounded-[16px] bg-primary-1 text-body-04 text-neutral-6 hover:bg-[#005a96] active:bg-[#004d80] disabled:opacity-50"
           >
             사기
           </button>
