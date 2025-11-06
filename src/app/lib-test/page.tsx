@@ -17,7 +17,12 @@ export default function DesignSystemDemo() {
         <div className="w-[375px]">
           {/* *<InputTest/> */}
           {/* *<ButtonTest /> */}
+<<<<<<< HEAD
+          {/* <ModalTest /> */}
+          <BadgeTest />
+=======
           <NoticeTest />
+>>>>>>> 97892ca47a5c41364bfa9e38c674e48302a67099
         </div>
       </section>
     </div>
