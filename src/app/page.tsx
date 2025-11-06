@@ -15,11 +15,11 @@ export default function Home() {
         <h1>추후 랜딩 페이지가 될 페이지입니다.</h1>
         이름 : {userName || "미정"} <br/>
         역할 : {userType || "미정"}
-        <button onClick={() => setUser("민트", "aso8eyf2o3rkes", "child")}
+        <button onClick={() => setUser("민트", "child")}
           className="bg-primary-3 text-neutral-1 text-body-01 rounded-sm p-2">
           자녀 유저로 설정하기
         </button>
-        <button onClick={() => setUser("박부모", "aso8eyf2o3rkes", "parent")}
+        <button onClick={() => setUser("박부모", "parent")}
           className="bg-primary-3 text-neutral-1 text-body-01 rounded-sm p-2">
           부모 유저로 설정하기
         </button>
