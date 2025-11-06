@@ -1,6 +1,6 @@
 "use client"
 
-import { HeaderBar } from "@/components/ui/headerbar/HeaderBar"
+import { HeaderBar } from "@/components/layout/headerbar/HeaderBar"
 
 
 

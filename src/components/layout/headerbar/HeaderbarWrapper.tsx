@@ -12,7 +12,7 @@ const HeaderbarWrapper = () => {
       }
     
       const handleNotification = () => {
-        alert("알람창 이동 예정!");
+        router.push("/notice");
       }
 
     return (
