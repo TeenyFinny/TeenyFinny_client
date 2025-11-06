@@ -14,23 +14,23 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#F6F7F8] p-8">
+    <main className="flex min-h-screen items-center justify-center bg-(--color-monochrome-lightgray) p-8">
       <div className="text-center space-y-6">
         <div className="space-y-2">
-          <h1 className="text-head-01 text-[#000000]">간편 비밀번호 바텀시트 테스트</h1>
-          <p className="text-body-05 text-[#898989]">버튼을 클릭하여 비밀번호 입력 바텀시트를 열어보세요</p>
+          <h1 className="text-head-01 text-(--color-neutral-1)">간편 비밀번호 바텀시트 테스트</h1>
+          <p className="text-body-05 text-(--color-neutral-2)">버튼을 클릭하여 비밀번호 입력 바텀시트를 열어보세요</p>
         </div>
 
         <Button
           onClick={() => setIsPasswordSheetOpen(true)}
-          className="bg-[#0067ac] hover:bg-[#005a94] text-[#ffffff] px-8 py-6 text-body-04"
+          className="bg-(--color-primary-1) hover:bg-[#005a94] text-(--color-neutral-7) px-8 py-6 text-body-04"
         >
           비밀번호 입력하기
         </Button>
 
         {passwordResult && (
-          <div className="mt-6 p-4 rounded-lg bg-[#E8EBEE]">
-            <p className="text-body-05 text-[#343434] whitespace-pre-line">{passwordResult}</p>
+          <div className="mt-6 p-4 rounded-lg bg-(--color-monochrome-gray)">
+            <p className="text-body-05 text-(--color-neutral-1) whitespace-pre-line">{passwordResult}</p>
           </div>
         )}
 
