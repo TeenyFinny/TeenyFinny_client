@@ -54,7 +54,7 @@ interface BottomSheetBuyStock {
  *
  * @component
  * @param {BottomSheetBuyStock} props - BottomSheetBuyStock 컴포넌트 속성
- * @returns {React.ReactElement | null} 열림 상태일 경우 바텀시트 요소, 닫힘 상태일 경우 `null`
+ * @returns {React.ReactElement} 바텀시트 요소
  *
  * @example
  * ```tsx
@@ -95,6 +95,18 @@ export function BottomSheetBuyStock({
   // 현재 드래그 중인지 여부
   const [isDragging, setIsDragging] = useState<boolean>(false)
 
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = ""
+    }
+
+    return () => {
+      document.body.style.overflow = ""
+    }
+  }, [open])
+
   // 바텀시트가 닫힐 때 모든 상태 초기화
   useEffect(() => {
     if (!open) {
@@ -104,9 +116,6 @@ export function BottomSheetBuyStock({
       setIsDragging(false)
     }
   }, [open])
-
-  // 바텀시트가 열려있지 않으면 렌더링하지 않음
-  if (!open) return null
 
   /**
    * 바텀시트의 반투명 배경(backdrop)을 클릭했을 때 닫히도록 하는 이벤트 핸들러입니다.
@@ -209,14 +218,16 @@ export function BottomSheetBuyStock({
   const sheetStyle = isDragging ? { transform: `translateY(${dragCurrentY}px)`, transition: "none" } : {}
 
   return (
-    // 전체 화면을 덮는 배경 (backdrop)
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-neutral-1/50"
+      className={`fixed inset-0 z-50 flex items-end bg-neutral-1/50 transition-opacity duration-300 ${
+        open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      }`}
       onClick={handleBackdropClick}
     >
-      {/* 바텀시트 컨테이너 */}
       <div
-        className="w-full max-w-[480px] h-[85vh] rounded-t-[24px] bg-neutral-6 pb-[24px] shadow-lg transition-transform duration-300 overflow-hidden"
+        className={`w-full max-w-[480px] h-[85vh] rounded-t-[24px] bg-neutral-6 pb-[24px] shadow-lg transition-transform duration-300 overflow-hidden ${
+          open ? "translate-y-0" : "translate-y-full"
+        }`}
         style={sheetStyle}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -231,9 +242,9 @@ export function BottomSheetBuyStock({
         <h2 className="text-head-03 text-neutral-1 text-center mb-[20px]">주식 사기</h2>
 
         {/* 구매할 가격 정보 카드 */}
-        <div className="mx-[20px] mb-[12px] rounded-[16px] bg-primary-1/8 px-4 py-[14px] text-left">
-          <p className="text-body-07 textneutral-1 mb-[8px]">구매할 가격</p>
-          <p className="text-head-01 textneutral-1 mb-1">{formatNumber(price)}원</p>
+        <div className="mx-[20px] mb-[12px] rounded-[16px] bg-primary-1/8 px-[16px] py-[14px] text-left">
+          <p className="text-body-07 text-neutral-1 mb-[8px]">구매할 가격</p>
+          <p className="text-head-01 text-neutral-1 mb-[4px]">{formatNumber(price)}원</p>
           <p className="text-body-08 text-neutral-3">예상 체결가 {formatNumber(expectedPrice)}원</p>
         </div>
 
@@ -285,7 +296,7 @@ export function BottomSheetBuyStock({
         </div>
 
         {/* 하단 액션 버튼 (취소, 사기) */}
-        <div className="mx-5 flex gap-3">
+        <div className="mx-[20px] flex gap-[12px]">
           {/* 취소 버튼 */}
           <button
             onClick={handleCancel}
