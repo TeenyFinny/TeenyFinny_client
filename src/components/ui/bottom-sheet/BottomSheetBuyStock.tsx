@@ -57,7 +57,7 @@ interface BottomSheetBuyStock {
  * @returns {React.ReactElement} 바텀시트 요소
  *
  * @example
- * ```tsx
+ * \`\`\`tsx
  * const [open, setOpen] = useState(false)
  *
  * <BottomSheetBuyStock
@@ -72,7 +72,7 @@ interface BottomSheetBuyStock {
  *   }}
  *   onCancel={() => setOpen(false)}
  * />
- * ```
+ * \`\`\`
  */
 export function BottomSheetBuyStock({
   open,
@@ -140,7 +140,7 @@ export function BottomSheetBuyStock({
 
   /**
    * 터치 이동 시 현재 Y 좌표를 업데이트하는 함수입니다.
-   * 아래로만 드래그할 수 있도록 제한합니다 (위로 드래그는 무시).
+   * 아래로만 드래그 가능 (diff > 0)
    *
    * @param {React.TouchEvent<HTMLDivElement>} e - 터치 이벤트 객체
    */
@@ -167,21 +167,30 @@ export function BottomSheetBuyStock({
 
   /**
    * 숫자 키패드 버튼 클릭 시 수량 입력을 처리하는 함수입니다.
-   * 입력된 값이 최대 수량을 초과하면 자동으로 최대 수량으로 설정됩니다.
+   * 입력된 값이 최대 수량을 초과하면 입력이 차단됩니다.
+   * 앞의 불필요한 0은 자동으로 제거됩니다 (예: "002" → "2").
    *
    * @param {string} value - 입력할 숫자 값 ("1"-"9", "0", "00")
    */
   const handleNumberClick = (value: string) => {
     const newQuantity = quantity + value
-    const numericValue = Number.parseInt(newQuantity)
-    // 최대 수량을 초과하면 최대 수량으로 설정
-    setQuantity(numericValue > maxQuantity ? maxQuantity.toString() : newQuantity)
+    const trimmedQuantity = newQuantity.replace(/^0+/, "") || "0"
+    const numericValue = Number.parseInt(trimmedQuantity)
+
+    // 최대 수량을 초과하면 입력을 무시
+    if (numericValue > maxQuantity) {
+      return
+    }
+
+    setQuantity(trimmedQuantity)
   }
 
   /**
    * 백스페이스 버튼 클릭 시 마지막 입력 문자를 삭제하는 함수입니다.
    */
-  const handleBackspace = () => setQuantity(quantity.slice(0, -1))
+  const handleBackspace = () => {
+    setQuantity(quantity.slice(0, -1))
+  }
 
   /**
    * 취소 버튼 클릭 시 실행되는 함수입니다.
@@ -289,7 +298,7 @@ export function BottomSheetBuyStock({
           {/* 백스페이스 버튼 */}
           <button
             onClick={handleBackspace}
-            className="h-[40px] flex items-center justify-center rounded-[12px] text-neutral-2 hover:bg-monochrome-lightgray active:bg-monochrome-gray"
+            className="h-[40px] flex items-center justify-center rounded-[12px] text-neutral-2 hover:bg-monochrome-lightgray active:bg-neutral-5"
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
