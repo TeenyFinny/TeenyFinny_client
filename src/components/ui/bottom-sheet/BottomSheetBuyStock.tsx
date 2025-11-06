@@ -4,7 +4,7 @@ import type React from "react";
 import { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 
-interface StockPurchaseBottomSheet {
+interface BottomSheetBuyStock {
   open: boolean;
   setOpen: (open: boolean) => void;
   price: number;
@@ -14,7 +14,7 @@ interface StockPurchaseBottomSheet {
   onCancel?: () => void;
 }
 
-export function StockPurchaseBottomSheet({
+export function BottomSheetBuyStock({
   open,
   setOpen,
   price,
@@ -22,7 +22,7 @@ export function StockPurchaseBottomSheet({
   maxQuantity,
   onConfirm,
   onCancel,
-}: StockPurchaseBottomSheet) {
+}: BottomSheetBuyStock) {
   const [quantity, setQuantity] = useState<string>("");
   const [dragStartY, setDragStartY] = useState<number>(0);
   const [dragCurrentY, setDragCurrentY] = useState<number>(0);

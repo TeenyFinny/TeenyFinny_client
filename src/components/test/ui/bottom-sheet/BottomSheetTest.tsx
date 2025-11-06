@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { StockPurchaseBottomSheet } from "@/components/ui/bottom-sheet/StockPurchaseSheet"
+import { BottomSheetBuyStock } from "@/components/ui/bottom-sheet/BottomSheetBuyStock"
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -54,7 +54,7 @@ export default function Home() {
         )}
 
         {/* 바텀시트 */}
-        <StockPurchaseBottomSheet
+        <BottomSheetBuyStock
           open={isModalOpen}
           setOpen={setIsModalOpen}
           price={stockPrice}
