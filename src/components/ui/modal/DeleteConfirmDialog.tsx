@@ -37,11 +37,11 @@ export function DeleteConfirmDialog({
     <AlertDialog>
       {trigger && <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>}
       <AlertDialogContent className="w-[270px] p-0 gap-0 rounded-[14px] backdrop-blur-[27px]">
-        <AlertDialogHeader className="px-6 pt-6 pb-4 space-y-3 text-center">
-          <AlertDialogTitle>
-            <span className="text-head-03 text-(--color-neutral-1)">{title}</span>
+        <AlertDialogHeader className="px-4 pt-6 pb-5 space-y-3 text-center">
+          <AlertDialogTitle className="text-center">
+            <span className="text-head-06 text-(--color-neutral-1) ">{title}</span>
             </AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogDescription className="text-center">
             <span className="text-body-07 text-(--color-neutral-3)">{description}</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
