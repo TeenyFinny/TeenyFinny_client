@@ -10,7 +10,7 @@ import Image from "next/image"
  * @property {boolean} [disabled] - 네비게이션 바의 활성화 여부입니다. `true`일 경우 표시되지 않습니다.
  */
 interface NavigationBarProps {
-  userType: "parent" | "child"
+  userType: "parent" | "child" | "admin" | null
   onNavigate?: (page: string) => void
   disabled?: boolean
 }
@@ -18,10 +18,31 @@ interface NavigationBarProps {
 /**
  * NavigationBar
  *
- * 하단 고정 네비게이션 바 컴포넌트
- * - 부모: 3개 아이콘
- * - 자녀: 4개 아이콘
- * - 활성화 색상은 고정 (#0067AC)
+ * 하단 고정 네비게이션 바 컴포넌트입니다.
+ *
+ * ### 특징
+ * - 부모(`parent`)와 자녀(`child`) 타입에 따라 아이콘의 개수가 다릅니다.
+ * - 활성화된 아이콘은 고정된 하이라이트 색상(`"#0067AC"`)으로 표시됩니다.
+ * - `onNavigate` 콜백을 통해 라우팅 제어가 가능합니다.
+ * - `disabled` 상태에서는 바가 렌더링되지 않습니다.
+ *
+ * ### 시각적 구성
+ * - 고정 높이: `86px`
+ * - 상단 아이콘 영역(`56px`) + 하단 회색 베이스(`30px`)
+ * - 그림자 효과(`shadow-[0_-8px_24px_rgba(0,0,0,0.08)]`)
+ * - 홈 인디케이터 영역 포함
+ *
+ * @component
+ * @param {NavigationBarProps} props - NavigationBar 컴포넌트 속성
+ * @returns {React.ReactElement | null} 하단 네비게이션 바 요소
+ *
+ * @example
+ * ```tsx
+ * <NavigationBar
+ *   userType="parent"
+ *   onNavigate={(path) => console.log(path)}
+ * />
+ * ```
  */
 export function NavigationBar({
   userType,
@@ -33,18 +54,25 @@ export function NavigationBar({
 
   if (disabled) return null
 
-  /** 네비게이션 아이템 */
+  /**
+   * 부모용 네비게이션 아이템 리스트
+   * - 홈, 아이관리, 마이페이지
+   */
   const parentNavItems = [
     { path: "/home", label: "홈", iconPath: "/icons/home.png" },
-    { path: "/child-management", label: "아이관리", iconPath: "/icons/child-management.png" },
-    { path: "/mypage", label: "마이페이지", iconPath: "/icons/mypage.png" },
+    { path: "/account", label: "아이관리", iconPath: "/icons/child-management.png" },
+    { path: "/profile", label: "마이페이지", iconPath: "/icons/mypage.png" },
   ]
 
+  /**
+   * 자녀용 네비게이션 아이템 리스트
+   * - 홈, 퀴즈, 투자, 마이페이지
+   */
   const childNavItems = [
     { path: "/home", label: "홈", iconPath: "/icons/home.png" },
-    { path: "/lee-test", label: "퀴즈", iconPath: "/icons/quiz.png" },
-    { path: "/investment", label: "투자", iconPath: "/icons/investment.png" },
-    { path: "/mypage", label: "마이페이지", iconPath: "/icons/mypage.png" },
+    { path: "/quiz", label: "퀴즈", iconPath: "/icons/quiz.png" },
+    { path: "/invest", label: "투자", iconPath: "/icons/investment.png" },
+    { path: "/profile", label: "마이페이지", iconPath: "/icons/mypage.png" },
   ]
 
   const navItems = userType === "parent" ? parentNavItems : childNavItems
@@ -105,10 +133,6 @@ export function NavigationBar({
           })}
         </div>
 
-        {/* 하단 회색 Base + Home Indicator */}
-        <div className="absolute bottom-0 left-0 right-0 h-[30px] bg-[#f8f8f8]">
-          <div className="absolute bottom-[8px] left-1/2 -translate-x-1/2 w-[134px] h-[5px] bg-black rounded-full" />
-        </div>
       </div>
     </nav>
   )
