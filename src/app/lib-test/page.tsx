@@ -4,6 +4,7 @@ import CardForTest from "@/components/test/ui/card/CardForTest";
 import HeaderBarTest from "@/components/test/ui/headerbar/HeaderBarTest";
 import InputTest from "@/components/test/ui/input/InputTest";
 import ModalTest from "@/components/test/ui/modal/ModalTest";
+import NoticeTest from "@/components/test/ui/notice/NoticeTest";
 
 
 export default function DesignSystemDemo() {
@@ -16,8 +17,12 @@ export default function DesignSystemDemo() {
         <div className="w-[375px]">
           {/* *<InputTest/> */}
           {/* *<ButtonTest /> */}
+<<<<<<< HEAD
           {/* <ModalTest /> */}
           <BadgeTest />
+=======
+          <NoticeTest />
+>>>>>>> 97892ca47a5c41364bfa9e38c674e48302a67099
         </div>
       </section>
     </div>

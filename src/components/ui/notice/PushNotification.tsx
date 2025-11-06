@@ -109,7 +109,7 @@ export function PushNotification({ open, setOpen, message, timestamp, onClick }:
           backdrop-blur-3xl
           border border-white/30 dark:border-white/10
           shadow-[0_20px_40px_-20px_rgba(0,0,0,0.30),0_8px_16px_-8px_rgba(0,0,0,0.18)]
-          ring-1 ring-black/5
+          ring-1 ring-black/5 
           px-4 py-3
         "
           role="status" aria-live="polite"
@@ -119,9 +119,9 @@ export function PushNotification({ open, setOpen, message, timestamp, onClick }:
             <div className="flex-shrink-0">
               <div className="relative h-[60px] w-[60px] overflow-hidden rounded-lg bg-neutral-7 flex items-center justify-center">
                 <img
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-iU2YO3ROPMVvdndB1afLWpH35oP6IN.png"
+                  src="/logos/96x96.png"
                   alt="Notification bell"
-                  className="h-[40px] w-[40px] object-contain"
+                  className="h-[55px] w-[55px] object-contain"
                 />
               </div>
             </div>
