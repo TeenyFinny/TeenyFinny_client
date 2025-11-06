@@ -44,7 +44,7 @@ export function ConfirmDisabledInputDialog({
       <AlertDialogContent className="w-[270px] p-0 gap-0 rounded-[14px] backdrop-blur-[27px]">
         <AlertDialogHeader className="px-5 pt-4.5 pb-4 space-y-3 text-center">
           <AlertDialogTitle className="text-center">
-            <span className="text-head-06 text-(--color-neutral-1) ">{title}</span>
+            <span className="text-head-06 text-(--color-neutral-1)">{title}</span>
             </AlertDialogTitle>
         </AlertDialogHeader>
           {/* Form Content */}
@@ -56,7 +56,8 @@ export function ConfirmDisabledInputDialog({
               type="text"
               value={inputVal1}
               disabled
-              className="w-full px-4 py-3 bg-[#F3F4F6] rounded-[6px] text-body-08 text-neutral-3 border-0 outline-none cursor-not-allowed"
+              placeholder={lab1}
+              className="w-full px-4 py-3 bg-(--color-monochrome-lightgray) rounded-[6px] text-body-08 text-neutral-3 border-0 outline-none cursor-not-allowed"
             />
           </div>
 
@@ -67,8 +68,8 @@ export function ConfirmDisabledInputDialog({
               type="text"
               value={inputVal2}
               disabled
-              placeholder="긴히 쓸 데가 있어용"
-              className="w-full px-4 py-3 bg-[#F3F4F6] rounded-[6px] text-body-08 text-neutral-3 placeholder:text-neutral-3 border-0 outline-none cursor-not-allowed"
+              placeholder={lab2}
+              className="w-full px-4 py-3 bg-(--color-monochrome-lightgray) rounded-[6px] text-body-08 text-neutral-3 placeholder:text-neutral-3 border-0 outline-none cursor-not-allowed"
             />
           </div>
         </div>
