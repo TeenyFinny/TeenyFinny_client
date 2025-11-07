@@ -42,23 +42,23 @@ export default function Step01Intro({ onNext }: Step1IntroProps) {
    */
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#ffffff] px-[46px]">
+    <div className="flex min-h-screen flex-col bg-neutral-7 px-[46px]">
       {/* WON 로고 텍스트 */}
       <div className="mt-[80px] text-center">
-        <h1 className="text-head-00 text-[#0067ac]">WON</h1>
+        <h1 className="text-head-00 text-primary-1">WON</h1>
       </div>
 
       {/* 제목 및 부제 */}
       <div className="mt-[32px] space-y-[24px] text-center">
-        <h2 className="text-head-01 text-[#000000] whitespace-pre-line">통장으로 금융의 첫 걸음 시작!</h2>
-        <p className="text-body-05 text-[#898989] whitespace-pre-line">{"계좌를 만들기만 해도\n수수료 면제"}</p>
+        <h2 className="text-head-01 text-neutral-1 whitespace-pre-line">통장으로 금융의 첫 걸음 시작!</h2>
+        <p className="text-body-05 text-neutral-2 whitespace-pre-line">{"계좌를 만들기만 해도\n수수료 면제"}</p>
       </div>
 
       {/* 토끼와 코인 이미지 */}
       <div className="mt-[60px] flex justify-center">
         <div className="relative h-[280px] w-[280px]">
           <Image
-            src="/images/saving/illust_saving_7.png"
+            src="/images/allowance/illust_allowance_makeaccount.png"
             alt="입출금 계좌"
             fill
             className="object-contain"
@@ -69,14 +69,14 @@ export default function Step01Intro({ onNext }: Step1IntroProps) {
 
       {/* 하단 안내 메시지 */}
       <div className="mt-auto mb-[24px] text-center">
-        <p className="text-body-07 text-[#898989]">자녀가 보유한 계좌가 없습니다.</p>
+        <p className="text-body-07 text-neutral-2">자녀가 보유한 계좌가 없습니다.</p>
       </div>
 
       {/* 개설하기 버튼 */}
       <div className="mb-[46px]">
         <button
           onClick={onNext}
-          className="w-full rounded-[10px] bg-[#0067ac] py-[16px] text-body-04 text-[#ffffff] transition-opacity hover:opacity-90 active:opacity-80"
+          className="w-full rounded-[10px] bg-primary-1 py-[16px] text-body-04 text-neutral-7 transition-opacity hover:opacity-90 active:opacity-80"
         >
           개설하기
         </button>
