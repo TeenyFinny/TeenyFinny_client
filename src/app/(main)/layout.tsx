@@ -24,7 +24,7 @@ export default function MainLayout({
                 </div>
 
                 {/* Row 2: 컨텐츠 */}
-                <section className="w-full flex overflow-y-auto">
+                <section className="w-full flex overflow-y-auto bg-primary-4">
                     {children}
                 </section>
 
