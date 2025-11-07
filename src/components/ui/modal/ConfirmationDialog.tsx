@@ -5,18 +5,18 @@ import { Dialog, DialogContent } from "@/components/ui/dialog"
 interface ConfirmationDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  title?: string
-  description?: string
-  confirmText?: string
+  title: string
+  description: string
+  confirmText: string
   onConfirm?: () => void
 }
 
 export function ConfirmationDialog({
   open,
   onOpenChange,
-  title = "확인하셨나요?",
-  description = "삭제하면 되돌릴 수 없어요",
-  confirmText = "확인",
+  title,
+  description,
+  confirmText,
   onConfirm,
 }: ConfirmationDialogProps) {
   const handleConfirm = () => {
