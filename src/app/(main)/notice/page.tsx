@@ -3,12 +3,12 @@
 
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
-import { ApiResponse } from "@/types/apiRes.t";
-import { HttpError } from "@/types/httpError.t";
+import { ApiResponse } from "@/types/axios/apiRes.t";
+import { HttpError } from "@/types/axios/httpError.t";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-type Notice<T = unknown> = {
+type Notice = {
   message: string,
   time: string
 };
@@ -18,32 +18,38 @@ export default function Page() {
   const [data, setData] = useState<Notice | null>(null);
 
   useEffect(() => {
-    let mounted = true;
+    const controller = new AbortController();
 
     (async () => {
       try {
         // 인터셉터가 res.data를 반환하므로 res가 응답 바디
         // <ApiResponse<Notice>>는 없어도 작동함 (타입 지정)
-        const res = await api.get<ApiResponse<Notice>>(requests.fetchTest);
-        if (!mounted) return;
+        const res = await api.get<ApiResponse<Notice>>(requests.fetchTest, {
+          signal: controller.signal,
+        });
+          
+        if (controller.signal.aborted) return;
         setData(res.data as Notice);
 
       } catch (e) {
-        const err = e as HttpError;
-        if (err.statusCode === 403) {
-          alert(err.message);
-          router.push("/");
+        if (e instanceof HttpError) {
+          if (e.statusCode === 403) {
+            alert(e.message);
+            router.push("/");
+          } else {
+            // 필요 시 다른 에러 처리
+            console.error(e);
+          }
         } else {
-          // 필요 시 다른 에러 처리
-          console.error(err);
+          console.error("An unexpected error occurred", e);
         }
       }
     })();
 
     return () => {
-      mounted = false;
+      controller.abort();
     };
-  }, [router]);
+  }, []);
 
   return (
     <section>

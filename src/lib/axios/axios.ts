@@ -1,7 +1,7 @@
 // lib/axios.ts
 "use client";
-import { ApiResponse } from "@/types/apiRes.t";
-import { HttpError } from "@/types/httpError.t";
+import { ApiResponse } from "@/types/axios/apiRes.t";
+import { HttpError } from "@/types/axios/httpError.t";
 import axios, { AxiosError, AxiosResponse } from "axios";
 
 // 한 파일에서 응답 형식이나 에러처리 등을 관리
