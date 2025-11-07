@@ -37,11 +37,7 @@ export function ConfirmInputDialog({
   const [value1, setValue1] = useState(inputVal1)
   const [value2, setValue2] = useState(inputVal2)
   
-  const handleButtonClick = () => {
-    if (onClickBtn) {
-      onClickBtn(value1, value2)
-    }
-  }
+ 
   return (
     <AlertDialog>
       {trigger && <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>}
@@ -79,7 +75,7 @@ export function ConfirmInputDialog({
         </div>
         <AlertDialogFooter className="flex-row p-0 m-0 gap-0">
           <AlertDialogAction
-            onClick={handleButtonClick}
+            onClick={() => onClickBtn?.(value1, value2)}
             className="flex-1 m-0 h-12 rounded-[14px] border-0 hover:bg-transparent transition-colors bg-neutral-7"
           >
             <span className="text-body-04 text-info">{btnText}</span>
