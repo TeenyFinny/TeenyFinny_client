@@ -53,7 +53,7 @@ interface TransactionHistoryProps {
  *   이중으로 보일 수 있으니 하나만 사용하세요.
  */
 export function TransactionHistory({ transactionName, time, Price, isDeposit }: TransactionHistoryProps) {
-    const changeColor = isDeposit ? "#f55053" : "#0d77cf"
+  const changeColor = isDeposit ? "bg-chart-10" : "bg-chart-3"
 
   return (
     <div
@@ -63,7 +63,7 @@ export function TransactionHistory({ transactionName, time, Price, isDeposit }: 
       "
     >
       {/** 인디케이터 점 */}
-      <div className="h-3 w-3 rounded-full flex-shrink-0 mt-[6px]" style={{ backgroundColor: changeColor }}/>
+      <div className={`h-3 w-3 rounded-full flex-shrink-0 mt-[6px] ${changeColor}`}/>
 
       {/** 거래 정보 */}
       <div className="flex-1 min-w-0">
