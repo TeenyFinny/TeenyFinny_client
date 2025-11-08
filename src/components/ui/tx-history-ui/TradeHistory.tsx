@@ -72,7 +72,7 @@ export function TradeHistory({ stockName, stockCode, currentPrice, changeRate }:
    * 양수: 빨간색 (#f55053)
    * 음수: 파란색 (#0d77cf)
    */
-  const changeColor = isPositive ? "#f55053" : "#0d77cf"
+  const changeColor = isPositive ? "text-chart-10" : "text-chart-3"
 
   /**
    * 등락률에 따른 화살표를 결정합니다.
