@@ -128,7 +128,7 @@
   --color-monochrome-gray: #e8ebee;
   --color-monochrome-lightgray: #f6f7f8;
 
-  /* 추가 사항 : Chart Colors */
+  /* Chart Colors */
   --color-chart-3: #0d77cf;
   --color-chart-10: #e24851;
 
@@ -177,7 +177,7 @@
   /* Typography - Letter Spacing */
   --letter-spacing-tight: -0.6px;
   --letter-spacing-tighter: -0.8px;
-  --letter-spacing-tightest: -0.12px; /* 추가 사항 */
+  --letter-spacing-tightest: -0.12px; 
 }
 
 @layer base {
@@ -317,8 +317,14 @@
     letter-spacing: var(--letter-spacing-tight);
     line-height: normal;
   }
+  
+  .text-landing-01 {
+    font-size: var(--font-size-landing-01);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-tight);
+    line-height: normal;
+  }
 
-  /* 추가 사항 */
   .account-title {
     font-size: var(--font-size-account-title);
     font-weight: var(--font-weight-bold);
@@ -333,10 +339,4 @@
     line-height: normal;
   }
 
-  .text-landing-01 {
-    font-size: var(--font-size-landing-01);
-    font-weight: var(--font-weight-bold);
-    letter-spacing: var(--letter-spacing-tight);
-    line-height: normal;
-  }
 }
