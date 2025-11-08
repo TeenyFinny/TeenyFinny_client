@@ -42,7 +42,7 @@ interface HeaderBarProps {
 export function HeaderBar({ onBackClick, onNotificationClick }: HeaderBarProps) {
   return (
     <header className="w-full bg-primary-4 border-primary-4">
-      {/* 높이 56px, 좌 12px / 우 12px 패딩 */}
+      {/* 높이 56px, 좌 12px / 우 12spx 패딩 */}
       <div className="flex h-14 items-center justify-between pl-3 pr-3">
         {/** 뒤로가기 버튼 */}
         <button
