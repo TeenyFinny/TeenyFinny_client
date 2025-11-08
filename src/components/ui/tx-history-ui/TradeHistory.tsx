@@ -72,8 +72,8 @@ export function TradeHistory({ stockName, stockCode, currentPrice, changeRate }:
    * 양수: 빨간색 (#f55053)
    * 음수: 파란색 (#0d77cf)
    */
-  const changeColor = isPositive ? "text-chart-10" : "text-chart-3"
-
+  const textColor = isPositive ? "text-chart-10" : "text-chart-3"
+  const bgColor = isPositive ? "bg-chart-10" : "bg-chart-3"
   /**
    * 등락률에 따른 화살표를 결정합니다.
    * 양수: ↑
@@ -89,18 +89,26 @@ export function TradeHistory({ stockName, stockCode, currentPrice, changeRate }:
       "
     >
       {/** 인디케이터 점 */}
-      <div className="h-3 w-3 rounded-full flex-shrink-0 mt-[6px]" style={{ backgroundColor: changeColor }}/>
+      <div
+        className={`h-3 w-3 rounded-full flex-shrink-0 mt-[6px] ${bgColor}`}
+      />
 
       {/** 종목 정보 */}
       <div className="flex-1 min-w-0">
-        <h3 className="text-head-04 text-neutral-1 whitespace-pre-line">{stockName}</h3>
-        <p className="text-body-07 text-neutral-3 whitespace-pre-line mt-[5px]">{stockCode}</p>
+        <h3 className="text-head-04 text-neutral-1 whitespace-pre-line">
+          {stockName}
+        </h3>
+        <p className="text-body-07 text-neutral-3 whitespace-pre-line mt-[5px]">
+          {stockCode}
+        </p>
       </div>
 
       {/** 가격 정보 */}
       <div className="flex flex-col items-end gap-[3px]">
-        <p className="text-head-08 text-neutral-1 whitespace-nowrap">{currentPrice}</p>
-        <p className="text-body-05 whitespace-nowrap" style={{ color: changeColor }}>
+        <p className="text-head-08 text-neutral-1 whitespace-nowrap">
+          {currentPrice}
+        </p>
+        <p className={`text-body-05 whitespace-nowrap ${textColor}`}>
           {absoluteChangeRate}% {arrow}
         </p>
       </div>
@@ -108,5 +116,5 @@ export function TradeHistory({ stockName, stockCode, currentPrice, changeRate }:
       {/** Divider (inset 20px, 1px, inset -0.5 shadow) */}
       <div className="absolute bottom-0 left-5 right-5 h-px bg-neutral-5" />
     </div>
-  )
+  );
 }
