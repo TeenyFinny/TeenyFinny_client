@@ -3,6 +3,7 @@ import type { AxiosRequestConfig } from "axios";
 import requests from "@/lib/axios/requests";
 import api from "@/lib/axios/axios";
 import { useUserStore } from "@/store/userStore";
+import type { ApiResponse } from "@/types/axios/apiRes.t";
 
 /**
  * @typedef ChildSummary
@@ -10,7 +11,6 @@ import { useUserStore } from "@/store/userStore";
  * @property {number} id - 자녀 계좌 고유 식별자.
  * @property {string} name - 자녀 이름.
  * @property {number} balance - 자녀 계좌 잔액.
- * @property {string} avatar - 자녀 계좌 아바타 (추가필요)
  */
 export interface ChildSummary {
   id: number;
@@ -46,10 +46,7 @@ export interface MappedUser {
 const normalizeRole = (role: unknown): MappedUser["userType"] => {
   if (typeof role !== "string") return null;
   const lowered = role.toLowerCase();
-  if (lowered === "parent" || lowered === "child") {
-    return lowered;
-  }
-  return null;
+  return lowered === "parent" || lowered === "child" ? lowered : null;
 };
 
 /**
@@ -68,16 +65,16 @@ const extractChildren = (payload: any): ChildSummary[] => {
 };
 
 /**
- * 백엔드 사용자 응답을 `MappedUser` 구조로 변환합니다.
+ * 백엔드 사용자 응답(ApiResponse.data)을 `MappedUser` 구조로 변환합니다.
  *
- * @param {any} data - 서버에서 내려온 사용자 응답.
+ * @param {ApiResponse} response - 서버 응답 데이터.
  * @returns {MappedUser} 변환된 사용자 데이터.
  */
-export const mapUserFromDB = (data: any): MappedUser => {
-  const userPayload = data?.user ?? data?.data?.user ?? data ?? {};
+export const mapUserFromApi = (response: ApiResponse): MappedUser => {
+  const data = response.data as Record<string, any> | undefined;
+  const userPayload = (data?.user as Record<string, any> | undefined) ?? data ?? {};
   const role = normalizeRole(userPayload.role);
   const children = extractChildren(userPayload);
-
   const hasChildren = children.length > 0;
 
   return {
@@ -91,6 +88,21 @@ export const mapUserFromDB = (data: any): MappedUser => {
 };
 
 /**
+ * snake_case → camelCase 변환 (axios 응답용)
+ */
+export const toCamelCaseKeys = (obj: Record<string, any>): any => {
+  if (obj === null || typeof obj !== "object") return obj;
+  if (Array.isArray(obj)) return obj.map(toCamelCaseKeys);
+
+  return Object.entries(obj).reduce((acc, [key, val]) => {
+    const camelKey = key.replaceAll(/_([a-z])/g, (_, c) => c.toUpperCase());
+    acc[camelKey] =
+      typeof val === "object" && val !== null ? toCamelCaseKeys(val) : val;
+    return acc;
+  }, {} as Record<string, any>);
+};
+
+/**
  * 서버에서 받은 응답 데이터를 camelCase로 변환합니다.
  *
  * @template T
@@ -100,22 +112,6 @@ export const mapUserFromDB = (data: any): MappedUser => {
 export const mapAxiosResponse = <T = any>(payload: T): T => {
   if (!payload) return {} as T;
   return toCamelCaseKeys(payload);
-};
-/**
- * snake_case → camelCase 변환
- * axios 응답에 중첩 객체가 포함될 때 자동 변환.
- */
-export const toCamelCaseKeys = (obj: Record<string, any>): any => {
-  if (obj === null || typeof obj !== "object") return obj;
-
-  if (Array.isArray(obj)) return obj.map(toCamelCaseKeys);
-
-  return Object.entries(obj).reduce((acc, [key, val]) => {
-    const camelKey = key.replaceAll(/_([a-z])/g, (_, c) => c.toUpperCase());
-    acc[camelKey] =
-      typeof val === "object" && val !== null ? toCamelCaseKeys(val) : val;
-    return acc;
-  }, {} as Record<string, any>);
 };
 
 /**
@@ -128,9 +124,9 @@ export const fetchAndSetUser = async (
   url: string = requests.fetchHome,
   options?: AxiosRequestConfig
 ): Promise<MappedUser> => {
-  const res = await api.get(url, options);
-  const data = mapAxiosResponse(res);
-  const mapped = mapUserFromDB(data);
+  const res = await api.get<ApiResponse>(url, options);
+  const camelResponse = mapAxiosResponse(res);
+  const mapped = mapUserFromApi(camelResponse);
 
   useUserStore
     .getState()
