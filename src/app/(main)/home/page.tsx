@@ -11,6 +11,7 @@ import {
 import { HttpError } from "@/types/axios/httpError.t";
 import ParentDashboard from "@/components/custom/home/parent-dashboard/ParentDashboard";
 import requests from "@/lib/axios/requests";
+
 interface ParentDashboardState {
   balance: number;
   children: ChildSummary[];
@@ -30,57 +31,68 @@ export default function Page() {
     null
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let mounted = true;
+    const controller = new AbortController();
 
     const loadUser = async () => {
       try {
-        // 자녀 대시보드 API 테스트 후 최종 엔드포인트(/home)로 재조정 예정
-        const mappedUser: MappedUser = await fetchAndSetUser(
-          requests.fetchHome
-        );
-        if (!mounted) return;
+        const mappedUser: MappedUser = await fetchAndSetUser(requests.fetchHome, {
+          signal: controller.signal,
+        });
 
         if (mappedUser.userType === "parent") {
           setParentData({
             balance: mappedUser.balance,
             children: mappedUser.children,
           });
+          setError(null);
         } else {
           setParentData(null);
         }
-      } catch (error) {
-        if (error instanceof HttpError) {
+      } catch (err) {
+        if (controller.signal.aborted) return;
+
+        if (err instanceof HttpError) {
           console.error(
-            `[HOME] 요청 실패 - ${error.statusCode} ${error.message}`,
-            error
+            `[HOME] 요청 실패 - ${err.statusCode} ${err.message}`,
+            err
           );
+          setError("데이터를 불러오지 못했습니다.");
         } else {
-          console.error("사용자 정보를 불러오지 못했습니다.", error);
+          console.error("사용자 정보를 불러오지 못했습니다.", err);
+          setError("예기치 못한 오류가 발생했습니다.");
         }
-        if (mounted) setParentData(null);
+        setParentData(null);
       } finally {
-        if (mounted) setIsLoading(false);
+        if (!controller.signal.aborted) setIsLoading(false);
       }
     };
 
     loadUser();
 
-    return () => {
-      mounted = false;
-    };
+    return () => controller.abort();
   }, []);
 
-  if (userType === "parent") {
-    if (isLoading || !parentData) {
-      return (
-        <div className="flex h-full w-full items-center justify-center bg-primary-4">
-          <p className="text-body-01 text-color-neutral-2">불러오는 중...</p>
-        </div>
-      );
-    }
+  // === 상태별 렌더링 분기 ===
+  if (isLoading) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-primary-4">
+        <p className="text-body-01 text-color-neutral-2">불러오는 중...</p>
+      </div>
+    );
+  }
 
+  if (error) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-primary-4">
+        <p className="text-body-01 text-color-error">{error}</p>
+      </div>
+    );
+  }
+
+  if (userType === "parent" && parentData) {
     return (
       <div className="w-full bg-primary-4">
         <div className="mx-auto w-full max-w-[375px] px-4.5 pt-4 pb-7.5">

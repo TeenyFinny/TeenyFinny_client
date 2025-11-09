@@ -1,5 +1,5 @@
 // src/lib/utils/userMapper.ts
-import type { AxiosResponse } from "axios";
+import type { AxiosRequestConfig } from "axios";
 import requests from "@/lib/axios/requests";
 import api from "@/lib/axios/axios";
 import { useUserStore } from "@/store/userStore";
@@ -125,9 +125,10 @@ export const toCamelCaseKeys = (obj: Record<string, any>): any => {
  * @returns {Promise<MappedUser>} 변환된 사용자 정보.
  */
 export const fetchAndSetUser = async (
-  url: string = requests.fetchHome
+  url: string = requests.fetchHome,
+  options?: AxiosRequestConfig
 ): Promise<MappedUser> => {
-  const res = await api.get(url);
+  const res = await api.get(url, options);
   const data = mapAxiosResponse(res);
   const mapped = mapUserFromDB(data);
 
