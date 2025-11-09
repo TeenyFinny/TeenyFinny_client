@@ -21,12 +21,6 @@ export interface ChildSummary {
 /**
  * @typedef MappedUser
  * @description API 응답을 프론트엔드 상태에서 활용하기 위한 사용자 정보입니다.
- * @property {string} userName - 사용자 이름.
- * @property {"parent" | "child" | null} userType - 사용자 유형.
- * @property {boolean} hasChildren - 자녀 계좌 존재 여부.
- * @property {string} [email] - 이메일 주소.
- * @property {number} balance - 사용자 계좌 잔액.
- * @property {ChildSummary[]} children - 연결된 자녀 계좌 목록.
  */
 export interface MappedUser {
   userName: string;
@@ -39,9 +33,6 @@ export interface MappedUser {
 
 /**
  * 역할 문자열을 enum 형태로 정규화합니다.
- *
- * @param {unknown} role - 서버 응답에서 내려온 역할 값.
- * @returns {"parent" | "child" | null} 정규화된 역할.
  */
 const normalizeRole = (role: unknown): MappedUser["userType"] => {
   if (typeof role !== "string") return null;
@@ -51,9 +42,6 @@ const normalizeRole = (role: unknown): MappedUser["userType"] => {
 
 /**
  * 사용자 응답에서 자녀 계좌 목록을 추출합니다.
- *
- * @param {any} payload - 서버에서 내려온 사용자 데이터.
- * @returns {ChildSummary[]} 변환된 자녀 계좌 목록.
  */
 const extractChildren = (payload: any): ChildSummary[] => {
   if (!payload || !Array.isArray(payload.children)) return [];
@@ -66,21 +54,18 @@ const extractChildren = (payload: any): ChildSummary[] => {
 
 /**
  * 백엔드 사용자 응답(ApiResponse.data)을 `MappedUser` 구조로 변환합니다.
- *
- * @param {ApiResponse} response - 서버 응답 데이터.
- * @returns {MappedUser} 변환된 사용자 데이터.
  */
-export const mapUserFromApi = (response: ApiResponse): MappedUser => {
-  const data = response.data as Record<string, any> | undefined;
-  const userPayload = (data?.user as Record<string, any> | undefined) ?? data ?? {};
+export const mapUserFromApi = (
+  response: ApiResponse<{ user: Record<string, any> }>
+): MappedUser => {
+  const userPayload = response.data?.user ?? {};
   const role = normalizeRole(userPayload.role);
   const children = extractChildren(userPayload);
-  const hasChildren = children.length > 0;
 
   return {
     userName: userPayload.name ?? "",
     userType: role,
-    hasChildren,
+    hasChildren: children.length > 0,
     email: userPayload.email ?? "",
     balance: Number(userPayload.balance ?? 0),
     children: role === "parent" ? children : [],
@@ -104,10 +89,6 @@ export const toCamelCaseKeys = (obj: Record<string, any>): any => {
 
 /**
  * 서버에서 받은 응답 데이터를 camelCase로 변환합니다.
- *
- * @template T
- * @param {T} payload - Axios 인터셉터를 거친 응답 데이터(순수 객체).
- * @returns {T} camelCase로 변환된 응답 데이터.
  */
 export const mapAxiosResponse = <T = any>(payload: T): T => {
   if (!payload) return {} as T;
@@ -115,19 +96,22 @@ export const mapAxiosResponse = <T = any>(payload: T): T => {
 };
 
 /**
- * `/home/parent` 엔드포인트(기본값)를 호출해 사용자 정보를 받아오고 Zustand에 반영합니다.
- *
- * @param {string} [url=requests.fetchHome] - 호출할 엔드포인트.
- * @returns {Promise<MappedUser>} 변환된 사용자 정보.
+ * `/home` 엔드포인트를 호출해 사용자 정보를 받아오고 Zustand에 반영합니다.
  */
 export const fetchAndSetUser = async (
   url: string = requests.fetchHome,
   options?: AxiosRequestConfig
 ): Promise<MappedUser> => {
-  const res = await api.get<ApiResponse>(url, options);
-  const camelResponse = mapAxiosResponse(res);
-  const mapped = mapUserFromApi(camelResponse);
+  // 1. ApiResponse<{ user: ... }> 제네릭 명시
+  const res = await api.get<ApiResponse<{ user: Record<string, any> }>>(url, options);
 
+  // 2. res.data만 camelCase로 변환
+  const camelData = mapAxiosResponse(res.data);
+
+  // 3. 변환된 데이터를 mapUserFromApi로 전달
+  const mapped = mapUserFromApi(camelData);
+
+  // 4. Zustand 상태 반영
   useUserStore
     .getState()
     .setUser(mapped.userName, mapped.userType, mapped.hasChildren);
