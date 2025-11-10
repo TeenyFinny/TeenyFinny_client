@@ -15,7 +15,7 @@ export default function MainLayout({
   return (
     // 화면 전체를 '상태바 44px + 헤더 56px + 컨텐츠' 행으로 분리
     <div className="w-full h-full bg-primary-4 flex justify-center">
-      <div className="w-[375px] h-dvh bg-primary-4 grid grid-rows-[56px_1fr] overflow-hidden">
+      <div className="w-[375px] h-dvh bg-primary-4 grid grid-rows-[44px_56px_1fr] overflow-hidden">
         {/* Row 1: 상태바 */}
         <div className="w-full h-[44px] relative">
           <img
