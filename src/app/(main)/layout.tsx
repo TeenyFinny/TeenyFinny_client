@@ -13,11 +13,11 @@ export default function MainLayout({
   const { userType } = useUserStore()
 
   return (
-    // 화면 전체를 '상태바 44px + 헤더 56px + 컨텐츠 + 푸터 86px' 4행으로 분리
-    <div className="w-full h-full bg-primary-4 flex justify-center">
-      <div className="w-full h-dvh bg-primary-4 grid grid-rows-[44px_56px_1fr_86px] overflow-hidden">
-        {/* Row 1: 상태바 */}
-        <div className="w-full h-[44px] relative">
+    // 전체를 중앙에 고정된 375×812 모바일 프레임으로
+    <div className="flex justify-center bg-primary-4 min-h-screen">
+      <div className="w-[375px] h-[812px] bg-primary-4 flex flex-col overflow-hidden">
+        {/* ✅ 상태바 */}
+        <div className="h-[44px] w-full relative flex-shrink-0">
           <img
             src="/images/common/illust_common_status_bar.png"
             alt="status bar"
@@ -25,20 +25,24 @@ export default function MainLayout({
           />
         </div>
 
-        {/* Row 2: 헤더 */}
-        <div className="w-full flex justify-between">
-          <div className="w-full">
-            <HeaderbarWrapper />
-          </div>
+        {/* ✅ 헤더 */}
+        <div className="h-[56px] flex-shrink-0">
+          <HeaderbarWrapper />
         </div>
 
-        {/* Row 3: 컨텐츠 */}
-        <section className="w-full flex overflow-y-auto bg-primary-4">{children}</section>
+        {/* ✅ 컨텐츠 (여기만 스크롤 가능) */}
+        <div className="flex-1 overflow-y-auto bg-primary-4">
+          {children}
+        </div>
 
-        {/* Row 4: 푸터 */}
-        <section className="w-full flex justify-center overflow-y-auto">
-          <NavigationBar userType={userType} onNavigate={() => null} disabled={false} />
-        </section>
+        {/* ✅ 푸터 */}
+        <div className="h-[86px] flex-shrink-0">
+          <NavigationBar
+            userType={userType}
+            onNavigate={() => null}
+            disabled={false}
+          />
+        </div>
       </div>
     </div>
   )

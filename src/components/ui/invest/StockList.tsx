@@ -9,6 +9,7 @@ interface Stock {
   code: string
   price: number
   changePercent: number
+  isPositive: boolean
 }
 
 interface StockListProps {
@@ -37,19 +38,19 @@ export function StockList({ stocks, onSell, btnLab="팔기" }: StockListProps) {
           <div key={stock.id}>
             <div className="flex items-center justify-between px-[16px] py-[12px]">
               {/* Left Side - Stock Info */}
-              <div className="flex items-center gap-[8px]">
-                <div className="w-[12px] h-[12px] rounded-full bg-primary-1 flex-shrink-0" />
+              <div className="flex gap-[8px]">
+                <div className={`w-[12px] h-[12px] rounded-full flex-shrink-0 translate-y-[6px] ${stock.isPositive ? "bg-error" : "bg-primary-1"}`} />
                 <div className="flex flex-col gap-[4px]">
-                  <h3 className="text-head-06 text-neutral-1">{stock.name}</h3>
-                  <p className="text-body-08 text-neutral-2">거래량 {stock.code}</p>
+                  <h3 className="text-head-04 text-neutral-1">{stock.name}</h3>
+                  <p className="text-body-07 text-neutral-3">거래량 {stock.code}</p>
                 </div>
               </div>
 
               {/* Right Side - Price and Action */}
               <div className="flex items-center gap-[12px]">
                 <div className="flex flex-col items-end gap-[4px]">
-                  <p className="text-head-06 text-neutral-1">{formatPrice(stock.price)} 원</p>
-                  <p className="text-body-08 text-error font-medium">{stock.changePercent}% ↑</p>
+                  <p className="text-head-04 text-neutral-1">{formatPrice(stock.price)} 원</p>
+                  <p className={`text-body-08 ${stock.isPositive ? "text-error" : "text-primary-1"}`}>{stock.changePercent}% {stock.isPositive ? "↑" : "↓"}</p>
                 </div>
                 <TinyButton label={btnLab} onClick={() => onSell?.(stock.id)} />
               </div>
