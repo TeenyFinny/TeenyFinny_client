@@ -1,7 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { ChevronLeft, Bell } from "lucide-react";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import Image from "next/image"
 
