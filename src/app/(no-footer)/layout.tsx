@@ -15,7 +15,16 @@ export default function MainLayout({
     return (
         // 화면 전체를 '헤더 56px + 컨텐츠' 2행으로 분리
         <div className="w-full h-full bg-neutral-3 flex justify-center">
-            <div className="w-[375px] h-dvh bg-neutral-7 grid grid-rows-[56px_1fr] overflow-hidden">
+            <div className="w-[375px] h-dvh bg-primary-4 grid grid-rows-[56px_1fr] overflow-hidden">
+                {/* Row 1: 상태바 */}
+                <div className="w-full h-[44px] relative">
+                    <img
+                        src="/images/common/illust_common_status_bar.png"
+                        alt="status bar"
+                        className="w-full h-full object-cover"
+                    />
+                </div>
+
                 {/* Row 1: 헤더 */}
                 <div className="w-full flex justify-center">
                     <div className="w-full">
