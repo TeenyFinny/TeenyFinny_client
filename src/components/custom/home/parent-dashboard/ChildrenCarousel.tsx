@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useMemo, useRef, useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { ChildSummary } from "@/lib/utils/userMapper";
+import type { ChildSummary } from "@/types/user";
 
 interface ChildrenCarouselProps {
   readonly childAccounts: ChildSummary[];
