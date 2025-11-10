@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import Image from "next/image"
+import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 
 /**
  * Page
@@ -42,21 +43,21 @@ export default function Step01Intro({ onNext }: Step1IntroProps) {
    */
 
   return (
-    <div className="flex min-h-screen flex-col bg-neutral-7 px-[46px]">
-      {/* WON 로고 텍스트 */}
-      <div className="mt-[74px] text-center">
+    <div className="flex flex-col">
+      {/* 제목 */}
+      <div className="mt-[47px] text-center">
         <h1 className="text-account-title text-primary-1">WON</h1>
         <h2 className="text-head-01 text-neutral-1 whitespace-pre-line">통장으로 금융의 첫 걸음 시작!</h2>
       </div>
 
-      {/* 제목 및 부제 */}
-      <div className="mt-[32px] space-y-[24px] text-center">
-        <p className="text-body-05 text-neutral-2 whitespace-pre-line">{"계좌를 만들기만 해도\n수수료 면제"}</p>
+      {/* 부제 */}
+      <div className="mt-[33px] mb-[2px] space-y-[24px] text-center">
+        <p className="text-head-05 text-neutral-2 whitespace-pre-line">{"계좌를 만들기만 해도\n수수료 면제"}</p>
       </div>
 
       {/* 토끼와 코인 이미지 */}
-      <div className="mt-[60px] flex justify-center">
-        <div className="relative h-[280px] w-[280px]">
+      <div className="flex justify-center">
+        <div className="relative h-[312px] w-[312px]">
           <Image
             src="/images/allowance/illust_allowance_makeaccount.png"
             alt="입출금 계좌"
@@ -68,19 +69,11 @@ export default function Step01Intro({ onNext }: Step1IntroProps) {
       </div>
 
       {/* 하단 안내 메시지 */}
-      <div className="mt-auto mb-[24px] text-center">
-        <p className="text-body-07 text-neutral-2">자녀가 보유한 계좌가 없습니다.</p>
+      <div className="mt-[42px] mb-[24px] text-center">
+        <p className="text-body-01 text-neutral-2">자녀가 보유한 계좌가 없습니다.</p>
       </div>
-
-      {/* 개설하기 버튼 */}
-      <div className="mb-[46px]">
-        <button
-          onClick={onNext}
-          className="w-full rounded-[10px] bg-primary-1 py-[16px] text-body-04 text-neutral-7 transition-opacity hover:opacity-90 active:opacity-80"
-        >
-          개설하기
-        </button>
-      </div>
+      
+      <BigButtonActivated label="개설하기" onClick={onNext}/>
     </div>
   )
 }
