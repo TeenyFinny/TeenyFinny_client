@@ -12,7 +12,7 @@ import type React from "react";
  * @property {string} [content] - 읽기 전용 상태에서 표시할 텍스트 콘텐츠.
  * @property {string} [placeholder] - 입력 가능한 상태에서의 placeholder 텍스트.
  * @property {React.HTMLInputTypeAttribute} [type] - 입력 필드의 type 속성.
- * @property {"sm" | "md" | "lg"} [inputSize] - 입력 필드 높이 사이즈. 기본값은 `lg`입니다.
+ * @property {"sm" | "lg"} [inputSize] - 입력 필드 높이 사이즈. 기본값은 `sm`입니다.
  */
 interface FlexibleInputFieldProps {
   readonly label: string;
@@ -22,7 +22,7 @@ interface FlexibleInputFieldProps {
   readonly content?: string;
   readonly placeholder?: string;
   readonly type?: React.HTMLInputTypeAttribute;
-  readonly inputSize?: "sm" | "md" | "lg";
+  readonly inputSize?: "sm" | "lg";
 }
 
 /**
