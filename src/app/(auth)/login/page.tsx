@@ -26,20 +26,20 @@ export default function Page() {
 
   return (
     <main className="min-h-[calc(100dvh-44px)]">
-      <div className="mx-auto flex w-full flex-col px-6 pb-12 pt-29.5">
+      <div className="mx-auto flex w-full flex-col px-6 pb-20 pt-20">
         {/* 로고 */}
         <div className="flex justify-center">
           <Image
-            src="/logos/48x48.png"
+            src="/logos/96x96.png"
             alt="티니피니 로고"
-            width={48}
-            height={48}
+            width={96}
+            height={96}
             priority
           />
         </div>
 
         {/* 입력 영역 */}
-        <div className="pt-21.5 flex flex-col gap-6">
+        <div className="pt-20 flex flex-col gap-6">
           <FlexibleInputField
             label="이메일을 입력하세요"
             enabled
