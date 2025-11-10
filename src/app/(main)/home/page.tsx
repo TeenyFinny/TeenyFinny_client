@@ -3,27 +3,30 @@
 
 import { useEffect, useState } from "react";
 import { useUserStore } from "@/store/userStore";
-import {
-  fetchAndSetUser,
-  type ChildSummary,
-  type MappedUser,
-} from "@/lib/utils/userMapper";
 import { HttpError } from "@/types/axios/httpError.t";
 import ParentDashboard from "@/components/custom/home/parent-dashboard/ParentDashboard";
 import requests from "@/lib/axios/requests";
+import api from "@/lib/axios/axios";
+import type { ChildSummary } from "@/types/user";
 
 interface ParentDashboardState {
   balance: number;
   children: ChildSummary[];
 }
 
+interface HomeApiResponse {
+  user: {
+    name?: string;
+    role?: string;
+    email?: string;
+    balance?: number;
+    children?: ChildSummary[];
+  };
+}
+
 /**
  * 홈 페이지 엔트리 컴포넌트.
- *
- * 부모/자녀 여부에 따라 각각의 대시보드를 렌더링하며,
- * 초기 마운트 시 `/home/parent` API를 호출해 Zustand 상태를 갱신합니다.
- *
- * @returns {JSX.Element} 홈 페이지 요소.
+ * `/home` API를 호출해 사용자 정보를 불러오고 Zustand에 반영합니다.
  */
 export default function Page() {
   const { userType, hasChildren } = useUserStore();
@@ -38,14 +41,35 @@ export default function Page() {
 
     const loadUser = async () => {
       try {
-        const mappedUser: MappedUser = await fetchAndSetUser(requests.fetchHome, {
+        // 명시적 타입 지정 (HomeApiResponse)
+        const res = await api.get<HomeApiResponse>(requests.fetchHome, {
           signal: controller.signal,
         });
+        const userPayload = res.data?.user ?? {};
 
-        if (mappedUser.userType === "parent") {
+        // role → userType 변환
+        const rawRole = userPayload.role?.toLowerCase() ?? null;
+        const normalizedRole =
+          rawRole === "parent" || rawRole === "child" ? rawRole : null;
+
+        // 자녀 목록 추출
+        const children: ChildSummary[] = Array.isArray(userPayload.children)
+          ? userPayload.children.map((child) => ({
+              id: Number(child.id ?? 0),
+              name: child.name ?? "",
+              balance: Number(child.balance ?? 0),
+            }))
+          : [];
+
+        // Zustand 상태 갱신
+        useUserStore
+          .getState()
+          .setUser(userPayload.name ?? "", normalizedRole, children.length > 0);
+
+        if (normalizedRole === "parent") {
           setParentData({
-            balance: mappedUser.balance,
-            children: mappedUser.children,
+            balance: Number(userPayload.balance ?? 0),
+            children,
           });
           setError(null);
         } else {
@@ -71,7 +95,6 @@ export default function Page() {
     };
 
     loadUser();
-
     return () => controller.abort();
   }, []);
 

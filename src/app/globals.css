@@ -325,14 +325,14 @@
     line-height: normal;
   }
 
-  .account-title {
+  .text-account-title {
     font-size: var(--font-size-account-title);
     font-weight: var(--font-weight-bold);
     letter-spacing: var(--letter-spacing-tight);
     line-height: normal;
   }
 
-  .nav-title {
+  .text-nav-title {
     font-size: var(--font-size-nav-title);
     font-weight: var(--font-weight-semibold);
     letter-spacing: var(--letter-spacing-tightest);

@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
 /**
  * FlexibleInputFieldProps
@@ -11,14 +11,18 @@ import type React from "react"
  * @property {(text: string) => void} [setText] - 입력 값 변경 콜백. `enabled`가 `true`일 때만 사용됩니다.
  * @property {string} [content] - 읽기 전용 상태에서 표시할 텍스트 콘텐츠.
  * @property {string} [placeholder] - 입력 가능한 상태에서의 placeholder 텍스트.
+ * @property {React.HTMLInputTypeAttribute} [type] - 입력 필드의 type 속성.
+ * @property {"sm" | "lg"} [inputSize] - 입력 필드 높이 사이즈. 기본값은 `sm`입니다.
  */
 interface FlexibleInputFieldProps {
-  label: string
-  enabled: boolean
-  text?: string
-  setText?: (text: string) => void
-  content?: string
-  placeholder?: string
+  readonly label: string;
+  readonly enabled: boolean;
+  readonly text?: string;
+  readonly setText?: (text: string) => void;
+  readonly content?: string;
+  readonly placeholder?: string;
+  readonly type?: React.HTMLInputTypeAttribute;
+  readonly inputSize?: "sm" | "lg";
 }
 
 /**
@@ -63,7 +67,29 @@ export function FlexibleInputField({
   setText,
   content,
   placeholder,
+  type = "text",
+  inputSize = "sm",
 }: FlexibleInputFieldProps) {
+  const sizeClass = (() => {
+    switch (inputSize) {
+      case "sm":
+        return "h-[44px] text-body-07";
+      case "lg":
+      default:
+        return "h-16 text-body-06";
+    }
+  })();
+
+  const readOnlySizeClass = (() => {
+    switch (inputSize) {
+      case "sm":
+        return "min-h-[44px]";
+      case "lg":
+      default:
+        return "min-h-[64px]";
+    }
+  })();
+
   /**
    * 입력 값 변경 핸들러.
    * `enabled`가 `true`이고 `setText`가 전달된 경우에만 상위 상태를 갱신합니다.
@@ -72,34 +98,36 @@ export function FlexibleInputField({
    */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (enabled && setText) {
-      setText(e.target.value)
+      setText(e.target.value);
     }
-  }
+  };
 
   return (
     <div className="w-full space-y-1">
       {/* label */}
-      <label className="block text-body-07 text-neutral-1 whitespace-pre-line">{label}</label>
+      <label className="block text-body-07 text-neutral-3 whitespace-pre-line">
+        {label}
+      </label>
 
       {/* input field */}
       {enabled ? (
         <input
-          type="text"
+          type={type}
           value={text || ""}
           onChange={handleChange}
           placeholder={placeholder}
-          className="w-full px-3 py-2 bg-neutral-7 border border-neutral-6 rounded-[6px] text-body-06 
+          className={`w-full ${sizeClass} px-3 py-2 bg-neutral-7 border border-neutral-6 rounded-[6px] 
           text-neutral-1 placeholder:text-neutral-3 focus:outline-none focus:ring-2 focus:ring-primary-1 
-          focus:border-transparent transition-all whitespace-pre-line"
+          focus:border-transparent transition-all whitespace-pre-line`}
         />
       ) : (
         <div
-          className="w-full px-3 py-2 bg-neutral-6 border border-neutral-5 rounded-[6px] text-body-06 
-        text-neutral-2 whitespace-pre-line"
+          className={`w-full ${readOnlySizeClass} px-3 py-2 bg-neutral-6 border border-neutral-5 rounded-[6px] text-body-06 
+        text-neutral-2 whitespace-pre-line flex items-center`}
         >
           {content}
         </div>
       )}
     </div>
-  )
+  );
 }
