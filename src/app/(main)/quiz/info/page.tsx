@@ -22,20 +22,13 @@ export default function Page() {
   const router = useRouter()
   const setQuizData = useQuizStore((state) => state.setQuizData)
   const quizStore = useQuizStore() // 현재 상태 가져오기 (옵션)
-
-//  // ✅ state 선언부
-//   const [streakDays, setStreakDays] = useState(0)
-//   const [courseCompleted, setCourseCompleted] = useState(false)
-//   const [quizDate, setQuizDate] = useState(0)
-//   const [monthlyReward, setMonthlyReward] = useState(false)
-//   const [todaySolved, setTodaySolved] = useState(0)
-//   const [quizActive, setQuizActive] = useState(true)
-
+  
   // ✅ useEffect로 API 요청
   useEffect(() => {
     (async () => {
       try {
-        const res = await api.get(requests.fetchProgress)
+        //const res = await api.get(`${requests.fetchQuiz}?quiz_id=${quizStore.quiz_date}`)
+        const res = await api.get(`${requests.fetchQuiz}?quiz_id=2`)
         const data = res.data
         setQuizData(data) // 전역 상태 저장
       } catch (e) {
@@ -43,6 +36,8 @@ export default function Page() {
       }
     })()
   }, [setQuizData])
+
+  //TODO: 교육과정일 경우와 랜덤일 경우에 따라 퀴즈 ID를 정하는 알고리즘 추가
 
   const quizActive =
     !quizStore.course_completed &&
@@ -55,7 +50,7 @@ export default function Page() {
     ? "이번 달 도전 완료"
     : `${quizStore.streak_days}일 연속 도전!`
 
-  const rightBadgeText = quizStore.course_completed ? "랜덤" : `${quizStore.quiz_date}일차`
+  const rightBadgeText = `${quizStore.today_solved + 1} / 2 문제`
 
   return (
     <main
@@ -76,56 +71,29 @@ export default function Page() {
           <StateBadge enabled={false} label={rightBadgeText} onClick={() => {}} />
         </div>
 
-       {/* 상단 설명 텍스트 (course_completed가 false일 때만 표시) */}
-  {!quizStore.course_completed && (
-    <p className="absolute top-[85px] left-[48px] text-center text-head-04 font-bold text-[var(--color-neutral-1)] w-[231px] mb-8 leading-relaxed">
-      15일간의 퀴즈 교육 과정을 전부 마치면<br />
-      <span className="text-[var(--color-primary-1)] font-bold">
-        주식 크레딧
-      </span>
-      을 얻을 수 있어요!
+       {/* 상단 제못 텍스트 */}
+  {quizActive && (
+    <p className="absolute top-[67px] left-[33px] text-center text-head-00 font-bold text-[var(--color-neutral-1)] w-[260px] mb-8 leading-relaxed">
+      {quizStore.title}
     </p>
 )}
 
-        {/* 중앙 이미지 */}
-        <div className="absolute top-[135px] w-[262px] h-[262px] mb-8">
-          <Image
-            src="/images/quiz/illust_quiz_credit.png"
-            alt="퀴즈 일러스트"
-            width={262}
-            height={262}
-            priority
-          />
-        </div>
 
-        {/* 하단 설명 텍스트 */}
-<p className="absolute top-[407px] left-[45px] text-center text-head-04 font-bold text-[var(--color-neutral-1)] w-[237px] mb-8 leading-relaxed">
-  {quizStore.monthly_reward ? (
-    <>
-      이번 달의{" "}
-      <span className="text-[var(--color-primary-1)] font-bold">
-        용돈조르기권
-      </span>
-      을 <br />이미 받아갔어요!
-    </>
-  ) : (
-    <>
-      3일 연속으로 퀴즈를 풀면 한 달에 한 번, <br />
-      <span className="text-[var(--color-primary-1)] font-bold">
-        용돈조르기권
-      </span>
-      을 얻을 수 있어요!
-    </>
-  )}
-</p>
+        {/* 중단 설명 텍스트 */}
+        {quizActive && (
+           <p className="absolute top-[154px] left-[36px] text-left text-body-06 font-regular text-[var(--color-neutral-1)] w-[254px] mb-8 leading-relaxed">
+            {quizStore.info}
+            </p>
+       ) }
+
       </div>
 
       {/* 시작 버튼 */}
       <div className="w-[327px]">
         {quizActive ? (
           <BigButtonActivated
-            label="퀴즈 시작하기"
-            onClick={() => router.push("/quiz/info")}
+            label="문제 풀기"
+            onClick={() => router.push("/quiz/question")}
           />
         ) : (
           <BigButtonDisabled label={"오늘의 퀴즈를 모두 풀었어요!"} onClick={() => {}} />
