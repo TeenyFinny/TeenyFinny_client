@@ -1,8 +1,10 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Check, ChevronUp, ChevronDown } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
+import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled";
 
 /**
  * ConsentItem
@@ -11,12 +13,12 @@ import { useRouter } from "next/navigation"
  * @property {string} label - 동의 항목의 표시 텍스트
  */
 interface ConsentItem {
-  id: string
-  label: string
+  id: string;
+  label: string;
 }
 
 /**
- * Step3Page
+ * Step03AuthAgreement
  *
  * 휴대폰 본인확인을 위한 필수 약관 동의 페이지입니다.
  *
@@ -25,8 +27,8 @@ interface ConsentItem {
  * - 전체 동의 섹션은 토글 가능하며, 열림/닫힘 상태를 제어할 수 있습니다.
  * - 개별 동의 항목은 각각 체크/해제할 수 있습니다.
  * - 모든 항목에 동의해야 "동의하고 진행하기" 버튼이 활성화됩니다.
- *
- * ### 시각적 구성
+ * 
+ ### 시각적 구성
  * - 체크되지 않은 항목: `text-monochrome-gray` (회색)
  * - 체크된 항목: `text-success` (녹색)
  * - 모든 항목 체크 시 버튼: `text-primary-1` (파란색)
@@ -34,16 +36,17 @@ interface ConsentItem {
  * @component
  * @returns {React.ReactElement} 약관 동의 페이지
  */
-interface Step03AuthArgreementProps {
-  onNext: () => void; // 이게 핵심
+
+interface Step03AuthAgreementProps {
+  onNext: () => void
 }
-export default function Step03AuthArgreement({ onNext }: Step03AuthArgreementProps) {
+
+export default function Step03AuthAgreement({
+  onNext,
+}: Step03AuthAgreementProps) {
   const router = useRouter()
 
-  // 전체 동의 토글 열림/닫힘 상태
   const [isExpanded, setIsExpanded] = useState<boolean>(true)
-
-  // 개별 동의 항목 체크 상태
   const [consents, setConsents] = useState<Record<string, boolean>>({
     service: false,
     privacy: false,
@@ -51,21 +54,19 @@ export default function Step03AuthArgreement({ onNext }: Step03AuthArgreementPro
     telecom: false,
   })
 
-  // 동의 항목 목록
   const consentItems: ConsentItem[] = [
     { id: "service", label: "서비스 이용약관 동의" },
     { id: "privacy", label: "개인정보 수집/이용 동의" },
     { id: "identification", label: "고유식별정보처리" },
     { id: "telecom", label: "통신사 이용약관 동의" },
   ]
-
-  // 모든 항목이 체크되었는지 확인
+// 모든 항목이 체크되었는지 확인
   const allChecked = Object.values(consents).every((checked) => checked)
 
-  /**
+ /**
    * 전체 동의 체크박스 클릭 시 모든 하위 항목을 일괄 체크/해제합니다.
    */
-  const handleAllCheck = () => {
+    const handleAllCheck = () => {
     const newValue = !allChecked
     setConsents({
       service: newValue,
@@ -74,123 +75,112 @@ export default function Step03AuthArgreement({ onNext }: Step03AuthArgreementPro
       telecom: newValue,
     })
   }
-
   /**
    * 개별 동의 항목 체크박스 클릭 시 해당 항목의 체크 상태를 토글합니다.
    *
    * @param {string} id - 동의 항목의 고유 식별자
    */
-  const handleItemCheck = (id: string) => {
+    const handleItemCheck = (id: string) => {
     setConsents((prev) => ({
       ...prev,
       [id]: !prev[id],
-    }))
-  }
-
-  /**
-   * "동의하고 진행하기" 버튼 클릭 시 실행됩니다.
-   * 모든 항목에 동의한 경우에만 다음 단계로 이동합니다.
-   */
-  const handleProceed = () => {
-    if (allChecked) {
-      // 다음 단계로 이동하는 로직
-      console.log("모든 약관에 동의했습니다.")
-      // router.push("/step4")
-    }
-  }
+    }));
+  };
 
   return (
-    <div className="min-h-screen bg-[#ffffff] px-[24px] py-[24px]">
-      {/* 제목 */}
-      <h1 className="text-landing-01 text-[#000000] mb-[40px] whitespace-pre-line">
-        {"휴대폰 본인확인을 위해\n필수사항에 동의해 주세요"}
-      </h1>
+    <div className="flex flex-col px-[24px]">
+      {/* 타이틀 */}
+      <div className="mt-[43px] mb-[26px] text-left">
+        <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
+          {"휴대폰 본인확인을 위해\n필수사항에 동의해 주세요"}
+        </h1>
+      </div>
 
-      {/* 알아서 준비해주는 서류 섹션 */}
-      <section className="mb-[24px]">
-        <h2 className="text-head-04 text-[#000000] mb-[16px]">알아서 준비해주는 서류</h2>
-        <p className="text-body-07 text-[#000000] leading-relaxed whitespace-pre-line">
-          {"필요한 서류는 스크래핑을 통해 대법원에서 자동으로 발급해주니까, "}
-          <span className="text-[#0067ac]">부모님 본인 명의 휴대폰, 신분증</span>
-          {"만 준비하면 빠른 개설이 가능해요"}
-        </p>
-      </section>
-
-      {/* 휴대폰 본인확인 약관 - 전체 동의 */}
-      <div className="mb-[16px] bg-[#e8ebee] rounded-[8px] px-[20px] py-[16px]">
+      {/* 전체 동의 영역 */}
+      <div className="mb-[15px] bg-monochrome-gray rounded-[10px] px-[20px] py-[16px]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-[12px] flex-1">
-            {/* 전체 동의 체크박스 */}
+            {/* 전체 동의 체크 */}
             <button
               onClick={handleAllCheck}
-              className="flex-shrink-0 w-[24px] h-[24px] rounded-full border-[2px] flex items-center justify-center transition-colors"
-              style={{
-                borderColor: allChecked ? "#55bb59" : "#cacaca",
-                backgroundColor: allChecked ? "#55bb59" : "transparent",
-              }}
+              className="w-[24px] h-[24px] flex items-center justify-center"
             >
-              {allChecked && <Check className="w-[16px] h-[16px] text-[#ffffff]" strokeWidth={3} />}
+              <Image
+                src="/icons/check-circle.png"
+                alt="전체 동의"
+                width={24}
+                height={24}
+                style={{
+                  filter: allChecked
+                    ? "brightness(0) saturate(100%) invert(17%) sepia(99%) saturate(2940%) hue-rotate(190deg) brightness(102%) contrast(101%)"
+                    : "none",
+                }}
+              />
             </button>
 
             {/* 전체 동의 텍스트 */}
-            <span className="text-head-04 text-[#000000]">휴대폰 본인확인 약관</span>
+            <span className="text-head-06 text-neutral-1">
+              휴대폰 본인확인 약관
+            </span>
           </div>
 
           {/* 토글 버튼 */}
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="flex-shrink-0 text-[#898989] transition-transform"
-          >
-            {isExpanded ? <ChevronUp className="w-[24px] h-[24px]" /> : <ChevronDown className="w-[24px] h-[24px]" />}
+          <button onClick={() => setIsExpanded(!isExpanded)}>
+            <Image
+              src="/icons/arrow-down.png"
+              alt="토글"
+              width={24}
+              height={24}
+              style={{filter: "brightness(0) saturate(100%) invert(53%) sepia(54%) saturate(0%) hue-rotate(221deg) brightness(92%) contrast(99%)"}}
+              className={`transition-transform text-neutral-2 ${
+                isExpanded ? "rotate-180" : "rotate-0"
+              }`}
+            />
           </button>
         </div>
       </div>
 
-      {/* 개별 동의 항목 목록 */}
+      {/* 개별 항목 */}
       {isExpanded && (
-        <div className="space-y-[16px] mb-[40px]">
+        <div className="space-y-[15px] mb-[40px] px-[14px]">
           {consentItems.map((item) => (
             <div key={item.id} className="flex items-center justify-between">
               <div className="flex items-center gap-[12px] flex-1">
-                {/* 개별 체크박스 */}
-                <button
-                  onClick={() => handleItemCheck(item.id)}
-                  className="flex-shrink-0 w-[24px] h-[24px] flex items-center justify-center transition-colors"
-                >
-                  <Check
-                    className="w-[24px] h-[24px]"
-                    strokeWidth={2}
-                    style={{
-                      color: consents[item.id] ? "#55bb59" : "#e8ebee",
-                    }}
+                <button onClick={() => handleItemCheck(item.id)}>
+                  <Image
+                    src={
+                      allChecked ? "/icons/check-green.png" : "/icons/check.png"
+                    }
+                    style={{filter: allChecked ? "none" : "brightness(0) saturate(100%) invert(53%) sepia(54%) saturate(0%) hue-rotate(221deg) brightness(92%) contrast(99%)"}}
+                    alt="체크"
+                    width={24}
+                    height={24}
                   />
                 </button>
-
-                {/* 항목 텍스트 */}
-                <span className="text-body-06 text-[#000000]">{item.label}</span>
+                <span className="text-body-02">{item.label}</span>
               </div>
 
-              {/* 화살표 아이콘 */}
-              <button className="flex-shrink-0 text-[#cacaca]">
-                <ChevronDown className="w-[24px] h-[24px] -rotate-90" />
-              </button>
+              {/* 오른쪽 화살표 */}
+              <Image
+                src="/icons/arrow-right.png"
+                alt="보기"
+                width={24}
+                height={24}
+                style={{filter: "brightness(0) saturate(100%) invert(53%) sepia(54%) saturate(0%) hue-rotate(221deg) brightness(92%) contrast(99%)"}}
+              />
             </div>
           ))}
         </div>
       )}
 
-      {/* 동의하고 진행하기 버튼 */}
-      <button
-        onClick={handleProceed}
-        disabled={!allChecked}
-        className="fixed bottom-[24px] left-[24px] right-[24px] rounded-[8px] py-[16px] text-body-04 font-semibold transition-all"
-        style={{
-          backgroundColor: allChecked ? "#0067ac" : "#e8ebee",
-          color: allChecked ? "#ffffff" : "#cacaca",
-        }}
-      >
-        동의하고 진행하기
-      </button>
+      {/* 하단 버튼 */}
+      <div className="flex flex-col gap-5 items-center mt-[221px] mb-[56px]">
+        {allChecked ? (
+          <BigButtonActivated label="동의하고 진행하기" onClick={onNext} />
+        ) : (
+          <BigButtonDisabled label="동의하고 진행하기" onClick={() => {}} />
+        )}
+      </div>
     </div>
-  )
+  );
 }
