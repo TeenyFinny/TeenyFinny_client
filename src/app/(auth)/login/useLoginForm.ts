@@ -104,6 +104,20 @@ export function useLoginForm() {
         });
       }
 
+      const role = user.role?.toLowerCase();
+      if (role !== "parent" && role !== "child") {
+        if (process.env.NODE_ENV === "development") {
+          console.error(
+            "서버로부터 받은 사용자 역할이 유효하지 않습니다.",
+            role
+          );
+        }
+        throw new HttpError({
+          message: "잘못된 요청입니다. 관리자에게 문의해주세요.",
+          statusCode: res.status,
+        });
+      }
+
       // 상태 갱신 (Zustand)
       setUser(
         user.name,
