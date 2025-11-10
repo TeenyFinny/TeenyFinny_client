@@ -3,7 +3,8 @@
 const requests = {
   fetchTest: `/noticeTest`,
   fetchHome: `/home/parent`, // T
-  stockList: `/stock/list`,
+  stockList: `/invest/stockList`,
+  investSummary: `/invest/investSummary`,
 };
 
 export default requests;

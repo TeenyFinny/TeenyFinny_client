@@ -8,20 +8,24 @@ import requests from "@/lib/axios/requests"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation";
 
-// app/saving/page.tsx
 export default function Page() {
   const router = useRouter();
-  const [stocks, setStocks] = useState<any[]>([]) 
+  const [stocks, setStocks] = useState<any[]>([]);
+  const [investSummary, setInvestSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
 
     (async () => {
       try {
-	      // 요청 후 setData useState를 이용해 결과를 페이지에 반영
-        const res = await api.get(requests.stockList);
-        console.log("Fetched stocks:", res.data);
-        setStocks(res.data ?? []);
+        const [stockRes, investRes] = await Promise.all([
+          api.get(requests.stockList),
+          api.get(requests.investSummary),
+        ]);
+        // const res = await api.get(requests.stockList);
+        setStocks(stockRes.data ?? []);
+        setInvestSummary(investRes.data ?? []);
+        console.log(investRes.data);
       } catch (e) {
 	      // 커스텀 에러관리
         const err = e as HttpError;
@@ -56,11 +60,11 @@ export default function Page() {
     <main className="min-h-screen flex  bg-primary-4">
       <div className="flex flex-col gap-12 items-center pt-6">
         <InvestStatus
-            userName="민트"
-            currentAmount={20000}
-            changeAmount={23000}
-            changePercent={2.03}
-            availableAmount={30000}
+            userName={investSummary.userName}
+            currentAmount={investSummary.currentAmount}
+            profitAmount={investSummary.profitAmount}
+            profitRate={investSummary.profitRate}
+            availableAmount={investSummary.availableAmount}
             />
         
         <StockList stocks={stocks} onSell={handleSell} btnLab="사기"/>

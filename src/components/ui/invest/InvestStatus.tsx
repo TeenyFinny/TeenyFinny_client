@@ -3,19 +3,19 @@
 interface InvestStatusProps {
   userName: string
   currentAmount: number
-  changeAmount: number
-  changePercent: number
+  profitAmount: number
+  profitRate: number
   availableAmount: number
 }
 
 export function InvestStatus({
   userName,
   currentAmount,
-  changeAmount,
-  changePercent,
+  profitAmount,
+  profitRate,
   availableAmount,
 }: InvestStatusProps) {
-  const isPositive = changeAmount >= 0
+  const isPositive = profitAmount >= 0
 
   return (
     <div className="w-[340px] h-[232px] p-6 bg-white rounded-[16px]">
@@ -28,15 +28,15 @@ export function InvestStatus({
       {/* Current Amount */}
       <div className="mb-1">
         <p className="text-[32px] font-bold text-neutral-1 leading-none tracking-tight">
-          {currentAmount.toLocaleString("ko-KR")} <span className="text-body-07 font-normal">원</span>
+          {currentAmount} <span className="text-body-07 font-normal">원</span>
         </p>
       </div>
 
       {/* Change Amount */}
       <div className="mb-6">
         <p className={`text-body-07 ${isPositive ? "text-error" : "text-primary-1"}`}>
-          {isPositive ? "↑" : "↓"} {Math.abs(changeAmount).toLocaleString("ko-KR")}원 (
-          {Math.abs(changePercent).toFixed(2)}%)
+          {isPositive ? "↑" : "↓"} {Math.abs(profitAmount).toLocaleString("ko-KR")}원 (
+          {profitRate}%)
         </p>
       </div>
 
@@ -47,7 +47,7 @@ export function InvestStatus({
       <div>
         <p className="text-body-07 text-neutral-2">투자 가능한 금액</p>
         <p className="text-[32px] font-bold text-neutral-1 leading-none tracking-tight">
-          {availableAmount.toLocaleString("ko-KR")} <span className="text-body-07 font-normal">원</span>
+          {availableAmount} <span className="text-body-07 font-normal">원</span>
         </p>
       </div>
     </div>
