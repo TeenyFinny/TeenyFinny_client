@@ -28,14 +28,14 @@ interface Step2ChecklistProps {
 }
 export default function Step02Checklist({ onNext }: Step2ChecklistProps) {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col px-[24px]">
       {/* Title Section */}
       <div className="mt-[43px] mb-[24px] text-left">
-        <h1 className="text-head-01 text-neutral-1 whitespace-pre-line pl-[24px]">
+        <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
           {"계좌 개설 전에\n미리 확인해 주세요"}
         </h1>
       </div>
-      <div className="mb-[24px] pl-[24px] pr-[24px]">
+      <div className="mb-[24px]">
         <div className="space-y-[6px] text-left whitespace-pre-line">
           <h2 className="text-head-04 text-neutral-1">
             알아서 준비해주는 서류
