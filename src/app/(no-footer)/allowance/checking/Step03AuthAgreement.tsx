@@ -34,7 +34,10 @@ interface ConsentItem {
  * @component
  * @returns {React.ReactElement} 약관 동의 페이지
  */
-export default function Step3Page() {
+interface Step03AuthArgreementProps {
+  onNext: () => void; // 이게 핵심
+}
+export default function Step03AuthArgreement({ onNext }: Step03AuthArgreementProps) {
   const router = useRouter()
 
   // 전체 동의 토글 열림/닫힘 상태
