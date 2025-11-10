@@ -45,10 +45,7 @@ export default function Page() {
         const res = await api.get<HomeApiResponse>(requests.fetchHome, {
           signal: controller.signal,
         });
-        console.log("[DEBUG] res:", res);
-
         const userPayload = res.data?.user ?? {};
-        console.log("[DEBUG] userPayload:", userPayload);
 
         // role → userType 변환
         const rawRole = userPayload.role?.toLowerCase() ?? null;
