@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { TransactionHistory } from "@/components/ui/tx-history-ui/TransactionHistory"
@@ -19,20 +20,23 @@ interface GoalSaving {
   deposit_datetime: string[]
 }
 
-export default function SavingsDetailScreen({
-  onDelete,
-  onEdit,
-}: {
-  onDelete?: () => void
-  onEdit?: () => void
-}) {
+export default function Page() {
   const [goal, setGoal] = useState<GoalSaving | null>(null)
   const [transactions, setTransactions] = useState<
     { id: string; type: string; amount: number; date: string }[]
   >([])
-
-  // ✅ zustand로부터 userType 가져오기
   const userType = useUserStore((state) => state.userType)
+  const router = useRouter()
+
+  // ✅ 삭제 버튼 클릭 시 이동
+  const handleDelete = () => {
+    router.push("/saving/delete") // 🔗 아직 없는 삭제 페이지
+  }
+
+  // ✅ 수정 버튼 클릭 시 이동
+  const handleEdit = () => {
+    router.push("/saving/edit") // 🔗 아직 없는 수정 페이지
+  }
 
   useEffect(() => {
     async function fetchGoal() {
@@ -47,7 +51,7 @@ export default function SavingsDetailScreen({
         const tx = data.deposit_amount.map((amount, idx) => ({
           id: String(idx + 1),
           type: `${data.user_name} 입금`,
-          amount: amount,
+          amount,
           date: data.deposit_datetime[idx],
         }))
         setTransactions(tx)
@@ -66,17 +70,16 @@ export default function SavingsDetailScreen({
       {/* Title Section */}
       <div className="px-6 mt-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 relative z-10">
             <h1 className="text-head-02 text-primary-1">{goal.name}</h1>
 
-            {/* ✅ userType이 parent가 아닐 때만 버튼 표시 */}
             {userType !== "parent" && (
               <>
                 <Button
                   variant="ghost"
                   size="icon"
                   className="h-6 w-6 text-neutral-2 p-0"
-                  onClick={onDelete}
+                  onClick={handleDelete}
                 >
                   <Image
                     src="/icons/trashbin-small.png"
@@ -90,7 +93,7 @@ export default function SavingsDetailScreen({
                   variant="ghost"
                   size="icon"
                   className="h-6 w-6 text-neutral-2 p-0"
-                  onClick={onEdit}
+                  onClick={handleEdit}
                 >
                   <Image
                     src="/icons/edit-small.png"
@@ -119,10 +122,9 @@ export default function SavingsDetailScreen({
         </p>
       </div>
 
-      {/* ✅ Progress Section */}
+      {/* Progress Section */}
       <div className="flex flex-col items-center px-6 mt-6.5">
         <div className="w-full max-w-[300px] relative">
-          {/* 🧩 토끼 + 포인터 + % 묶음 그룹 */}
           <div
             className="absolute flex flex-col items-center transition-all duration-300 z-10"
             style={{
@@ -131,7 +133,6 @@ export default function SavingsDetailScreen({
               top: "5px",
             }}
           >
-            {/* 🐰 토끼 */}
             <div
               style={{
                 width: "68px",
@@ -139,9 +140,11 @@ export default function SavingsDetailScreen({
                 marginBottom: "-12px",
               }}
             >
-              <img
+              <Image
                 src="/images/saving/illust_saving_run.png"
                 alt="Savings character"
+                width={68}
+                height={68}
                 style={{
                   width: "100%",
                   height: "auto",
@@ -150,10 +153,11 @@ export default function SavingsDetailScreen({
               />
             </div>
 
-            {/* 📍 포인터 */}
-            <img
+            <Image
               src="/images/saving/illust_saving_pointer.png"
               alt="Progress pointer"
+              width={26}
+              height={34}
               style={{
                 width: "26px",
                 height: "auto",
@@ -162,20 +166,11 @@ export default function SavingsDetailScreen({
               }}
             />
 
-            {/* 🔢 진행률 */}
-            <span
-              className="text-head-04 text-neutral-2"
-              style={{
-                fontFamily: "Pretendard",
-                fontWeight: 700,
-                letterSpacing: "-0.6px",
-              }}
-            >
+            <span className="text-head-04 text-neutral-2">
               {goal.progress}%
             </span>
           </div>
 
-          {/* 🌈 Progress Bar */}
           <div className="relative h-[11px] rounded-full overflow-visible mt-[73px]">
             <div className="absolute inset-0 rounded-full bg-monochrome-gray" />
             <div
