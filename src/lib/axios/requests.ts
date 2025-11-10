@@ -6,6 +6,8 @@ const requests = {
   login: `/auth/login`,
   fetchSavingDetail: `/saving/detail`,
   fetchProgress: '/quiz/progress',
+  stockList: `/invest/stockList`,
+  investSummary: `/invest/investSummary`,
 };
 
 export default requests;
