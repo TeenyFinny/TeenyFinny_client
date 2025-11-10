@@ -1,4 +1,4 @@
-// app/(no-footer)/login/page.tsx
+// app/(auth)/login/page.tsx
 "use client";
 
 import Image from "next/image";

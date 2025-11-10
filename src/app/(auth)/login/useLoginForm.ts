@@ -1,4 +1,4 @@
-// app/(no-footer)/login/useLoginForm.ts
+// app/(auth)/login/useLoginForm.ts
 "use client";
 
 import { useState, useCallback } from "react";
@@ -28,7 +28,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  *   isSubmitting: boolean; # 요청 진행 중 여부
  *   handleEmailChange: (value: string) => void; # 이메일 입력 핸들러
  *   handlePasswordChange: (value: string) => void; # 비밀번호 입력 핸들러
- *   handleSubmit: () => Promise<void>; # 로그인 요청 핸들러러
+ *   handleSubmit: () => Promise<void>; # 로그인 요청 핸들러
  * }}
  */
 export function useLoginForm() {
