@@ -93,8 +93,12 @@ export default function Page() {
 
                 {/* 중단 설명 텍스트 */}
                 {quizActive && (
-                    <p className="absolute top-[154px] left-[36px] text-left text-body-06 font-bold text-[var(--color-neutral-1)] w-[254px] mb-8 leading-loose break-keep tracking-wide">
-                        {info}
+                    <p className="absolute top-[154px] left-[36px] text-left text-body-06 font-bold text-[var(--color-neutral-1)] w-[254px] mb-8 leading-loose tracking-wide">
+                        {info.split("\n").map((line, index) => (
+                            <p key={index} className="indent-1 mb-1">
+                                {line}
+                            </p>
+                        ))}
                     </p>
                 )}
 

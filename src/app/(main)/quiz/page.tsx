@@ -17,19 +17,18 @@ import { useQuizStore } from "@/store/quizStore"
  * - 상단 상태바 / 하단 네비게이션은 기본 레이아웃에서 제공
  * - 본 페이지에서는 배지, 중앙 이미지, 설명 텍스트, 시작 버튼만 렌더링
  */
-
 export default function Page() {
   const router = useRouter()
-  const setQuizData = useQuizStore((state) => state.setQuizData)
-  const quizStore = useQuizStore() // 현재 상태 가져오기 (옵션)
-
-  //  // ✅ state 선언부
-  //   const [streakDays, setStreakDays] = useState(0)
-  //   const [courseCompleted, setCourseCompleted] = useState(false)
-  //   const [quizDate, setQuizDate] = useState(0)
-  //   const [monthlyReward, setMonthlyReward] = useState(false)
-  //   const [todaySolved, setTodaySolved] = useState(0)
-  //   const [quizActive, setQuizActive] = useState(true)
+  const {
+    setQuizData,
+    streak_days,
+    course_completed,
+    monthly_reward,
+    today_solved,
+    title,
+    info,
+    quiz_date,
+  } = useQuizStore()
 
   // ✅ useEffect로 API 요청
   useEffect(() => {
@@ -52,18 +51,16 @@ export default function Page() {
     })()
   }, [setQuizData])
 
-  const quizActive =
-    !quizStore.course_completed &&
-    !quizStore.monthly_reward &&
-    quizStore.today_solved < 2
+  const quizActive = !course_completed && !monthly_reward && today_solved < 2
+
   // ---------------------------
   // 배지 텍스트
   // ---------------------------
-  const leftBadgeText = quizStore.monthly_reward
+  const leftBadgeText = monthly_reward
     ? "이번 달 도전 완료"
-    : `${quizStore.streak_days}일 연속 도전!`
+    : `${streak_days}일 연속 도전!`
 
-  const rightBadgeText = quizStore.course_completed ? "랜덤" : `${quizStore.quiz_date}일차`
+  const rightBadgeText = course_completed ? "랜덤" : `${quiz_date}일차`
 
   return (
     <main
@@ -85,7 +82,7 @@ export default function Page() {
         </div>
 
         {/* 상단 설명 텍스트 (course_completed가 false일 때만 표시) */}
-        {!quizStore.course_completed && (
+        {!course_completed && (
           <p className="absolute top-[85px] left-[48px] text-center text-head-04 font-bold text-[var(--color-neutral-1)] w-[231px] mb-8 leading-relaxed">
             15일간의 퀴즈 교육 과정을 전부 마치면<br />
             <span className="text-[var(--color-primary-1)] font-bold">
@@ -108,7 +105,7 @@ export default function Page() {
 
         {/* 하단 설명 텍스트 */}
         <p className="absolute top-[407px] left-[45px] text-center text-head-04 font-bold text-[var(--color-neutral-1)] w-[237px] mb-8 leading-relaxed">
-          {quizStore.monthly_reward ? (
+          {monthly_reward ? (
             <>
               이번 달의{" "}
               <span className="text-[var(--color-primary-1)] font-bold">
