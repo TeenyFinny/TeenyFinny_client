@@ -6,6 +6,7 @@ const requests = {
   login: `/auth/login`,
   fetchSavingDetail: `/saving/detail`,
   fetchProgress: '/quiz/progress',
+  fetchQuiz: '/quiz/info',
   stockList: `/invest/stockList`,
   investSummary: `/invest/investSummary`,
 };
