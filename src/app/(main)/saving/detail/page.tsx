@@ -40,17 +40,11 @@ export default function SavingsDetailScreen() {
 
     ;(async () => {
       try {
-        // console.log("📡 요청 시작:", requests.fetchSavingDetail)
         const res = await api.get(requests.fetchSavingDetail, {
           signal: controller.signal,
         })
 
-        // console.log("✅ 응답 전체:", res)
-        // console.log("✅ res.data:", res.data)
-
-        // ✅ mock 응답 구조: { data: {...} }
         const data: GoalSaving = res.data
-
         if (!data) throw new Error("데이터가 비어 있습니다.")
         setGoal(data)
 
@@ -64,7 +58,6 @@ export default function SavingsDetailScreen() {
       } catch (e) {
         const err = e as HttpError
         console.error("[SAVING] 데이터 요청 실패:", err)
-
         if (err.statusCode === 403) {
           alert(err.message)
           router.push("/")
@@ -78,7 +71,7 @@ export default function SavingsDetailScreen() {
   if (!goal) return <div className="text-center mt-10">로딩중...</div>
 
   return (
-    <div className="w-[375px] mx-auto min-h-screen flex flex-col">
+    <div className="w-[375px] mx-auto flex-1 flex flex-col">
       {/* Title Section */}
       <div className="px-6 mt-4">
         <div className="flex items-center justify-between">
@@ -204,8 +197,8 @@ export default function SavingsDetailScreen() {
       </div>
 
       {/* Transaction History */}
-      <div className="flex-1 pb-6 mt-[80px]">
-        <h2 className="text-head-04 text-neutral-1 mb-1.5 text-center">
+      <div className="flex-1 mt-[80px]">
+        <h2 className="text-head-03 text-neutral-1 mb-1.5 text-center">
           적금 기록
         </h2>
 

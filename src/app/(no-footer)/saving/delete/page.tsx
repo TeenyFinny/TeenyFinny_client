@@ -18,7 +18,7 @@ export default function DeleteConfirmationPage() {
   }
 
   return (
-    <div className="flex h-[812px] flex-col overflow-hidden bg-primary-4">
+    <div className="flex h-[712px] flex-col overflow-hidden bg-primary-4">
       <main className="flex flex-col items-center px-6">
         {/* Title */}
         <h1 className="mt-[73px] text-landing-01 text-primary-1">
