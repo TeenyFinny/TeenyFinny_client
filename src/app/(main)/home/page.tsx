@@ -7,12 +7,7 @@ import { HttpError } from "@/types/axios/httpError.t";
 import ParentDashboard from "@/components/custom/home/parent-dashboard/ParentDashboard";
 import requests from "@/lib/axios/requests";
 import api from "@/lib/axios/axios";
-
-interface ChildSummary {
-  id: number;
-  name: string;
-  balance: number;
-}
+import type { ChildSummary } from "@/types/user";
 
 interface ParentDashboardState {
   balance: number;
