@@ -25,7 +25,6 @@ export default function Page() {
         // const res = await api.get(requests.stockList);
         setStocks(stockRes.data ?? []);
         setInvestSummary(investRes.data ?? []);
-        console.log(investRes.data);
       } catch (e) {
 	      // 커스텀 에러관리
         const err = e as HttpError;
@@ -59,14 +58,14 @@ export default function Page() {
   return (
     <main className="min-h-screen flex  bg-primary-4">
       <div className="flex flex-col gap-12 items-center pt-6">
-        <InvestStatus
+        {investSummary && <InvestStatus
             userName={investSummary.userName}
             currentAmount={investSummary.currentAmount}
             profitAmount={investSummary.profitAmount}
             profitRate={investSummary.profitRate}
             availableAmount={investSummary.availableAmount}
             />
-        
+        }
         <StockList stocks={stocks} onSell={handleSell} btnLab="사기"/>
       </div>
     </main>
