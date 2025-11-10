@@ -1,11 +1,14 @@
 "use client"
 
 import Image from "next/image"
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { StateBadge } from "@/components/ui/badge/StateBadge"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled"
 import { useRouter } from "next/navigation"
+import { HttpError } from "@/types/axios/httpError.t"
+import api from "@/lib/axios/axios"
+import requests from "@/lib/axios/requests"
 
 /**
  * QuizStartPage
@@ -17,44 +20,59 @@ import { useRouter } from "next/navigation"
 export default function Page() {
   const router = useRouter()
 
-  // ---------------------------
-  // 샘플 데이터 (추후 실제 데이터로 대체)
-  // ---------------------------
-  const streak_days = 2
-  const course_completed = false
-  const quiz_date = 10
-  const monthly_reward = false
-  const today_solved = 1
+ // ✅ state 선언부
+  const [streakDays, setStreakDays] = useState(0)
+  const [courseCompleted, setCourseCompleted] = useState(false)
+  const [quizDate, setQuizDate] = useState(0)
+  const [monthlyReward, setMonthlyReward] = useState(false)
+  const [todaySolved, setTodaySolved] = useState(0)
+  const [quizActive, setQuizActive] = useState(true)
 
-// ---------------------------
-// 상태 로직
-// ---------------------------
-// 기본 로직: today_solved가 0 또는 1이면 true, 2면 false
-let quiz_active = today_solved < 2
+  // ✅ useEffect로 API 요청
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await api.get(requests.fetchProgress)
 
-// course_completed와 monthly_reward가 모두 true면 무조건 false
-if (course_completed && monthly_reward) {
-  quiz_active = false
-}
+        const {
+          streak_days,
+          course_completed,
+          quiz_date,
+          monthly_reward,
+          today_solved,
+        } = res.data
+
+        setStreakDays(streak_days)
+        setCourseCompleted(course_completed)
+        setQuizDate(quiz_date)
+        setMonthlyReward(monthly_reward)
+        setTodaySolved(today_solved)
+
+        // quiz_active 로직
+        const isActive =
+          !course_completed && !monthly_reward && today_solved < 2
+        setQuizActive(isActive)
+      } catch (e) {
+        const err = e as HttpError
+
+        if (err.statusCode === 403) {
+          alert(err.message)
+          router.push("/")
+        } else {
+          console.error(err)
+        }
+      }
+    })()
+  }, [router])
+
   // ---------------------------
   // 배지 텍스트
   // ---------------------------
-  const leftBadgeText = monthly_reward
+  const leftBadgeText = monthlyReward
     ? "이번 달 도전 완료"
-    : `${streak_days}일 연속 도전!`
+    : `${streakDays}일 연속 도전!`
 
-  const rightBadgeText = course_completed ? "랜덤" : `${quiz_date}일차`
-
-  // ---------------------------
-  // 설명 텍스트
-  // ---------------------------
-  const topText = !course_completed
-    ? "15일간의 퀴즈 교육 과정을 전부 마치면\n주식 크레딧을 얻을 수 있어요!"
-    : null
-
-  const bottomText = monthly_reward
-    ? "이번 달의 용돈조르기권을\n 이미 받아갔어요!"
-    : "3일 연속으로 퀴즈를 풀면 한 달에 한 번,\n용돈조르기권을 얻을 수 있어요!"
+  const rightBadgeText = courseCompleted ? "랜덤" : `${quizDate}일차`
 
   return (
     <main
@@ -75,12 +93,16 @@ if (course_completed && monthly_reward) {
           <StateBadge enabled={false} label={rightBadgeText} onClick={() => {}} />
         </div>
 
-        {/* 상단 설명 텍스트 (course_completed가 false일 때만 표시) */}
-        {topText && (
-          <p className="absolute top-[85px] left-[48px] text-center text-head-04 font-bold text-[var(--color-neutral-1)] w-[231px] mb-8 whitespace-pre-line">
-            {topText}
-          </p>
-        )}
+       {/* 상단 설명 텍스트 (course_completed가 false일 때만 표시) */}
+  {!courseCompleted && (
+    <p className="absolute top-[85px] left-[48px] text-center text-head-04 font-bold text-[var(--color-neutral-1)] w-[231px] mb-8 leading-relaxed">
+      15일간의 퀴즈 교육 과정을 전부 마치면<br />
+      <span className="text-[var(--color-primary-1)] font-bold">
+        주식 크레딧
+      </span>
+      을 얻을 수 있어요!
+    </p>
+)}
 
         {/* 중앙 이미지 */}
         <div className="absolute top-[135px] w-[262px] h-[262px] mb-8">
@@ -94,14 +116,30 @@ if (course_completed && monthly_reward) {
         </div>
 
         {/* 하단 설명 텍스트 */}
-        <p className="absolute top-[407px] left-[45px] text-center text-head-04 font-bold text-[var(--color-neutral-1)] w-[237px] mb-8 whitespace-pre-line">
-          {bottomText}
-        </p>
+<p className="absolute top-[407px] left-[45px] text-center text-head-04 font-bold text-[var(--color-neutral-1)] w-[237px] mb-8 leading-relaxed">
+  {monthlyReward ? (
+    <>
+      이번 달의{" "}
+      <span className="text-[var(--color-primary-1)] font-bold">
+        용돈조르기권
+      </span>
+      을 <br />이미 받아갔어요!
+    </>
+  ) : (
+    <>
+      3일 연속으로 퀴즈를 풀면 한 달에 한 번, <br />
+      <span className="text-[var(--color-primary-1)] font-bold">
+        용돈조르기권
+      </span>
+      을 얻을 수 있어요!
+    </>
+  )}
+</p>
       </div>
 
       {/* 시작 버튼 */}
       <div className="w-[327px]">
-        {quiz_active ? (
+        {quizActive ? (
           <BigButtonActivated
             label="퀴즈 시작하기"
             onClick={() => router.push("/quiz/info")}
