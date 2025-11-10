@@ -38,49 +38,51 @@ interface ConsentItem {
  */
 
 interface Step03AuthAgreementProps {
-  onNext: () => void
+  onNext: () => void;
 }
 
 export default function Step03AuthAgreement({
   onNext,
 }: Step03AuthAgreementProps) {
-  const router = useRouter()
+  const router = useRouter();
 
-  const [isExpanded, setIsExpanded] = useState<boolean>(true)
+  const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const [consents, setConsents] = useState<Record<string, boolean>>({
     service: false,
     privacy: false,
     identification: false,
     telecom: false,
-  })
+  });
 
   const consentItems: ConsentItem[] = [
     { id: "service", label: "서비스 이용약관 동의" },
     { id: "privacy", label: "개인정보 수집/이용 동의" },
     { id: "identification", label: "고유식별정보처리" },
     { id: "telecom", label: "통신사 이용약관 동의" },
-  ]
-// 모든 항목이 체크되었는지 확인
-  const allChecked = Object.values(consents).every((checked) => checked)
+  ];
+  // 모든 항목이 체크되었는지 확인
+  const allChecked = Object.values(consents).every((checked) => checked);
 
- /**
+  /**
    * 전체 동의 체크박스 클릭 시 모든 하위 항목을 일괄 체크/해제합니다.
    */
-    const handleAllCheck = () => {
-    const newValue = !allChecked
+  const handleAllCheck = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newValue = !allChecked;
     setConsents({
       service: newValue,
       privacy: newValue,
       identification: newValue,
       telecom: newValue,
-    })
-  }
+    });
+  };
   /**
    * 개별 동의 항목 체크박스 클릭 시 해당 항목의 체크 상태를 토글합니다.
    *
    * @param {string} id - 동의 항목의 고유 식별자
    */
-    const handleItemCheck = (id: string) => {
+  const handleItemCheck = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     setConsents((prev) => ({
       ...prev,
       [id]: !prev[id],
@@ -131,7 +133,10 @@ export default function Step03AuthAgreement({
               alt="토글"
               width={24}
               height={24}
-              style={{filter: "brightness(0) saturate(100%) invert(53%) sepia(54%) saturate(0%) hue-rotate(221deg) brightness(92%) contrast(99%)"}}
+              style={{
+                filter:
+                  "brightness(0) saturate(100%) invert(53%) sepia(54%) saturate(0%) hue-rotate(221deg) brightness(92%) contrast(99%)",
+              }}
               className={`transition-transform text-neutral-2 ${
                 isExpanded ? "rotate-180" : "rotate-0"
               }`}
@@ -139,22 +144,27 @@ export default function Step03AuthAgreement({
           </button>
         </div>
       </div>
-
       {/* 개별 항목 */}
       {isExpanded && (
         <div className="space-y-[15px] mb-[40px] px-[14px]">
           {consentItems.map((item) => (
             <div key={item.id} className="flex items-center justify-between">
               <div className="flex items-center gap-[12px] flex-1">
-                <button onClick={() => handleItemCheck(item.id)}>
+                <button onClick={(e) => handleItemCheck(item.id, e)}>
                   <Image
                     src={
-                      allChecked ? "/icons/check-green.png" : "/icons/check.png"
+                      consents[item.id]
+                        ? "/icons/check-green.png"
+                        : "/icons/check.png"
                     }
-                    style={{filter: allChecked ? "none" : "brightness(0) saturate(100%) invert(53%) sepia(54%) saturate(0%) hue-rotate(221deg) brightness(92%) contrast(99%)"}}
                     alt="체크"
                     width={24}
                     height={24}
+                    style={{
+                      filter: consents[item.id]
+                        ? "none"
+                        : "brightness(0) saturate(100%) invert(53%) sepia(54%) saturate(0%) hue-rotate(221deg) brightness(92%) contrast(99%)",
+                    }}
                   />
                 </button>
                 <span className="text-body-02">{item.label}</span>
@@ -166,7 +176,10 @@ export default function Step03AuthAgreement({
                 alt="보기"
                 width={24}
                 height={24}
-                style={{filter: "brightness(0) saturate(100%) invert(53%) sepia(54%) saturate(0%) hue-rotate(221deg) brightness(92%) contrast(99%)"}}
+                style={{
+                  filter:
+                    "brightness(0) saturate(100%) invert(53%) sepia(54%) saturate(0%) hue-rotate(221deg) brightness(92%) contrast(99%)",
+                }}
               />
             </div>
           ))}
