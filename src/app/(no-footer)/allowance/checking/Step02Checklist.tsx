@@ -47,7 +47,7 @@ export default function Step02Checklist({ onNext }: Step2ChecklistProps) {
       </div>
 
       {/* Image Placeholder */}
-      <div className="flex flex-1 items-center justify-center mb-[67px]">
+      <div className="flex flex-1 items-center justify-center mb-[65px]">
         <div className="relative h-[310px] w-[310px]">
           <Image
             src="/images/saving/illust_saving_7.png"
