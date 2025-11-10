@@ -1,16 +1,16 @@
 // app/(auth)/layout.tsx
-"use client"
+"use client";
 
 import HeaderbarWrapper from "@/components/layout/headerbar/HeaderbarWrapper";
 import { useUserStore } from "@/store/userStore";
-import React from "react"
+import React from "react";
 
 export default function MainLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode
+  children: React.ReactNode;
 }) {
-    const { userType } = useUserStore()
+  const { userType } = useUserStore();
 
     return (
         // 화면 전체를 '헤더 56px + 컨텐츠' 2행으로 분리
@@ -39,5 +39,17 @@ export default function MainLayout({
                 </section>
             </div>
         </div>
-    );
+        {/* Row 2: 헤더 */}
+        <div className="w-full flex justify-center">
+          <div className="w-full">
+            <HeaderbarWrapper />
+          </div>
+        </div>
+        {/* Row 3: 컨텐츠 */}
+        <section className="w-full flex justify-center overflow-y-auto">
+          <div className="w-full">{children}</div>
+        </section>
+      </div>
+    </div>
+  );
 }

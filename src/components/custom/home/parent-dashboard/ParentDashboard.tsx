@@ -3,7 +3,7 @@ import AboutBanner from "../AboutBanner";
 import ParentWalletCard from "./ParentWalletCard";
 import AddChildCard from "./AddChildCard";
 import ChildrenCarousel from "./ChildrenCarousel";
-import type { ChildSummary } from "@/lib/utils/userMapper";
+import type { ChildSummary } from "@/types/user";
 
 interface ParentDashboardProps {
   readonly hasChildren: boolean;
