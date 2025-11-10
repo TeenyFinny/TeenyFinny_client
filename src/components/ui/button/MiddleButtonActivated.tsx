@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 /**
  * CustomButtonProps
@@ -7,8 +7,8 @@
  * @property {() => void} onClick - 버튼 클릭 시 실행될 콜백 함수입니다.
  */
 interface CustomButtonProps {
-  label: string
-  onClick: () => void
+  label: string;
+  onClick: () => void;
 }
 
 /**
@@ -49,11 +49,11 @@ export function MiddleButtonActivated({ label, onClick }: CustomButtonProps) {
         w-[200px] h-[56px] p-0
         rounded-[15px] bg-primary-1
         shadow-[0_8px_16px_-6px_rgba(0,82,103,0.32)]
-        text-neutral-6 text-body-06 leading-[19px] font-semibold tracking-[-0.6px]
+        text-monochrome-lightgray text-body-06 leading-[19px] font-semibold tracking-[-0.6px]
         whitespace-pre-line
       "
     >
       {label}
     </button>
-  )
+  );
 }

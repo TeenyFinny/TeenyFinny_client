@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 /**
  * CustomButtonProps
@@ -7,8 +7,8 @@
  * @property {() => void} onClick - 버튼 클릭 시 실행될 콜백 함수입니다.
  */
 interface CustomButtonProps {
-  label: string
-  onClick: () => void
+  label: string;
+  onClick: () => void;
 }
 
 /**
@@ -48,11 +48,11 @@ export function TinyButton({ label, onClick }: CustomButtonProps) {
         relative flex items-center justify-center
         w-[59px] h-[31px] p-0
         rounded-[15px] bg-primary-1
-        text-neutral-6 text-body-07 leading-[17px] font-semibold tracking-[-0.6px]
+        text-monochrome-lightgray text-body-07 leading-[17px] font-semibold tracking-[-0.6px]
         whitespace-pre-line
       "
     >
       {label}
     </button>
-  )
+  );
 }
