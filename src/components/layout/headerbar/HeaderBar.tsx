@@ -23,7 +23,7 @@ interface HeaderBarProps {
  * - 깔끔한 흰색 배경에 회색 아이콘으로 구성됩니다.
  *
  * ### 시각적 구성
- * - 흰색 배경(`bg-[#ffffff]`)
+ * - 흰색 배경(`bg-primary-4`)
  * - 좌우 패딩과 적절한 높이로 구성
  * - 뒤로가기 아이콘(왼쪽)과 알림 아이콘(오른쪽)
  *
@@ -41,9 +41,9 @@ interface HeaderBarProps {
  */
 export function HeaderBar({ onBackClick, onNotificationClick }: HeaderBarProps) {
   return (
-    <header className="w-full bg-[#ffffff] border-[#e8ebee]">
-      {/* 높이 56px, 좌 12px / 우 20px 패딩 */}
-      <div className="flex h-14 items-center justify-between pl-3 pr-5">
+    <header className="w-full bg-primary-4 border-primary-4">
+      {/* 높이 56px, 좌 12px / 우 12spx 패딩 */}
+      <div className="flex h-14 items-center justify-between pl-3 pr-3">
         {/** 뒤로가기 버튼 */}
         <button
           onClick={onBackClick}
@@ -70,7 +70,7 @@ export function HeaderBar({ onBackClick, onNotificationClick }: HeaderBarProps) 
             alt="알림"
             width={24}
             height={24}
-            className="w-6 h-6"
+            className="w-6 h-6 -scale-x-100"
           />
         </button>
       </div>
