@@ -44,13 +44,13 @@ export default function Step01Intro({ onNext }: Step1IntroProps) {
   return (
     <div className="flex min-h-screen flex-col bg-neutral-7 px-[46px]">
       {/* WON 로고 텍스트 */}
-      <div className="mt-[80px] text-center">
-        <h1 className="text-head-00 text-primary-1">WON</h1>
+      <div className="mt-[74px] text-center">
+        <h1 className="text-account-title text-primary-1">WON</h1>
+        <h2 className="text-head-01 text-neutral-1 whitespace-pre-line">통장으로 금융의 첫 걸음 시작!</h2>
       </div>
 
       {/* 제목 및 부제 */}
       <div className="mt-[32px] space-y-[24px] text-center">
-        <h2 className="text-head-01 text-neutral-1 whitespace-pre-line">통장으로 금융의 첫 걸음 시작!</h2>
         <p className="text-body-05 text-neutral-2 whitespace-pre-line">{"계좌를 만들기만 해도\n수수료 면제"}</p>
       </div>
 
