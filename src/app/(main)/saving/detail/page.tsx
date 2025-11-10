@@ -1,11 +1,14 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { TransactionHistory } from "@/components/ui/tx-history-ui/TransactionHistory"
 import { useUserStore } from "@/store/userStore"
+import { useRouter } from "next/navigation"
+import api from "@/lib/axios/axios"
+import requests from "@/lib/axios/requests"
+import { HttpError } from "@/types/axios/httpError.t"
 
 interface GoalSaving {
   goal_id: number
@@ -20,32 +23,35 @@ interface GoalSaving {
   deposit_datetime: string[]
 }
 
-export default function Page() {
+export default function SavingsDetailScreen() {
+  const router = useRouter()
   const [goal, setGoal] = useState<GoalSaving | null>(null)
   const [transactions, setTransactions] = useState<
     { id: string; type: string; amount: number; date: string }[]
   >([])
+
   const userType = useUserStore((state) => state.userType)
-  const router = useRouter()
 
-  // ✅ 삭제 버튼 클릭 시 이동
-  const handleDelete = () => {
-    router.push("/saving/delete") // 🔗 아직 없는 삭제 페이지
-  }
-
-  // ✅ 수정 버튼 클릭 시 이동
-  const handleEdit = () => {
-    router.push("/saving/edit") // 🔗 아직 없는 수정 페이지
-  }
+  const handleDelete = () => router.push("/saving/delete")
+  const handleEdit = () => router.push("/saving/edit")
 
   useEffect(() => {
-    async function fetchGoal() {
+    const controller = new AbortController()
+
+    ;(async () => {
       try {
-        const res = await fetch(
-          "https://6972bba9-74a6-4c1f-a83a-dd9fc50a8a8b.mock.pstmn.io/saving/detail"
-        )
-        const json = await res.json()
-        const data: GoalSaving = json.data
+        // console.log("📡 요청 시작:", requests.fetchSavingDetail)
+        const res = await api.get(requests.fetchSavingDetail, {
+          signal: controller.signal,
+        })
+
+        // console.log("✅ 응답 전체:", res)
+        // console.log("✅ res.data:", res.data)
+
+        // ✅ mock 응답 구조: { data: {...} }
+        const data: GoalSaving = res.data
+
+        if (!data) throw new Error("데이터가 비어 있습니다.")
         setGoal(data)
 
         const tx = data.deposit_amount.map((amount, idx) => ({
@@ -55,13 +61,19 @@ export default function Page() {
           date: data.deposit_datetime[idx],
         }))
         setTransactions(tx)
-      } catch (err) {
-        console.error(err)
-      }
-    }
+      } catch (e) {
+        const err = e as HttpError
+        console.error("[SAVING] 데이터 요청 실패:", err)
 
-    fetchGoal()
-  }, [])
+        if (err.statusCode === 403) {
+          alert(err.message)
+          router.push("/")
+        }
+      }
+    })()
+
+    return () => controller.abort()
+  }, [router])
 
   if (!goal) return <div className="text-center mt-10">로딩중...</div>
 
@@ -70,7 +82,7 @@ export default function Page() {
       {/* Title Section */}
       <div className="px-6 mt-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1 relative z-10">
+          <div className="flex items-center gap-1">
             <h1 className="text-head-02 text-primary-1">{goal.name}</h1>
 
             {userType !== "parent" && (

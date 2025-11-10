@@ -14,11 +14,7 @@ export default function AuthLayout({
       <div className="w-[375px] h-dvh bg-primary-4 grid grid-rows-[44px_1fr] overflow-hidden">
         {/* Row 1: 상태바 */}
         <div className="w-full h-[44px] relative">
-          <img
-            src="/images/common/illust_common_status_bar.png"
-            alt="status bar"
-            className="w-full h-full object-cover"
-          />
+          <Image src="/images/common/illust_common_status_bar.png" alt="status bar" className="object-cover" fill priority />
         </div>
         {/* Row 2: 컨텐츠 */}
         <section className="w-full flex justify-center overflow-y-auto">
