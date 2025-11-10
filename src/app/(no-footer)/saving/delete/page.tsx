@@ -39,7 +39,7 @@ export default function DeleteConfirmationPage() {
           지금 삭제하면…{"\n"}
           <span className="text-primary-3">♥</span> 최대 이자를 받을 수 없어요!{"\n"}
           <span className="text-primary-3">♥</span> 부모님의 허가를 받아야 해요!{"\n"}
-          <span className="text-primary-3">♥</span> 은행에 방문해야 해지할 수 있어요
+          <span className="text-primary-3">♥</span> 은행에 방문해야 해지할 수 있어요!
         </p>
 
         {/* Buttons */}
