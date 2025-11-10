@@ -5,6 +5,10 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { TransactionHistory } from "@/components/ui/tx-history-ui/TransactionHistory"
 import { useUserStore } from "@/store/userStore"
+import { useRouter } from "next/navigation"
+import api from "@/lib/axios/axios"
+import requests from "@/lib/axios/requests"
+import { HttpError } from "@/types/axios/httpError.t"
 
 interface GoalSaving {
   goal_id: number
@@ -19,64 +23,68 @@ interface GoalSaving {
   deposit_datetime: string[]
 }
 
-export default function SavingsDetailScreen({
-  onDelete,
-  onEdit,
-}: {
-  onDelete?: () => void
-  onEdit?: () => void
-}) {
+export default function SavingsDetailScreen() {
+  const router = useRouter()
   const [goal, setGoal] = useState<GoalSaving | null>(null)
   const [transactions, setTransactions] = useState<
     { id: string; type: string; amount: number; date: string }[]
   >([])
 
-  // ✅ zustand로부터 userType 가져오기
   const userType = useUserStore((state) => state.userType)
 
+  const handleDelete = () => router.push("/saving/delete")
+  const handleEdit = () => router.push("/saving/edit")
+
   useEffect(() => {
-    async function fetchGoal() {
+    const controller = new AbortController()
+
+    ;(async () => {
       try {
-        const res = await fetch(
-          "https://6972bba9-74a6-4c1f-a83a-dd9fc50a8a8b.mock.pstmn.io/saving/detail"
-        )
-        const json = await res.json()
-        const data: GoalSaving = json.data
+        const res = await api.get(requests.fetchSavingDetail, {
+          signal: controller.signal,
+        })
+
+        const data: GoalSaving = res.data
+        if (!data) throw new Error("데이터가 비어 있습니다.")
         setGoal(data)
 
         const tx = data.deposit_amount.map((amount, idx) => ({
           id: String(idx + 1),
           type: `${data.user_name} 입금`,
-          amount: amount,
+          amount,
           date: data.deposit_datetime[idx],
         }))
         setTransactions(tx)
-      } catch (err) {
-        console.error(err)
+      } catch (e) {
+        const err = e as HttpError
+        console.error("[SAVING] 데이터 요청 실패:", err)
+        if (err.statusCode === 403) {
+          alert(err.message)
+          router.push("/")
+        }
       }
-    }
+    })()
 
-    fetchGoal()
-  }, [])
+    return () => controller.abort()
+  }, [router])
 
   if (!goal) return <div className="text-center mt-10">로딩중...</div>
 
   return (
-    <div className="w-[375px] mx-auto min-h-screen flex flex-col">
+    <div className="w-[375px] mx-auto flex-1 flex flex-col">
       {/* Title Section */}
       <div className="px-6 mt-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
             <h1 className="text-head-02 text-primary-1">{goal.name}</h1>
 
-            {/* ✅ userType이 parent가 아닐 때만 버튼 표시 */}
             {userType !== "parent" && (
               <>
                 <Button
                   variant="ghost"
                   size="icon"
                   className="h-6 w-6 text-neutral-2 p-0"
-                  onClick={onDelete}
+                  onClick={handleDelete}
                 >
                   <Image
                     src="/icons/trashbin-small.png"
@@ -90,7 +98,7 @@ export default function SavingsDetailScreen({
                   variant="ghost"
                   size="icon"
                   className="h-6 w-6 text-neutral-2 p-0"
-                  onClick={onEdit}
+                  onClick={handleEdit}
                 >
                   <Image
                     src="/icons/edit-small.png"
@@ -119,10 +127,9 @@ export default function SavingsDetailScreen({
         </p>
       </div>
 
-      {/* ✅ Progress Section */}
+      {/* Progress Section */}
       <div className="flex flex-col items-center px-6 mt-6.5">
         <div className="w-full max-w-[300px] relative">
-          {/* 🧩 토끼 + 포인터 + % 묶음 그룹 */}
           <div
             className="absolute flex flex-col items-center transition-all duration-300 z-10"
             style={{
@@ -131,7 +138,6 @@ export default function SavingsDetailScreen({
               top: "5px",
             }}
           >
-            {/* 🐰 토끼 */}
             <div
               style={{
                 width: "68px",
@@ -139,9 +145,11 @@ export default function SavingsDetailScreen({
                 marginBottom: "-12px",
               }}
             >
-              <img
+              <Image
                 src="/images/saving/illust_saving_run.png"
                 alt="Savings character"
+                width={68}
+                height={68}
                 style={{
                   width: "100%",
                   height: "auto",
@@ -150,10 +158,11 @@ export default function SavingsDetailScreen({
               />
             </div>
 
-            {/* 📍 포인터 */}
-            <img
+            <Image
               src="/images/saving/illust_saving_pointer.png"
               alt="Progress pointer"
+              width={26}
+              height={34}
               style={{
                 width: "26px",
                 height: "auto",
@@ -162,20 +171,11 @@ export default function SavingsDetailScreen({
               }}
             />
 
-            {/* 🔢 진행률 */}
-            <span
-              className="text-head-04 text-neutral-2"
-              style={{
-                fontFamily: "Pretendard",
-                fontWeight: 700,
-                letterSpacing: "-0.6px",
-              }}
-            >
+            <span className="text-head-04 text-neutral-2">
               {goal.progress}%
             </span>
           </div>
 
-          {/* 🌈 Progress Bar */}
           <div className="relative h-[11px] rounded-full overflow-visible mt-[73px]">
             <div className="absolute inset-0 rounded-full bg-monochrome-gray" />
             <div
@@ -197,8 +197,8 @@ export default function SavingsDetailScreen({
       </div>
 
       {/* Transaction History */}
-      <div className="flex-1 pb-6 mt-[80px]">
-        <h2 className="text-head-04 text-neutral-1 mb-1.5 text-center">
+      <div className="flex-1 mt-[80px]">
+        <h2 className="text-head-03 text-neutral-1 mb-1.5 text-center">
           적금 기록
         </h2>
 

@@ -47,8 +47,8 @@ export function SmallButtonDisabled({ label, onClick }: CustomButtonProps) {
       className="
         relative flex items-center justify-center
         w-[159px] h-[56px] p-0
-        rounded-[15px] bg-neutral-6
-        text-neutral-2 text-body-06 leading-[19px] font-semibold tracking-[-0.6px]
+        rounded-[15px] bg-monochrome-gray
+        text-neutral-1 text-body-06 leading-[19px] font-semibold tracking-[-0.6px]
         whitespace-pre-line
       "
       disabled={true}
