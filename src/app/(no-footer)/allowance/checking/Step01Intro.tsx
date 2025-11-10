@@ -50,7 +50,7 @@ export default function Step01Intro({ onNext }: Step1IntroProps) {
       </div>
 
       {/* 부제 */}
-      <div className="mt-[33px] mb-[2px] space-y-[24px] text-center">
+      <div className="mt-[33px] space-y-[24px] text-center">
         <p className="text-head-05 text-neutral-2 whitespace-pre-line">{"계좌를 만들기만 해도\n수수료 면제"}</p>
       </div>
 
