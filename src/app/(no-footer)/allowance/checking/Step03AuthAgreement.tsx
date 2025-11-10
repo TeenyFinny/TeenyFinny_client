@@ -137,9 +137,7 @@ export default function Step03AuthAgreement({
                 filter:
                   "brightness(0) saturate(100%) invert(53%) sepia(54%) saturate(0%) hue-rotate(221deg) brightness(92%) contrast(99%)",
               }}
-              className={`transition-transform text-neutral-2 ${
-                isExpanded ? "rotate-180" : "rotate-0"
-              }`}
+              className={`${isExpanded ? "rotate-0" : "rotate-180"}`}
             />
           </button>
         </div>
@@ -187,7 +185,9 @@ export default function Step03AuthAgreement({
       )}
 
       {/* 하단 버튼 */}
-      <div className="flex flex-col gap-5 items-center mt-[221px] mb-[56px]">
+      <div className={`flex flex-col gap-5 items-center mb-[56px] ${
+          isExpanded ? "mt-[221px]" : "mt-[402px]"
+        }`}>
         {allChecked ? (
           <BigButtonActivated label="동의하고 진행하기" onClick={onNext} />
         ) : (
