@@ -18,7 +18,7 @@ export default function DeleteConfirmationPage() {
   }
 
   return (
-    <div className="flex h-[812px] flex-col overflow-hidden bg-primary-4">
+    <div className="flex h-[712px] flex-col overflow-hidden bg-primary-4">
       <main className="flex flex-col items-center px-6">
         {/* Title */}
         <h1 className="mt-[73px] text-landing-01 text-primary-1">
@@ -39,7 +39,7 @@ export default function DeleteConfirmationPage() {
           지금 삭제하면…{"\n"}
           <span className="text-primary-3">♥</span> 최대 이자를 받을 수 없어요!{"\n"}
           <span className="text-primary-3">♥</span> 부모님의 허가를 받아야 해요!{"\n"}
-          <span className="text-primary-3">♥</span> 은행에 방문해야 해지할 수 있어요
+          <span className="text-primary-3">♥</span> 은행에 방문해야 해지할 수 있어요!
         </p>
 
         {/* Buttons */}
