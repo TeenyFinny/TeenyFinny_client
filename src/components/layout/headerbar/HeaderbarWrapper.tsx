@@ -1,33 +1,55 @@
-'use client'
+"use client";
 
-import { useRouter } from "next/navigation"
-import { HeaderBar } from "./HeaderBar"
-import { useState } from "react"
-import { TitleOnlyDialog } from "@/components/ui/modal/TitleOnlyDialog"
-import { useUserStore } from "@/store/userStore"
+import { useRouter } from "next/navigation";
+import { HeaderBar } from "./HeaderBar";
+import { useState } from "react";
+import { TitleOnlyDialog } from "@/components/ui/modal/TitleOnlyDialog";
+import { useUserStore } from "@/store/userStore";
 
-const HeaderbarWrapper = () => {
-  const router = useRouter()
-  const [open, setOpen] = useState(false)
+/**
+ * @typedef HeaderbarWrapperProps
+ * @property {() => void} [onBack] - 상위에서 주입할 수 있는 선택적 뒤로가기 콜백
+ */
+type HeaderbarWrapperProps = Readonly<{
+  onBack?: () => void;
+}>;
 
-  const { userType } = useUserStore()
+const HeaderbarWrapper = ({ onBack }: HeaderbarWrapperProps) => {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
 
+  const { userType } = useUserStore();
+
+  /**
+   * 뒤로가기 처리
+   * - onBack prop이 전달되면 해당 콜백을 우선 실행
+   * - 그렇지 않으면 window.history 길이에 따라 router.back() 또는 router.push("/")
+   */
   const handleBack = () => {
-    if (typeof window !== "undefined" && window.history.length > 1) router.back()
-    else router.push("/")
-  }
+    if (onBack) {
+      onBack();
+      return;
+    }
+
+    if (typeof window !== "undefined" && window.history.length > 1)
+      router.back();
+    else router.push("/");
+  };
 
   const handleNotification = () => {
     if (userType) {
-      router.push("/notice")
+      router.push("/notice");
     } else {
-      setOpen(true)
+      setOpen(true);
     }
-  }
+  };
 
   return (
     <div>
-      <HeaderBar onBackClick={handleBack} onNotificationClick={handleNotification} />
+      <HeaderBar
+        onBackClick={handleBack}
+        onNotificationClick={handleNotification}
+      />
 
       {open ? (
         <TitleOnlyDialog
@@ -39,7 +61,7 @@ const HeaderbarWrapper = () => {
         />
       ) : null}
     </div>
-  )
-}
+  );
+};
 
-export default HeaderbarWrapper
+export default HeaderbarWrapper;
