@@ -15,15 +15,15 @@ import { useQuizStore } from "@/store/quizStore"
 export default function Page() {
   const router = useRouter()
   const {
-    credit,
-  } = useQuizStore()//TODO : 추후 크레딧 여부를 검증해서 페이지 접근권한확인
+    course_completed,
+  } = useQuizStore()
 
   useEffect(() => {
-    if (credit <= 0) {
+    if (!course_completed) {
       alert("주식 크레딧이 없습니다. 퀴즈를 먼저 풀어주세요.")
       router.replace("/quiz")
     }
-  }, [credit, router])
+  }, [course_completed, router])
 
   return (
     <main
