@@ -25,8 +25,6 @@ export default function Page() {
     course_completed,
     monthly_reward,
     today_solved,
-    title,
-    info,
     quiz_date,
   } = useQuizStore()
 
