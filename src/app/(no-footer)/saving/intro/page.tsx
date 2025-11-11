@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 import { useUserStore } from "@/store/userStore"
 
-export default function DeleteReconfirmationPage() {
+export default function SavingIntroPage() {
   const router = useRouter()
   const { userType } = useUserStore()
 
@@ -26,12 +26,12 @@ export default function DeleteReconfirmationPage() {
       <main className="flex flex-1 flex-col items-center px-6">
         {/* Title */}
         <div className="mt-12 text-center">
-          <div className="text-head-01 text-neutral-1">
+          <h1 className="text-head-01 text-neutral-1">
             <span className="text-account-title text-primary-1">
               WON<br />
             </span>
             <span>목표 적금</span>
-          </div>
+          </h1>
         </div>
 
         {/* Interest Rates */}
@@ -53,7 +53,7 @@ export default function DeleteReconfirmationPage() {
         <div className="mt-17 flex justify-center">
           <img
             src="/images/common/illust_common_1.png"
-            alt="슬픈 토끼 캐릭터"
+            alt="티니피니 이미지"
             className="h-[233px] w-[350px] object-contain"
           />
         </div>
