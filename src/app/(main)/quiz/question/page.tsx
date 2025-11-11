@@ -27,7 +27,7 @@ export default function Page() {
       // 정답
       setQuizData({ today_solved: today_solved + 1 })
       //TODO: 바뀐 today_solved를 db에 저장해야함
-      
+
       router.push("/quiz/answer")
     } else {
       // 오답
@@ -46,7 +46,7 @@ export default function Page() {
           카드 영역 (중앙 콘텐츠) + 오답 효과
          =============================== */}
       <motion.div
-        className="relative w-[327px] h-[238px] mx-auto rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col justify-center items-center mb-[39px] mt-[100px]"
+        className="relative w-[327px] h-[238px] mx-auto  bg-[var(--color-neutral-7)] rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col justify-center items-center mb-[39px] mt-[100px]"
         animate={
           isWrong
             ? {
@@ -56,7 +56,7 @@ export default function Page() {
                 "rgb(207 76 76 / 0.2)",
                 "rgb(207 76 76 / 0.2)",
                 "rgb(207 76 76 / 0.2)",
-                "rgb(256 256 256 / 99)" // 원래 색 (bg-[var(--color-neutral-7)])
+                "rgb(256 256 256 / 1)" // 원래 색 (bg-[var(--color-neutral-7)])
               ],
             }
             : {}

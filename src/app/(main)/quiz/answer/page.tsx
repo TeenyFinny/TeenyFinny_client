@@ -42,7 +42,7 @@ export default function Page() {
   return (
     <main
       aria-label="퀴즈 시작 페이지"
-      className="r  h-[800px] bg-[var(--color-primary-4)] font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
+      className="r  h-[600px] bg-[var(--color-primary-4)] font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
     >
       {/* ===============================
           카드 영역 (중앙 콘텐츠)
