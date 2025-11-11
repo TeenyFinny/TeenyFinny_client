@@ -26,6 +26,9 @@ export default function Page() {
     quiz_date
   } = useQuizStore()
 
+  const STREAK_DAYS_FOR_REWARD = 3 //용돈조르기권을 얻기 위한 연속 문제 풀이 일수
+  const EDUCATION_COURSE_LAST_DAY = 15 //교육과정의 마지막 일차
+
   const quizActive = !course_completed && !monthly_reward && today_solved < 2
 
   // ---------------------------
@@ -91,11 +94,11 @@ export default function Page() {
           <BigButtonActivated
             label="오늘의 퀴즈 완료"
             onClick={() => {
-              if (streak_days === 3 && !monthly_reward)//3일 연속 퀴즈를 풀었으면서, 아직 용돈조르기권을 받지 않은 경우 용돈조르기권 지급 페이지로
+              if (streak_days === STREAK_DAYS_FOR_REWARD && !monthly_reward)//3일 연속 퀴즈를 풀었으면서, 아직 용돈조르기권을 받지 않은 경우 용돈조르기권 지급 페이지로
               {
                 setQuizData({ monthly_reward: true, coupon: coupon + 1 })
                 router.push("/quiz/coupon")
-              } else if (quiz_date === 15)//교육과정 마지막날인 경우 주식 크레딧 지급 페이지로 이동
+              } else if (quiz_date === EDUCATION_COURSE_LAST_DAY)//교육과정 마지막날인 경우 주식 크레딧 지급 페이지로 이동
               {
                 setQuizData({ quiz_date: quiz_date + 1, course_completed: true })
                 router.push("/quiz/credit")

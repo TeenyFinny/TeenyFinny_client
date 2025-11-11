@@ -1,4 +1,3 @@
-// src/app/(auth)/signup/Step01Terms.tsx
 "use client";
 
 import { useState } from "react";
