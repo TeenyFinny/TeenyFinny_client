@@ -2,14 +2,11 @@
 
 import { useRouter } from "next/navigation"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
-import { useUserStore } from "@/store/userStore"
 
 export default function SavingAccountCreateCompletePage() {
   const router = useRouter()
-  const { userType } = useUserStore()
 
-
-  // ✅ 버튼 클릭 시 userType별로 다른 페이지로 이동
+  // ✅ 버튼 클릭 시 홈으로 이동
   const handleClick = () => {
     router.push("/home")
   }
