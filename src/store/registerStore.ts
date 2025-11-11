@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 /**
  * @typedef {Object} TermsState
@@ -20,11 +20,11 @@ export interface TermsState {
  * @property {TermsState} terms - 약관 동의 상태 (1단계)
  * @property {"PARENT" | "CHILD" | null} role - 사용자 역할 (2단계)
  * @property {string} phoneNumber - 휴대폰 번호 (3단계)
- * @property {string} authCode - 인증번호 입력값 (3단계)
  * @property {boolean} isVerified - 본인인증 완료 여부 (3단계)
  * @property {string} name - 이름 (4단계)
  * @property {string} email - 이메일 (4단계)
  * @property {string} birthDate - 생년월일 (YYYYMMDD) 형식 (4단계)
+ * @property {"M" | "F" | null} gender - 성별 (3단계)
  * @property {string} password - 로그인용 비밀번호 (4단계)
  * @property {string} simplePassword - 6자리 간편비밀번호 (5단계)
  */
@@ -32,11 +32,11 @@ export interface RegisterForm {
   terms: TermsState;
   role: "PARENT" | "CHILD" | null;
   phoneNumber: string;
-  authCode: string;
   isVerified: boolean;
   name: string;
   email: string;
   birthDate: string;
+  gender: "M" | "F" | null;
   password: string;
   simplePassword: string;
 }
@@ -51,11 +51,11 @@ const initialForm: RegisterForm = {
   },
   role: null,
   phoneNumber: "",
-  authCode: "",
   isVerified: false,
   name: "",
   email: "",
   birthDate: "",
+  gender: null,
   password: "",
   simplePassword: "",
 };
@@ -152,6 +152,10 @@ export const useRegisterStore = create<RegisterStore>()(
         }
       },
     }),
-    { name: "register-form-storage" } // localStorage key
+    {
+      name: "register-form-storage",
+      /** sessionStorage 기반 persist */
+      storage: createJSONStorage(() => sessionStorage),
+    }
   )
 );
