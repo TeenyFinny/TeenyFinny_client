@@ -64,6 +64,7 @@ export default function Page() {
             profitAmount={investSummary.profitAmount}
             profitRate={investSummary.profitRate}
             availableAmount={investSummary.availableAmount}
+            isPositive={investSummary.isPositive}
             />
         }
         <StockList stocks={stocks} onSell={handleSell} btnLab="사기"/>
