@@ -69,12 +69,9 @@ export default function Step03AuthAgreement({
   const handleAllCheck = (e: React.MouseEvent) => {
     e.stopPropagation();
     const newValue = !allChecked;
-    setConsents({
-      service: newValue,
-      privacy: newValue,
-      identification: newValue,
-      telecom: newValue,
-    });
+    setConsents((prev) =>
+      Object.fromEntries(Object.keys(prev).map((key) => [key, newValue]))
+    );
   };
   /**
    * 개별 동의 항목 체크박스 클릭 시 해당 항목의 체크 상태를 토글합니다.
