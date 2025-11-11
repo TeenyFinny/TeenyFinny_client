@@ -10,6 +10,7 @@ const requests = {
   stockList: `/invest/stockList`,
   investSummary: `/invest/investSummary`,
   dashMyStockList: `/invest/myStockList`,
+  stockDetail: `/invest/stockDetail`,
 };
 
 export default requests;
