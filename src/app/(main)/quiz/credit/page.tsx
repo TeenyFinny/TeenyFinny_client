@@ -1,8 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import React, { useEffect, useState } from "react"
-import { StateBadge } from "@/components/ui/badge/StateBadge"
+import React, { useEffect } from "react"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 import { useRouter } from "next/navigation"
 import { useQuizStore } from "@/store/quizStore"
@@ -19,9 +18,16 @@ export default function Page() {
     credit,
   } = useQuizStore()//TODO : 추후 크레딧 여부를 검증해서 페이지 접근권한확인
 
+  useEffect(() => {
+    if (credit <= 0) {
+      alert("주식 크레딧이 없습니다. 퀴즈를 먼저 풀어주세요.")
+      router.replace("/quiz")
+    }
+  }, [credit, router])
+
   return (
     <main
-      aria-label="퀴즈 시작 페이지"
+      aria-label="주식 크레딧 페이지"
       className="h-[600px] bg-[var(--color-primary-4)] font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
     >
       {/* ===============================
@@ -30,17 +36,15 @@ export default function Page() {
       <div className="relative w-[327px] h-[490px] mx-auto bg-[var(--color-neutral-7)] rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col items-center pt-[160px] pb-[80px] mb-[32px]">
 
         {/* 상단 제목 텍스트 */}
-        {(
-          <p className="absolute top-[47px] left-[36px] text-center text-head-00 font-bold text-[var(--color-neutral-1)] w-[260px] mb-8 leading-relaxed">
-            {"주식 크레딧을 받았어요!"}
-          </p>
-        )}
+        <p className="absolute top-[47px] left-[36px] text-center text-head-00 font-bold text-[var(--color-neutral-1)] w-[260px] mb-8 leading-relaxed">
+          {"주식 크레딧을 받았어요!"}
+        </p>
 
         {/* 중앙 이미지 */}
         <div className="absolute top-[95px] w-[215px] h-[322px]">
           <Image
             src="/images/quiz/illust_quiz_3.png"
-            alt="퀴즈 일러스트"
+            alt="주식 크레딧 획득을 축하하는 일러스트"
             width={215}
             height={322}
             priority
@@ -55,12 +59,10 @@ export default function Page() {
 
       {/* 시작 버튼 */}
       <div className="w-[327px]">
-        {(
-          <BigButtonActivated
-            label="계좌 생성하기"
-            onClick={() => router.push("/quiz/credit/request")}
-          />
-        )}
+        <BigButtonActivated
+          label="계좌 생성하기"
+          onClick={() => router.push("/quiz/credit/request")}
+        />
       </div>
     </main>
   )
