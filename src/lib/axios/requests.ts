@@ -9,6 +9,7 @@ const requests = {
   fetchQuiz: '/quiz/info',
   stockList: `/invest/stockList`,
   investSummary: `/invest/investSummary`,
+  dashMyStockList: `/invest/myStockList`,
 };
 
 export default requests;
