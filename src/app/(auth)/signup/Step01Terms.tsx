@@ -11,8 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useRouter } from "next/navigation";
-import { useRegisterStore } from "@/store/registerStore";
 
 /**
  * Step1Terms
