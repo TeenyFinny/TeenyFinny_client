@@ -32,48 +32,40 @@ export default function Step02Roles({
           역할을 선택해 주세요
         </h2>
 
-        <div className="flex justify-between gap-4 pt-[112px]">
-          {/* 부모 */}
-          <button
-            type="button"
-            onClick={() => onSelect("PARENT")}
-            className={`flex flex-col items-center justify-center w-[151px] h-[237px] p-6 rounded-2xl border-2 ${
-              selectedRole === "PARENT"
-                ? "border-primary-1 bg-neutral-7"
-                : "border-neutral-4 bg-neutral-7"
-            } transition`}
-          >
-            <Image
-              src="/images/auth/icon_auth_parent.svg"
-              alt="부모 아이콘"
-              width={127}
-              height={127}
-            />
-            <span className="text-head-06 mt-[27px] font-medium text-neutral-1">
-              부모
-            </span>
-          </button>
-
-          {/* 자녀 */}
-          <button
-            type="button"
-            onClick={() => onSelect("CHILD")}
-            className={`flex flex-col items-center justify-center w-1/2 p-6 rounded-2xl border-2 ${
-              selectedRole === "CHILD"
-                ? "border-primary-1 bg-neutral-7"
-                : "border-neutral-4 bg-neutral-7"
-            } transition`}
-          >
-            <Image
-              src="/images/auth/icon_auth_child.svg"
-              alt="자녀 아이콘"
-              width={127}
-              height={127}
-            />
-            <span className="text-head-06 mt-[27px] font-medium text-neutral-1">
-              자녀
-            </span>
-          </button>
+        <div className="flex gap-4 pt-[112px]">
+          {[
+            {
+              role: "PARENT",
+              label: "부모",
+              icon: "/images/auth/icon_auth_parent.svg",
+            },
+            {
+              role: "CHILD",
+              label: "자녀",
+              icon: "/images/auth/icon_auth_child.svg",
+            },
+          ].map(({ role, label, icon }) => (
+            <button
+              key={role}
+              type="button"
+              onClick={() => onSelect(role as "PARENT" | "CHILD")}
+              className={`flex flex-1 flex-col items-center justify-center h-[237px] p-6 rounded-2xl border-2 ${
+                selectedRole === role
+                  ? "border-primary-1 bg-neutral-7"
+                  : "border-neutral-4 bg-neutral-7"
+              } transition`}
+            >
+              <Image
+                src={icon}
+                alt={`${label} 아이콘`}
+                width={127}
+                height={127}
+              />
+              <span className="text-head-06 mt-[27px] font-medium text-neutral-1">
+                {label}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
 
