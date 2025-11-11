@@ -2,10 +2,11 @@
 
 interface InvestStatusProps {
   userName: string
-  currentAmount: number
-  profitAmount: number
-  profitRate: number
-  availableAmount: number
+  currentAmount: string
+  profitAmount: string
+  profitRate: string
+  availableAmount: string
+  isPositive: boolean
 }
 
 export function InvestStatus({
@@ -14,8 +15,8 @@ export function InvestStatus({
   profitAmount,
   profitRate,
   availableAmount,
+  isPositive,
 }: InvestStatusProps) {
-  const isPositive = profitAmount >= 0
 
   return (
     <div className="w-[340px] p-6 bg-white rounded-[16px]">
@@ -35,7 +36,7 @@ export function InvestStatus({
       {/* Change Amount */}
       <div className="mb-6">
         <p className={`text-body-07 ${isPositive ? "text-error" : "text-primary-1"}`}>
-          {isPositive ? "↑" : "↓"} {Math.abs(profitAmount).toLocaleString("ko-KR")}원 (
+          {isPositive ? "↑" : "↓"} {profitAmount}원 (
           {profitRate}%)
         </p>
       </div>

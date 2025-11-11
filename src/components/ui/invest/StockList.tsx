@@ -7,8 +7,8 @@ interface Stock {
   id: string
   name: string
   code: string
-  price: number
-  changePercent: number
+  price: string
+  changePercent: string
   isPositive: boolean
 }
 
@@ -19,10 +19,6 @@ interface StockListProps {
 }
 
 export function StockList({ stocks, onSell, btnLab="팔기" }: StockListProps) {
-  const formatPrice = (price: number) => {
-    return price.toLocaleString("ko-KR")
-  }
-
   return (
     <div className="w-[376px] h-[267px] flex flex-col">
       <h2 className="text-head-06 text-neutral-2 px-[16px] self-start">
@@ -49,7 +45,7 @@ export function StockList({ stocks, onSell, btnLab="팔기" }: StockListProps) {
               {/* Right Side - Price and Action */}
               <div className="flex items-center gap-[12px]">
                 <div className="flex flex-col items-end gap-[4px]">
-                  <p className="text-head-04 text-neutral-1">{formatPrice(stock.price)} 원</p>
+                  <p className="text-head-04 text-neutral-1">{stock.price} 원</p>
                   <p className={`text-body-08 ${stock.isPositive ? "text-error" : "text-primary-1"}`}>{stock.changePercent}% {stock.isPositive ? "↑" : "↓"}</p>
                 </div>
                 <TinyButton label={btnLab} onClick={() => onSell?.(stock.id)} />
