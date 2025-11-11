@@ -48,19 +48,21 @@ export function NameInput({ value, onChange }: NameInputProps) {
 
   return (
     <div className="flex flex-col gap-[4px]">
-      {/* 입력 필드 */}
-      <NormalInput
-      label="이름"
-        value={value}
-        placeholder="홍길동"
-        onChange={handleChange}
-      />
+      {/* 입력 박스 */}
+      <div className="">
+        <NormalInput
+          label="이름"
+          value={value}
+          placeholder="홍길동"
+          onChange={handleChange}
+        />
 
-      {/* 🚨 에러 메시지 (내부 고정) */}
-      <div className="h-[20px] mt-[4px]">
-        {error && (
-          <p className="text-error text-body-03">한글만 입력할 수 있습니다.</p>
-        )}
+        {/* 🚨 에러 메시지 (내부 고정, 높이 유지) */}
+        <div className="h-[20px] mt-[4px]">
+          {error && (
+            <p className="text-error text-body-03">한글만 입력할 수 있습니다.</p>
+          )}
+        </div>
       </div>
     </div>
   )
