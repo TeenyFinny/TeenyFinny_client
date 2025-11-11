@@ -84,12 +84,15 @@ export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
   }, [form.gender]);
 
   /** 버튼 활성화 조건 */
-  const isButtonEnabled =
-    !getEmailError(form.email) &&
-    !getPasswordError(password) &&
-    !getConfirmError(password, passwordConfirm) &&
-    form.name.trim().length > 0 &&
-    form.birthDate.trim().length === 8;
+  const isButtonEnabled = useMemo(
+    () =>
+      !getEmailError(form.email) &&
+      !getPasswordError(password) &&
+      !getConfirmError(password, passwordConfirm) &&
+      form.name.trim().length > 0 &&
+      form.birthDate.trim().length === 8,
+    [form.email, password, passwordConfirm, form.name, form.birthDate]
+  );
 
   const handleEmailChange = (val: string) => {
     if (!touched.email) setTouched((prev) => ({ ...prev, email: true }));
@@ -106,6 +109,16 @@ export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
     setPasswordConfirm(val);
   };
 
+  const formattedBirthDate = useMemo(() => {
+    if (form.birthDate.length === 8) {
+      return `${form.birthDate.slice(0, 4)}.${form.birthDate.slice(
+        4,
+        6
+      )}.${form.birthDate.slice(6, 8)}`;
+    }
+    return form.birthDate;
+  }, [form.birthDate]);
+
   /** “다음” 버튼 클릭 */
   const handleNext = () => {
     setSubmitted(true);
@@ -114,7 +127,14 @@ export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
     const latestPasswordError = getPasswordError(password);
     const latestConfirmError = getConfirmError(password, passwordConfirm);
 
-    if (latestEmailError || latestPasswordError || latestConfirmError) {
+    if (
+      latestEmailError ||
+      latestPasswordError ||
+      latestConfirmError ||
+      form.name.trim().length === 0 ||
+      form.birthDate.trim().length !== 8 ||
+      form.gender === null
+    ) {
       return;
     }
 
@@ -177,14 +197,7 @@ export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
         {/* 생년월일 (읽기 전용) */}
         <NormalInput2
           label="생년월일"
-          value={
-            form.birthDate.length === 8
-              ? `${form.birthDate.slice(0, 4)}.${form.birthDate.slice(
-                  4,
-                  6
-                )}.${form.birthDate.slice(6, 8)}`
-              : form.birthDate
-          }
+          value={formattedBirthDate}
           onChange={() => {}}
         />
       </div>
