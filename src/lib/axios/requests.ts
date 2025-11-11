@@ -8,6 +8,7 @@ const requests = {
   fetchProgress: '/quiz/progress',
   stockList: `/invest/stockList`,
   investSummary: `/invest/investSummary`,
+  dashMyStockList: `/invest/myStockList`,
 };
 
 export default requests;
