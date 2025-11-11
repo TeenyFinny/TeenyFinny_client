@@ -45,7 +45,7 @@ export default function Step01Intro({ onNext }: Step1IntroProps) {
     <div className="flex flex-col">
       {/* 제목 */}
       <div className="mt-[47px] text-center">
-        <h1 className="text-account-title text-primary-1">WON</h1>
+        <h1 className="text-account-title text-primary-1">TeenyFinny</h1>
         <h2 className="text-head-01 text-neutral-1 whitespace-pre-line">통장으로 금융의 첫 걸음 시작!</h2>
       </div>
 
