@@ -56,8 +56,8 @@ export default function Page() {
   }
 
   return (
-    <main className="min-h-screen flex  bg-primary-4">
-      <div className="flex flex-col gap-12 items-center pt-6">
+    <main className="min-h-screen flex bg-primary-4">
+      <div className="flex flex-col items-center pt-6">
         {investSummary && <InvestStatus
             userName={investSummary.userName}
             currentAmount={investSummary.currentAmount}
@@ -67,7 +67,10 @@ export default function Page() {
             isPositive={investSummary.isPositive}
             />
         }
-        <StockList stocks={stocks} onSell={handleSell} btnLab="사기"/>
+        <h2 className="text-head-06 text-neutral-2 px-4 pt-12 self-start">
+          내가 산 주식
+        </h2>
+        <StockList stocks={stocks} onClickBtn={handleSell} btnLab="사기"/>
       </div>
     </main>
   )
