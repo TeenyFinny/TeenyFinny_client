@@ -5,7 +5,7 @@ import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled"
 import { PhoneNumberInput } from "@/components/allowance/PhoneNumberInput"
 import { ResidentNumberInput } from "@/components/allowance/ResidentNumberInput"
-import { NameInput } from "@/components/allowance/NamInput"
+import NameInput from "@/components/allowance/NameInput"
 
 interface Step04AuthProps {
   onNext: () => void

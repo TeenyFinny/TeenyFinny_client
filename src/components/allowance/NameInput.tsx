@@ -28,7 +28,7 @@ interface NameInputProps {
  * - 포커스 또는 올바른 입력 시 에러 메시지 자동 해제
  * - 스타일과 레이아웃은 기존 `NormalInput`과 100% 동일
  */
-export function NameInput({ value, onChange }: NameInputProps) {
+export default function NameInput({ value, onChange }: NameInputProps) {
   const [error, setError] = useState(false)
 
   /** 입력 이벤트 핸들러 (한글만 허용) */
