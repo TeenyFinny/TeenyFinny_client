@@ -4,6 +4,8 @@ import { useRegisterStore } from "@/store/registerStore";
 import { useRegisterStep } from "./useRgisterStep";
 import Step01Terms from "./Step01Terms";
 import Step02Roles from "./Step02Roles";
+import Step03Verification from "./Step03Verification";
+
 /**
  * RegisterPage
  *
@@ -40,6 +42,8 @@ export default function RegisterPage() {
             onNext={next}
           />
         )}
+        {/* Step 3: 본인인증 */}
+        {step === 3 && <Step03Verification onNext={next} />}
       </div>
     </main>
   );
