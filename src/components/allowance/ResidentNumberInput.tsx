@@ -4,7 +4,10 @@ import React, { useState, useRef, useEffect } from "react"
 
 interface ResidentNumberInputProps {
   label: string
-  onChange: (value: string) => void
+  front: string
+  back: string
+  onFrontChange: (value: string) => void
+  onBackChange: (value: string) => void
 }
 
 /**
@@ -15,9 +18,13 @@ interface ResidentNumberInputProps {
  * - 숫자만 입력 가능, 자동 포커스 이동
  * - 앞자리 입력 완료 시 뒷자리 입력칸 초기화 후 자동 포커스 이동
  */
-export function ResidentNumberInput({ label, onChange }: ResidentNumberInputProps) {
-  const [front, setFront] = useState("")
-  const [backFirst, setBackFirst] = useState("")
+export function ResidentNumberInput({
+  label,
+  front,
+  back,
+  onFrontChange,
+  onBackChange,
+}: ResidentNumberInputProps) {
   const [error, setError] = useState(false)
   const backRef = useRef<HTMLInputElement>(null)
 
@@ -32,11 +39,11 @@ export function ResidentNumberInput({ label, onChange }: ResidentNumberInputProp
 
     const numeric = value.replace(/[^0-9]/g, "")
     if (numeric.length <= 6) {
-      setFront(numeric)
+      onFrontChange(numeric)
 
       // ✅ 6자리 완성 시 — 뒷자리 값 초기화 후 포커스 이동
       if (numeric.length === 6) {
-        setBackFirst("") // 이전 입력값 초기화
+        onBackChange("") // 이전 입력값 초기화
         setTimeout(() => backRef.current?.focus(), 0)
       }
     }
@@ -52,18 +59,12 @@ export function ResidentNumberInput({ label, onChange }: ResidentNumberInputProp
     }
     const numeric = value.replace(/[^0-9]/g, "")
     if (numeric.length <= 1) {
-      setBackFirst(numeric)
+      onBackChange(numeric)
     }
   }
 
   /** 포커스 시 에러 제거 */
   const handleFocus = () => setError(false)
-
-  /** 부모로 전체값 전달 */
-  useEffect(() => {
-    const fullValue = `${front}-${backFirst}`
-    onChange(fullValue)
-  }, [front, backFirst, onChange])
 
   return (
     <div className="flex flex-col gap-[4px]">
@@ -95,20 +96,18 @@ export function ResidentNumberInput({ label, onChange }: ResidentNumberInputProp
 
         {/* 뒷자리 입력 */}
         <div className="flex items-center w-full">
-          {/* 뒷자리 첫 숫자 입력칸 */}
           <input
             ref={backRef}
             type="text"
             inputMode="numeric"
             maxLength={1}
-            value={backFirst}
+            value={back}
             onChange={handleBackChange}
             onFocus={handleFocus}
             placeholder="_"
             className="w-[16px] text-neutral-1 placeholder:text-neutral-2 text-body-04
               focus:outline-none bg-transparent"
           />
-          {/* 고정된 마스킹 점 */}
           <span className="ml-[2px] text-neutral-1 tracking-[2px] select-none">
             ●●●●●●
           </span>
