@@ -47,7 +47,7 @@ export function BigButtonDisabled({ label, onClick }: CustomButtonProps) {
       className="
         relative flex items-center justify-center
         w-[327px] h-[56px] p-0
-        rounded-[15px] bg-neutral-6
+        rounded-[15px] bg-monochrome-gray
         text-neutral-2 text-body-06 leading-[19px] font-semibold tracking-[-0.6px]
         whitespace-pre-line
       "
