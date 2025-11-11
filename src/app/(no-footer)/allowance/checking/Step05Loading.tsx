@@ -9,7 +9,7 @@ export default function Step05Loading({ onNext }: Step05Loading) {
     <div>
         loading...
         <button 
-        className="w-[100px] f-[30px] text-neutral-3 bg-primary-1"
+        className="w-[100px] f-[30px] text-neutral-7 bg-primary-1"
         onClick={onNext}>다음</button>
     </div>
   )
