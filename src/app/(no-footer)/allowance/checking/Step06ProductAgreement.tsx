@@ -100,7 +100,7 @@ export default function Step06ProductAgreement({
       </div>
 
       {/* 첫 번째 회색 필드 - 전체 동의 */}
-      <div className="mb-[15px] bg-monochrome-gray rounded-[10px] px-[20px] py-[16px]">
+      <div className={`${isExpanded ? "mb-[15px]" : "mb-[327px]"} bg-monochrome-gray rounded-[10px] px-[20px] py-[16px]`}>
         <div className="flex items-center justify-between">
           {/* 왼쪽: 체크박스 + 텍스트 */}
           <div className="flex items-center gap-[12px] flex-1">
