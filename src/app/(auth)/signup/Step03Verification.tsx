@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useMemo } from "react";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled";
 import { PhoneNumberInput } from "@/components/allowance/PhoneNumberInput";
@@ -30,22 +30,23 @@ export default function Step03Verification({
   const [birthBack, setBirthBack] = useState<string>(""); // 1자리
 
   // 파생 상태: 성별/세기
-  const [gender, setGender] = useState<"M" | "F" | null>(null);
-  const [yearPrefix, setYearPrefix] = useState<"19" | "20" | null>(null);
-
-  /** 주민번호 뒷자리 첫 글자로 성별/세기 판별 */
-  useEffect(() => {
+  const { gender, yearPrefix } = useMemo(() => {
     const g = birthBack[0];
-    if (g === "1" || g === "3") {
-      setGender("M");
-      setYearPrefix(g === "1" ? "19" : "20");
-    } else if (g === "2" || g === "4") {
-      setGender("F");
-      setYearPrefix(g === "2" ? "19" : "20");
-    } else {
-      setGender(null);
-      setYearPrefix(null);
+    const GENDER_INFO_MAP: Record<
+      string,
+      { gender: "M" | "F"; prefix: "19" | "20" }
+    > = {
+      "1": { gender: "M", prefix: "19" },
+      "2": { gender: "F", prefix: "19" },
+      "3": { gender: "M", prefix: "20" },
+      "4": { gender: "F", prefix: "20" },
+    };
+    const info = GENDER_INFO_MAP[g];
+
+    if (info) {
+      return { gender: info.gender, yearPrefix: info.prefix };
     }
+    return { gender: null, yearPrefix: null };
   }, [birthBack]);
 
   /** 버튼 활성화 조건 */
