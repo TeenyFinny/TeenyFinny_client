@@ -71,6 +71,8 @@ interface RegisterStore {
   isStepValid: (step: number) => boolean;
 }
 
+const EMAIL_REGEX = /^[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}$/;
+
 /**
  * useRegisterStore
  *
@@ -135,7 +137,7 @@ export const useRegisterStore = create<RegisterStore>()(
           case 4:
             return (
               Boolean(f.name) &&
-              /\S+@\S+\.\S+/.test(f.email) &&
+              EMAIL_REGEX.test(f.email) &&
               f.birthDate.length === 8
             );
           default:
