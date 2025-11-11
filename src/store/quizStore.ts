@@ -9,6 +9,7 @@ interface QuizState {
     quiz_date: number
     monthly_reward: boolean
     today_solved: number
+    credit: number
     title: string
     info: string
     question: string
@@ -27,6 +28,7 @@ export const useQuizStore = create(
             monthly_reward: false,
             today_solved: 0,
             title: "",
+            credit: 0,
             info: "",
             question: "",
             answer: "",

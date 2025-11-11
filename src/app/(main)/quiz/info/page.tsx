@@ -12,10 +12,10 @@ import { useQuizStore } from "@/store/quizStore"
 import { HttpError } from "@/types/axios/httpError.t"
 
 /**
- * QuizStartPage
- * - 퀴즈 탭의 시작페이지
+ * QuizInfoPage
+ * - 퀴즈 탭의 정보페이지
  * - 상단 상태바 / 하단 네비게이션은 기본 레이아웃에서 제공
- * - 본 페이지에서는 배지, 중앙 이미지, 설명 텍스트, 시작 버튼만 렌더링
+ * - 본 페이지에서는 배지, 제목 텍스트, 설명 텍스트, 다음 버튼만 렌더링
  */
 
 export default function Page() {
@@ -31,7 +31,8 @@ export default function Page() {
         info,
     } = useQuizStore()
 
-    // ✅ useEffect로 API 요청
+    // ✅ useEffect로 API 요청 
+    //  //TODO: 교육과정일 경우와 랜덤일 경우에 따라 퀴즈 ID를 정하는 알고리즘 추가
     useEffect(() => {
         (async () => {
             try {
@@ -52,9 +53,10 @@ export default function Page() {
         })()
     }, [setQuizData])
 
-    //TODO: 교육과정일 경우와 랜덤일 경우에 따라 퀴즈 ID를 정하는 알고리즘 추가
+  
 
-    const quizActive = !course_completed && !monthly_reward && today_solved < 2
+
+
     // ---------------------------
     // 배지 텍스트
     // ---------------------------
@@ -84,7 +86,7 @@ export default function Page() {
                 </div>
 
                 {/* 상단 제목 텍스트 */}
-                {quizActive && (
+                {(
                     <p className="absolute top-[67px] left-[33px] text-center text-head-00 font-bold text-[var(--color-neutral-1)] w-[260px] mb-8 leading-relaxed">
                         {title}
                     </p>
@@ -92,28 +94,29 @@ export default function Page() {
 
 
                 {/* 중단 설명 텍스트 */}
-                {quizActive && (
-                    <p className="absolute top-[154px] left-[36px] text-left text-body-06 font-bold text-[var(--color-neutral-1)] w-[254px] mb-8 leading-loose tracking-wide">
+                { (
+                    <div className="absolute top-[154px] left-[36px] w-[254px] mb-8">
                         {info.split("\n").map((line, index) => (
-                            <p key={index} className="indent-1 mb-1">
+                            <p
+                                key={index}
+                                className="text-left text-body-06 font-bold text-[var(--color-neutral-1)] leading-loose tracking-wide indent-1 mb-1"
+                            >
                                 {line}
                             </p>
                         ))}
-                    </p>
+                    </div>
                 )}
 
             </div>
 
             {/* 시작 버튼 */}
             <div className="w-[327px]">
-                {quizActive ? (
+                { (
                     <BigButtonActivated
                         label="문제 풀기"
                         onClick={() => router.push("/quiz/question")}
                     />
-                ) : (
-                    <BigButtonDisabled label={"오늘의 퀴즈를 모두 풀었어요!"} onClick={() => { }} />
-                )}
+                ) }
             </div>
         </main>
     )

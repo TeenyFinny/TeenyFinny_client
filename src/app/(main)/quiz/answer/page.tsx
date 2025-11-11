@@ -25,29 +25,8 @@ export default function Page() {
     course_completed,
     monthly_reward,
     today_solved,
-    quiz_date,
+    credit
   } = useQuizStore()
-
-  // ✅ useEffect로 API 요청
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await api.get(requests.fetchProgress)
-        const data = res.data
-        setQuizData(data) // 전역 상태 저장
-      } catch (e) {
-        const err = e as HttpError
-
-        if (err.statusCode === 403) {
-          alert(err.message)
-          router.push("/")
-        } else {
-          console.error(err)
-        }
-        console.error(e)
-      }
-    })()
-  }, [setQuizData])
 
   const quizActive = !course_completed && !monthly_reward && today_solved < 2
 
@@ -58,12 +37,12 @@ export default function Page() {
     ? "이번 달 도전 완료"
     : `${streak_days}일 연속 도전!`
 
-  const rightBadgeText = course_completed ? "랜덤" : `${quiz_date}일차`
+  const rightBadgeText = `${today_solved} / 2 문제`
 
   return (
     <main
       aria-label="퀴즈 시작 페이지"
-      className="relative w-full max-w-[375px] mx-auto h-full max-h-[800px] bg-[var(--color-primary-4)] font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
+      className="r  h-[800px] bg-[var(--color-primary-4)] font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
     >
       {/* ===============================
           카드 영역 (중앙 콘텐츠)
@@ -79,60 +58,51 @@ export default function Page() {
           <StateBadge enabled={false} label={rightBadgeText} onClick={() => { }} />
         </div>
 
-        {/* 상단 설명 텍스트 (course_completed가 false일 때만 표시) */}
-        {!course_completed && (
-          <p className="absolute top-[85px] left-[48px] text-center text-head-04 font-bold text-[var(--color-neutral-1)] w-[231px] mb-8 leading-relaxed">
-            15일간의 퀴즈 교육 과정을 전부 마치면<br />
-            <span className="text-[var(--color-primary-1)] font-bold">
-              주식 크레딧
-            </span>
-            을 얻을 수 있어요!
+        {/* 상단 제목 텍스트 */}
+        {quizActive && (
+          <p className="absolute top-[67px] left-[33px] text-center text-head-00 font-bold text-[var(--color-neutral-1)] w-[260px] mb-8 leading-relaxed">
+            {"정답이에요!"}
           </p>
         )}
 
         {/* 중앙 이미지 */}
-        <div className="absolute top-[135px] w-[262px] h-[262px] mb-8">
+        <div className="absolute top-[135px] w-[214px] h-[214px] mb-8">
           <Image
-            src="/images/quiz/illust_quiz_credit.png"
+            src="/images/quiz/illust_quiz_1.png"
             alt="퀴즈 일러스트"
-            width={262}
-            height={262}
+            width={214}
+            height={214}
             priority
           />
         </div>
 
         {/* 하단 설명 텍스트 */}
         <p className="absolute top-[407px] left-[45px] text-center text-head-04 font-bold text-[var(--color-neutral-1)] w-[237px] mb-8 leading-relaxed">
-          {monthly_reward ? (
-            <>
-              이번 달의{" "}
-              <span className="text-[var(--color-primary-1)] font-bold">
-                용돈조르기권
-              </span>
-              을 <br />이미 받아갔어요!
-            </>
-          ) : (
-            <>
-              3일 연속으로 퀴즈를 풀면 한 달에 한 번, <br />
-              <span className="text-[var(--color-primary-1)] font-bold">
-                용돈조르기권
-              </span>
-              을 얻을 수 있어요!
-            </>
-          )}
+          {"해설이에요! 이러이러해서 답은 X입니다."}
         </p>
       </div>
 
       {/* 시작 버튼 */}
       <div className="w-[327px]">
-        {quizActive ? (
+        {today_solved === 1 ? (
           <BigButtonActivated
-            label="퀴즈 시작하기"
+            label="다음 문제로"
             onClick={() => router.push("/quiz/info")}
           />
-        ) : (
-          <BigButtonDisabled label={"오늘의 퀴즈를 모두 풀었어요!"} onClick={() => { }} />
-        )}
+        ) : today_solved === 2 ? (
+          <BigButtonActivated
+            label="오늘의 퀴즈 완료"
+            onClick={() => {
+              if (streak_days === 3 && !monthly_reward) {
+                setQuizData({monthly_reward: true})
+                setQuizData({credit: credit + 1})
+                router.push("/quiz/credit")
+              } else {
+                router.push("/quiz")
+              }
+            }}
+          />
+        ) : null}
       </div>
     </main>
   )
