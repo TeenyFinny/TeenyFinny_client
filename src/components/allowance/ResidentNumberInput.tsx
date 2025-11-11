@@ -113,11 +113,11 @@ export function ResidentNumberInput({
           </span>
         </div>
       </div>
-
-      {/* 🚨 내부 고정 에러 메시지 (레이아웃 유지됨) */}
-      <div className="h-[20px] mt-[4px]">
+        {/* 🚨 내부 고정 에러 메시지 (레이아웃 유지됨) */}
+      <div className="h-[16px] mt-[4px]">
         {error && <p className="text-error text-body-03">숫자만 입력하세요.</p>}
       </div>
+
     </div>
   )
 }
