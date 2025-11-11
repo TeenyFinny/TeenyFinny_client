@@ -128,7 +128,7 @@ export default function Page(){
             className="mb-2 mt-4"
           />
           <span className="text-head-04">
-            주식 <span className="text-primary-1">사기</span>
+            주식 <span className="text-primary-1">팔기</span>
           </span>
         </a>
       </div>
