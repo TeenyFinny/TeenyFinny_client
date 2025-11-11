@@ -113,6 +113,10 @@ export function PhoneNumberInput({
               width={16}
               height={16}
               unoptimized
+              style={{
+                filter:
+                  "brightness(0) saturate(100%) invert(53%) sepia(54%) saturate(0%) hue-rotate(221deg) brightness(92%) contrast(99%)",
+              }}
               className={`${open ? "rotate-0" : "rotate-180"}`}
             />
           </div>
