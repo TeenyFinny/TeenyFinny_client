@@ -99,7 +99,7 @@ function SignupLayoutShell({
       </div>
 
       {/* 메인 컨텐츠 영역 */}
-      <div className="flex-1 h-[700px]">
+      <div className="flex-1 overflow-y-auto">
         <div className="w-full">{children}</div>
       </div>
     </div>
