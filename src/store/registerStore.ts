@@ -18,7 +18,7 @@ export interface TermsState {
 /**
  * @typedef {Object} RegisterForm
  * @property {TermsState} terms - 약관 동의 상태 (1단계)
- * @property {"PARENT" | "CHILD" | ""} role - 사용자 역할 (2단계)
+ * @property {"PARENT" | "CHILD" | null} role - 사용자 역할 (2단계)
  * @property {string} phoneNumber - 휴대폰 번호 (3단계)
  * @property {string} authCode - 인증번호 입력값 (3단계)
  * @property {boolean} isVerified - 본인인증 완료 여부 (3단계)
@@ -30,7 +30,7 @@ export interface TermsState {
  */
 export interface RegisterForm {
   terms: TermsState;
-  role: "PARENT" | "CHILD" | "";
+  role: "PARENT" | "CHILD" | null;
   phoneNumber: string;
   authCode: string;
   isVerified: boolean;
@@ -49,7 +49,7 @@ const initialForm: RegisterForm = {
     thirdParty: false,
     finance: false,
   },
-  role: "",
+  role: null,
   phoneNumber: "",
   authCode: "",
   isVerified: false,
