@@ -30,7 +30,7 @@ export default function DeleteConfirmationPage() {
           <img
             src="/images/saving/illust_saving_5.png"
             alt="슬픈 토끼 캐릭터"
-            className="h-[280px] w-[280px] object-contain"
+            className="h-[300px] w-[300px] object-contain"
           />
         </div>
 
