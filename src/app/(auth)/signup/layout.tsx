@@ -5,6 +5,7 @@ import HeaderbarWrapper from "@/components/layout/headerbar/HeaderbarWrapper";
 import React from "react";
 import { RegisterStepProvider, useRegisterStep } from "./useRgisterStep";
 import { useRouter } from "next/navigation";
+import { useRegisterStore } from "@/store/registerStore";
 
 /**
  * SignupLayout
@@ -57,6 +58,7 @@ function SignupLayoutShell({
 }>) {
   const router = useRouter();
   const { step, prev } = useRegisterStep();
+  const { reset } = useRegisterStore();
 
   /** 단계별 진행률 퍼센트 값 */
   const PROGRESS_STEPS = [10, 20, 40, 60, 80, 100] as const;
@@ -72,6 +74,8 @@ function SignupLayoutShell({
             prev();
             return;
           }
+          // 세션 스토리지 비우기
+          reset();
 
           // 브라우저 히스토리가 있을 경우 이전 페이지로 이동
           if (
