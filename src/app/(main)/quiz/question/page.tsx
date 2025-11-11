@@ -7,6 +7,13 @@ import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { useState } from "react"
 
+
+/**
+ * QuizQuestionPage
+ * - 퀴즈 탭의 문제페이지
+ * - 상단 상태바 / 하단 네비게이션은 기본 레이아웃에서 제공
+ * - 본 페이지에서는  설명 텍스트, 버튼만 렌더링
+ */
 export default function Page() {
   const router = useRouter()
   const {  
@@ -39,7 +46,7 @@ export default function Page() {
 
   return (
     <main
-      aria-label="퀴즈 시작 페이지"
+      aria-label="퀴즈 문제 페이지"
       className="relative h-[600px] bg-[var(--color-primary-4)] font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
     >
       {/* ===============================
@@ -56,7 +63,7 @@ export default function Page() {
                 "rgb(207 76 76 / 0.2)",
                 "rgb(207 76 76 / 0.2)",
                 "rgb(207 76 76 / 0.2)",
-                "rgb(256 256 256 / 1)" // 원래 색 (bg-[var(--color-neutral-7)])
+                "rgb(255 255 255 / 1)" // 원래 색 (bg-[var(--color-neutral-7)])
               ],
             }
             : {}
@@ -64,7 +71,7 @@ export default function Page() {
         transition={{ duration: 0.4 }}
       >
         {/* 문제 텍스트 */}
-        <p className="text-center text-head-00 font-bold text-[var(--color-neutral-1)] w-[260px] leading-relaxed whitespace-normal break-words">
+        <p className="text-center text-head-00 font-bold text-[var(--color-neutral-1)] w-[260px] leading-relaxed whitespace-normal break-keep">
           {question}
         </p>
       </motion.div>

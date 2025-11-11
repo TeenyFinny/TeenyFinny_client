@@ -4,18 +4,14 @@ import Image from "next/image"
 import React, { useEffect, useState } from "react"
 import { StateBadge } from "@/components/ui/badge/StateBadge"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
-import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled"
 import { useRouter } from "next/navigation"
-import { HttpError } from "@/types/axios/httpError.t"
-import api from "@/lib/axios/axios"
-import requests from "@/lib/axios/requests"
 import { useQuizStore } from "@/store/quizStore"
 
 /**
- * QuizStartPage
- * - 퀴즈 탭의 시작페이지
+ * QuizAnswerPage
+ * - 퀴즈 탭의 정답페이지
  * - 상단 상태바 / 하단 네비게이션은 기본 레이아웃에서 제공
- * - 본 페이지에서는 배지, 중앙 이미지, 설명 텍스트, 시작 버튼만 렌더링
+ * - 본 페이지에서는 배지, 중앙 이미지, 설명 텍스트, 버튼만 렌더링
  */
 export default function Page() {
   const router = useRouter()
@@ -25,7 +21,8 @@ export default function Page() {
     course_completed,
     monthly_reward,
     today_solved,
-    credit
+    credit,
+    explanation
   } = useQuizStore()
 
   const quizActive = !course_completed && !monthly_reward && today_solved < 2
@@ -42,7 +39,7 @@ export default function Page() {
   return (
     <main
       aria-label="퀴즈 시작 페이지"
-      className="r  h-[600px] bg-[var(--color-primary-4)] font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
+      className="h-[600px] bg-[var(--color-primary-4)] font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
     >
       {/* ===============================
           카드 영역 (중앙 콘텐츠)
@@ -78,7 +75,7 @@ export default function Page() {
 
         {/* 하단 설명 텍스트 */}
         <p className="absolute top-[407px] left-[45px] text-center text-head-04 font-bold text-[var(--color-neutral-1)] w-[237px] mb-8 leading-relaxed">
-          {"해설이에요! 이러이러해서 답은 X입니다."}
+          {explanation}
         </p>
       </div>
 
@@ -94,8 +91,7 @@ export default function Page() {
             label="오늘의 퀴즈 완료"
             onClick={() => {
               if (streak_days === 3 && !monthly_reward) {
-                setQuizData({monthly_reward: true})
-                setQuizData({credit: credit + 1})
+                 setQuizData({ monthly_reward: true, credit: credit + 1 })
                 router.push("/quiz/credit")
               } else {
                 router.push("/quiz")

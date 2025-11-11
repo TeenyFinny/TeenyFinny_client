@@ -1,46 +1,45 @@
 "use client";
 
 /**
- * CustomButtonProps
- * @typedef {Object} CustomButtonProps
- * @property {string} label - 버튼에 표시될 텍스트입니다.
- * @property {() => void} onClick - 버튼 클릭 시 실행될 콜백 함수입니다.
+ * RedSmallButtonActivatedProps
+ * @typedef {Object} RedSmallButtonActivatedProps
+ * @property {string} label - 버튼에 표시될 텍스트
+ * @property {() => void} onClick - 버튼 클릭 시 실행될 콜백 함수
  */
-interface CustomButtonProps {
+interface RedSmallButtonActivatedProps {
   label: string;
   onClick: () => void;
 }
 
 /**
- * CustomButton
+ * RedSmallButtonActivated
  *
- * 재사용 가능한 파란색 버튼 컴포넌트입니다.
+ * 재사용 가능한 빨간색 버튼 컴포넌트입니다.
  *
  * ### 특징
  * - `label` prop으로 버튼 텍스트를 지정할 수 있습니다.
  * - `onClick` prop으로 클릭 이벤트 핸들러를 전달받습니다.
- * - `whitespace-pre-line`을 사용하여 개발자가 원하는 대로 줄바꿈할 수 있습니다.
+ * - `whitespace-pre-line` 적용으로 줄바꿈 가능
  *
  * ### 시각적 구성
- * - 빨간색 배경(`bg-[#EF4C4A]`)
- * - 흰색 텍스트(`text-[#ffffff]`)
- * - 둥근 모서리(`rounded-[20px]`)
- * - 전체 너비(`w-full`)
- * - 호버 및 액티브 상태 효과
+ * - 빨간색 배경 (`bg-error`)
+ * - 흰색 텍스트 (`text-monochrome-lightgray`)
+ * - 둥근 모서리 (`rounded-[15px]`)
+ * - 고정 크기 (`w-[159px] h-[56px]`)
+ * - 그림자 효과 (`shadow-[0_8px_16px_-6px_rgba(0,82,103,0.32)]`)
  *
- * @component
- * @param {CustomButtonProps} props - CustomButton 컴포넌트 속성
- * @returns {React.ReactElement} 버튼 요소
+ * @param {RedSmallButtonActivatedProps} props - 버튼 속성
+ * @returns {JSX.Element} 버튼 요소
  *
  * @example
  * ```tsx
- * <CustomButton
- *   label="버튼"
- *   onClick={() => alert("버튼 클릭됨!")}
+ * <RedSmallButtonActivated
+ *   label="X"
+ *   onClick={() => console.log("X 버튼 클릭됨")}
  * />
  * ```
  */
-export function RedSmallButtonActivated({ label, onClick }: CustomButtonProps) {
+export function RedSmallButtonActivated({ label, onClick }: RedSmallButtonActivatedProps) {
   return (
     <button
       onClick={onClick}
