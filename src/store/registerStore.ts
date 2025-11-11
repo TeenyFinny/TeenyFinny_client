@@ -41,6 +41,25 @@ export interface RegisterForm {
   simplePassword: string;
 }
 
+/** 회원가입 폼의 초기 상태 (중복 방지용 상수) */
+const initialForm: RegisterForm = {
+  terms: {
+    service: false,
+    privacy: false,
+    thirdParty: false,
+    finance: false,
+  },
+  role: "",
+  phoneNumber: "",
+  authCode: "",
+  isVerified: false,
+  name: "",
+  email: "",
+  birthDate: "",
+  password: "",
+  simplePassword: "",
+};
+
 /**
  * @typedef {Object} RegisterStore
  * @property {RegisterForm} form - 현재 회원가입 단계별 데이터 상태
@@ -78,46 +97,12 @@ interface RegisterStore {
  * | 3 | 본인인증 | `isVerified`가 true |
  * | 4 | 개인정보 입력 | 이름 존재, 이메일 형식 유효, 생년월일 8자리, 비밀번호 8자 이상 |
  * | 5 | 간편비밀번호 | 숫자 6자리 정규식 일치 |
- *
- * ### 사용 예시
- * ```tsx
- * import { useRegisterStore } from "@/store/registerStore";
- *
- * const { form, setField, isStepValid, reset } = useRegisterStore();
- *
- * // 값 변경
- * setField("name", "홍길동");
- *
- * // 특정 단계 검증
- * const valid = isStepValid(4);
- *
- * // 전체 초기화
- * reset();
- * ```
- *
- * @returns {RegisterStore} Zustand 기반 회원가입 상태 및 조작 메서드
  */
 export const useRegisterStore = create<RegisterStore>()(
   persist(
     (set, get) => ({
-      /** 초기 상태 정의 */
-      form: {
-        terms: {
-          service: false,
-          privacy: false,
-          thirdParty: false,
-          finance: false,
-        },
-        role: "",
-        phoneNumber: "",
-        authCode: "",
-        isVerified: false,
-        name: "",
-        email: "",
-        birthDate: "",
-        password: "",
-        simplePassword: "",
-      },
+      /** 초기 상태 */
+      form: initialForm,
 
       /**
        * 지정된 필드(key)의 값을 업데이트합니다.
@@ -129,25 +114,13 @@ export const useRegisterStore = create<RegisterStore>()(
 
       /**
        * 모든 입력값을 초기화합니다.
+       * (얕은 복사로 새로운 참조를 생성하여 불변성 보장)
        */
       reset: () =>
         set({
           form: {
-            terms: {
-              service: false,
-              privacy: false,
-              thirdParty: false,
-              finance: false,
-            },
-            role: "",
-            phoneNumber: "",
-            authCode: "",
-            isVerified: false,
-            name: "",
-            email: "",
-            birthDate: "",
-            password: "",
-            simplePassword: "",
+            ...initialForm,
+            terms: { ...initialForm.terms },
           },
         }),
 
@@ -157,28 +130,28 @@ export const useRegisterStore = create<RegisterStore>()(
        * @returns {boolean} 해당 단계의 필수 입력값이 유효한 경우 true
        */
       isStepValid: (step) => {
-        const form = get().form;
+        const f = get().form;
         switch (step) {
           case 1:
-            return Object.values(form.terms).every(Boolean);
+            return Object.values(f.terms).every(Boolean);
           case 2:
-            return Boolean(form.role);
+            return Boolean(f.role);
           case 3:
-            return form.isVerified;
+            return f.isVerified;
           case 4:
             return (
-              Boolean(form.name) &&
-              /\S+@\S+\.\S+/.test(form.email) &&
-              form.birthDate.length === 8 &&
-              form.password.length >= 8
+              Boolean(f.name) &&
+              /\S+@\S+\.\S+/.test(f.email) &&
+              f.birthDate.length === 8 &&
+              f.password.length >= 8
             );
           case 5:
-            return /^\d{6}$/.test(form.simplePassword);
+            return /^\d{6}$/.test(f.simplePassword);
           default:
             return false;
         }
       },
     }),
-    { name: "register-form-storage" } // localStorage에 저장됨
+    { name: "register-form-storage" } // localStorage key
   )
 );
