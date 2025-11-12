@@ -7,7 +7,7 @@ import { NormalInput2 } from "@/components/ui/input/NormalInput2"
 
 /**
  * Step08ChildInfoInputProps
- * @typedef {Object} Step08ChildInfoInputProps
+ * @typedef {Object} Step07ChildInfoInputProps
  * @property {() => void} onNext - 모든 입력 완료 시 실행되는 콜백 함수입니다.
  */
 
@@ -30,10 +30,10 @@ import { NormalInput2 } from "@/components/ui/input/NormalInput2"
  * - 하단 버튼: "모두 입력했어요" (활성/비활성 상태 구분)
  *
  * @component
- * @param {Step08ChildInfoInputProps} props - 컴포넌트 속성
+ * @param {Step07ChildInfoInputProps} props - 컴포넌트 속성
  * @returns {React.ReactElement}
  */
-export default function Step08ChildInfoInput({ onNext }: { onNext: () => void }) {
+export default function Step07ChildInfoInput({ onNext }: { onNext: () => void }) {
   const [childName, setChildName] = useState("")
   const [childPhone, setChildPhone] = useState("")
   const [birth, setBirth] = useState("")
@@ -92,9 +92,11 @@ const handleNameChange = (value: string) => {
     childName !== "" &&
     childPhone !== "" &&
     address !== "" &&
+    birth !== "" &&
     detailAddress !== "" &&
     nameError === "" &&
-    phoneError === ""
+    phoneError === "" &&
+    birthError === ""
 
   return (
     <div className="flex flex-col px-[24px] h-full mb-[0px]">
@@ -142,7 +144,7 @@ const handleNameChange = (value: string) => {
             onChange={handleBirthChange}
           />
           <div className="h-[20px] mt-[4px]">
-            {phoneError && <p className="text-error text-body-08">{birthError}</p>}
+            {birthError && <p className="text-error text-body-08">{birthError}</p>}
           </div>
         </div>
 
