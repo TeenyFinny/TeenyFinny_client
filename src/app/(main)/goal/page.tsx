@@ -32,15 +32,15 @@ export default function SavingsDetailScreen() {
 
   const userType = useUserStore((state) => state.userType)
 
-  const handleDelete = () => router.push("/saving/delete")
-  const handleEdit = () => router.push("/saving/edit")
+  const handleDelete = () => router.push("/goal/delete")
+  const handleEdit = () => router.push("/goal/edit")
 
   useEffect(() => {
     const controller = new AbortController()
 
     ;(async () => {
       try {
-        const res = await api.get(requests.fetchSavingDetail, {
+        const res = await api.get(requests.fetchGoal, {
           signal: controller.signal,
         })
 
@@ -57,7 +57,7 @@ export default function SavingsDetailScreen() {
         setTransactions(tx)
       } catch (e) {
         const err = e as HttpError
-        console.error("[SAVING] 데이터 요청 실패:", err)
+        console.error("[GOAL] 데이터 요청 실패:", err)
         if (err.statusCode === 403) {
           alert(err.message)
           router.push("/")
