@@ -96,7 +96,6 @@ export default function Step07ChildInfoInput({ onNext }: { onNext: () => void })
 
   /** 비밀번호 입력 완료 시 다음 단계 이동 */
   const handlePasswordComplete = (password: string) => {
-    console.log("설정된 비밀번호:", password)
     setIsPasswordSheetOpen(false)
     onNext()
   }
