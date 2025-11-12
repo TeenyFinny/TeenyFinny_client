@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState } from "react"
-import { NormalInput } from "../ui/input/NormalInput"
+import { NormalInput } from "../../ui/input/NormalInput"
 
 /**
  * NameInputProps
