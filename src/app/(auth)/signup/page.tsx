@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
+import { TitleOnlyDialog } from "@/components/ui/modal/TitleOnlyDialog";
 
 /**
  * RegisterPage
@@ -25,6 +26,10 @@ export default function RegisterPage() {
   const { step, next } = useRegisterStep();
   const { form, setField, reset } = useRegisterStore();
   const [password, setPassword] = useState("");
+
+  /** 모달 상태 */
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
   /** 회원가입 POST 요청 */
   const handleSignup = async (simplePassword: string) => {
@@ -44,14 +49,18 @@ export default function RegisterPage() {
 
       const res = await api.post(requests.signup, payload);
       if (res?.data?.email && res?.data?.role) {
-        alert("회원가입이 완료되었습니다!");
         reset();
-        router.push("/login");
+        router.push("/signup/complete");
       } else {
-        alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+        setModalMessage("회원가입에 실패했습니다.\n다시 시도해주세요.");
+        setModalOpen(true);
       }
     } catch (error) {
-      console.error("회원가입 요청 실패:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.error("회원가입 요청 실패:", error);
+      }
+      setModalMessage("서버 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.");
+      setModalOpen(true);
     }
   };
 
@@ -96,6 +105,15 @@ export default function RegisterPage() {
           />
         )}
       </div>
+
+      {/* 회원가입 실패 시 모달 */}
+      <TitleOnlyDialog
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        title={modalMessage}
+        confirmText="확인"
+        onConfirm={() => setModalOpen(false)}
+      />
     </main>
   );
 }
