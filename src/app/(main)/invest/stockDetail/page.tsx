@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation";
 import api from "@/lib/axios/axios";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
+import { BottomSheetBuyStock } from "@/components/ui/bottom-sheet/BottomSheetBuyStock";
 
 
 export default function Page(){
@@ -14,6 +15,7 @@ export default function Page(){
 
   const [stock, setStock] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (!stockId) return;
@@ -97,9 +99,24 @@ export default function Page(){
 
         {/* Buy Button */}
         <div className="mt-1">
-          <BigButtonActivated label="주식 사기" onClick={() => alert("주식 구매 기능은 아직 구현되지 않았습니다.")} />
+          <BigButtonActivated label="주식 사기" onClick={() => setOpen(true)} />
         </div>
       </main>
+
+      {/* 바텀시트 컴포넌트 */}
+      <BottomSheetBuyStock
+        open={open}
+        setOpen={setOpen}
+        price={Number(String(stock.price).replace(/,/g, ""))}
+        availableStocks={1000000}
+        maxQuantity={20}
+        onConfirm={(quantity) => {
+          console.log(`${stock.name} ${quantity}주 매수 (${quantity * stock.price}원)`)
+          setOpen(false)
+        }}
+        onCancel={() => setOpen(false)}
+      />
+
     </div>
   )
 }
