@@ -12,7 +12,7 @@ export default function Step05PasswordInstruction({ onNext }: Step05PasswordInst
       </div>
       <div className="pb-[34px] text-left">
         <p className="text-body-05 text-neutral-2 whitespace-pre-line">
-          간편 비밀번호를 등록하시면 <br /> 6자리 숫자 입력으로 로그인 하실 수 있습니다.
+          {`간편 비밀번호를 등록하시면\n6자리 숫자 입력으로 로그인 하실 수 있습니다.`}
         </p>
       </div>
       <div className="flex justify-center px-[37px]">

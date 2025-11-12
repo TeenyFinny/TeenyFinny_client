@@ -18,8 +18,8 @@ export default function Step06SimplePassword({
 
   const passwordError = useMemo(() => {
     if (!submitted && !password) return undefined;
-    if (password.length < 6) return "비밀번호는 6자리 숫자여야 합니다.";
-    if (!/^[0-9]+$/.test(password)) return "숫자만 입력 가능합니다.";
+    if (password && !/^[0-9]+$/.test(password)) return "숫자만 입력 가능합니다.";
+    if (password.length > 0 && password.length !== 6) return "비밀번호는 6자리 숫자여야 합니다.";
     return undefined;
   }, [password, submitted]);
 
@@ -49,7 +49,7 @@ export default function Step06SimplePassword({
       </div>
       <div className="pb-[31px] text-left">
         <p className="text-body-05 text-neutral-2 whitespace-pre-line">
-          간편 비밀번호를 등록하시면 <br /> 6자리 숫자 입력으로 로그인 하실 수 있습니다.
+          {`간편 비밀번호를 등록하시면\n6자리 숫자 입력으로 로그인 하실 수 있습니다.`}
         </p>
       </div>
 
