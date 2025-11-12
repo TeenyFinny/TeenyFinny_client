@@ -6,7 +6,7 @@ import Step01Terms from "./Step01Terms";
 import Step02Roles from "./Step02Roles";
 import Step03Verification from "./Step03Verification";
 import Step04UserInfo from "./Step04UserInfo";
-
+import Step05PasswordInstruction from "./Step05PasswordInstruction";
 /**
  * RegisterPage
  *
@@ -47,6 +47,8 @@ export default function RegisterPage() {
         {step === 3 && <Step03Verification onNext={next} />}
         {/* Step 4: 회원가입 폼 */}
         {step === 4 && <Step04UserInfo onNext={next} />}
+        {/* Step 5: 간편 비밀번호 안내 */}
+        {step === 5 && <Step05PasswordInstruction onNext={next} />}
       </div>
     </main>
   );
