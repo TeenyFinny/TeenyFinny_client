@@ -16,6 +16,8 @@ interface BottomSheetPasswordProps {
   open: boolean
   setOpen: (open: boolean) => void
   onComplete: (pin: string) => void
+  pinLength?: number
+  title?: string
 }
 
 /**
@@ -57,7 +59,13 @@ interface BottomSheetPasswordProps {
  * />
  * ```
  */
-export function BottomSheetPassword({ open, setOpen, onComplete }: BottomSheetPasswordProps) {
+export function BottomSheetPassword({ 
+  open, 
+  setOpen, 
+  onComplete,
+  pinLength = 6,
+  title = "간편비밀번호"
+}: BottomSheetPasswordProps) {
   // 입력된 비밀번호를 저장하는 상태
   const [pin, setPin] = useState("")
   // 드래그 시작 Y 좌표
@@ -151,11 +159,11 @@ export function BottomSheetPassword({ open, setOpen, onComplete }: BottomSheetPa
    * @param {string} num - 클릭된 숫자
    */
   const handleNumberClick = (num: string) => {
-    if (pin.length < 6) {
+    if (pin.length < pinLength) {
       const newPin = pin + num
       setPin(newPin)
       // 6자리 완성 시 300ms 후 onComplete 실행
-      if (newPin.length === 6) {
+      if (newPin.length === pinLength) {
         setTimeout(() => onComplete(newPin), 300)
       }
     }
@@ -178,13 +186,13 @@ export function BottomSheetPassword({ open, setOpen, onComplete }: BottomSheetPa
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-end bg-neutral-1/50 transition-opacity duration-300 ${
+      className={`fixed inset-0 z-50 flex justify-center items-end bg-neutral-1/50 transition-opacity duration-300 ${
         open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
       }`}
       onClick={handleBackdropClick}
     >
       <div
-        className={`w-full max-w-[480px] h-[60vh] relative rounded-t-[24px] bg-neutral-7 pb-[32px] shadow-lg transition-transform duration-300 overflow-hidden ${
+        className={`w-full max-w-[375px] h-[60vh] relative rounded-t-[24px] bg-neutral-7 pb-[32px] shadow-lg transition-transform duration-300 overflow-hidden ${
           open ? "translate-y-0" : "translate-y-full"
         }`}
         style={sheetStyle}
@@ -214,7 +222,7 @@ export function BottomSheetPassword({ open, setOpen, onComplete }: BottomSheetPa
         {/* 비밀번호 입력 표시 - 6개의 동그라미 */}
         <div className="flex flex-col items-center pt-[16px] pb-[16px]">
           <div className="flex justify-center items-center gap-[18px]">
-            {Array.from({ length: 6 }).map((_, i) => (
+            {Array.from({ length: pinLength }).map((_, i) => (
               <div
                 key={i}
                 className={`w-4 h-4 rounded-full border border-neutral-4 ${
@@ -226,7 +234,7 @@ export function BottomSheetPassword({ open, setOpen, onComplete }: BottomSheetPa
         </div>
 
         {/* 숫자 키패드 */}
-        <div className="mx-[20px] mt-[20px] mb-[20px] grid grid-cols-3 gap-x-[16px] gap-y-[12px] py-[7px]">
+        <div className="mx-[20px] mt-[20px] mb-[20px] grid grid-cols-3 gap-x-[16px] gap-y-[20px] py-[7px]">
           {/* 숫자 1-9 버튼 */}
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
             <button
