@@ -26,8 +26,7 @@ export default function Steop08Complete() {
         
         <div className="mt-4 text-center">
              <span className="text-head-01 text-neutral-1">
-              목표 적금에 <br />
-              가입했어요!
+            TeenyFinny <br/>계좌 개설에 성공했어요.
             </span>
         </div>
 
