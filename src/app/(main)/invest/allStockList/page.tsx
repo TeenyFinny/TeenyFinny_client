@@ -13,8 +13,8 @@ interface StockDetail {
   id: string
   prdt_name: string
   price: string
-  // availableStocks: number
-  // maxQuantity: number
+  availableStocks: number
+  maxQuantity: number
 }
 
 export default function Page() {
@@ -67,7 +67,9 @@ export default function Page() {
       setSelectedStock({
         id: stock.id,
         prdt_name: stock.prdt_name,
-        price: stock.price
+        price: stock.price,
+        availableStocks: stock.availableStocks,
+        maxQuantity: stock.maxQuantity,
 
       })
       console.log(stock);
@@ -100,8 +102,8 @@ export default function Page() {
           open={open}
           setOpen={setOpen}
           price={Number(String(selectedStock.price).replace(/,/g, ""))}
-          availableStocks={1000000}
-          maxQuantity={20}
+          availableStocks={Number(String(selectedStock.availableStocks).replace(/,/g, ""))}
+          maxQuantity={selectedStock.maxQuantity}
           onConfirm={(quantity) => {
             alert(`${selectedStock.prdt_name} ${quantity}주 매수`)
             setOpen(false)

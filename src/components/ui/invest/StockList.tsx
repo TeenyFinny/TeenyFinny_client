@@ -46,8 +46,7 @@ export function StockList({ stocks, onClickBtn, onClickRow, btnLab="팔기" }: S
                   <p className="text-head-04 text-neutral-1">{stock.price} 원</p>
                   <p className={`text-body-08 ${stock.isPositive ? "text-error" : "text-primary-1"}`}>{stock.changePercent}% {stock.isPositive ? "↑" : "↓"}</p>
                 </div>
-                <TinyButton label={btnLab} 
-                onClick={() => onClickBtn?.(stock.id)} />
+                <TinyButton label={btnLab} onClick={() => onClickBtn?.(stock.id)} />
               </div>
             </div>
             {index < stocks.length - 1 && <div className="mx-[16px] h-[1px] bg-monochrome-gray" />}

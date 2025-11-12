@@ -108,10 +108,10 @@ export default function Page(){
         open={open}
         setOpen={setOpen}
         price={Number(String(stock.price).replace(/,/g, ""))}
-        availableStocks={1000000}
-        maxQuantity={20}
+        availableStocks={Number(String(stock.availableStocks).replace(/,/g, ""))}
+        maxQuantity={stock.maxQuantity}
         onConfirm={(quantity) => {
-          console.log(`${stock.name} ${quantity}주 매수 (${quantity * stock.price}원)`)
+          console.log(`${stock.name} ${quantity}주 매수)`)
           setOpen(false)
         }}
         onCancel={() => setOpen(false)}
