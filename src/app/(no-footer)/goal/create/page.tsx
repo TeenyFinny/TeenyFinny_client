@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { NormalInput2 } from "@/components/ui/input/NormalInput2"
-import { DateInput } from "@/components/ui/input/DateInput"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled"
 import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog" // ✅ 모달 import
@@ -86,7 +85,7 @@ export default function GoalSettingPage() {
             unit="원"
           />
 
-          <DateInput
+          <NormalInput2
             label="언제 저금할까요?"
             value={savingDay}
             placeholder="1"
