@@ -6,11 +6,23 @@ import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation";
+import { BottomSheetBuyStock } from "@/components/ui/bottom-sheet/BottomSheetBuyStock";
+
+
+interface StockDetail {
+  id: string
+  prdt_name: string
+  price: string
+  // availableStocks: number
+  // maxQuantity: number
+}
 
 export default function Page() {
   const router = useRouter();
   const [stocks, setStocks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [selectedStock, setSelectedStock] = useState<StockDetail | null>(null)
 
   useEffect(() => {
 
@@ -48,16 +60,55 @@ export default function Page() {
     );
   }
 
-  const handleBuy = (stockId: string) => {
-    router.push(`/invest/buyStock?id=${stockId}`)
+  const handleStockDetail = async (stockId: string) => {
+    try {
+      const res = await api.get(`${requests.stockDetail}?id=${stockId}`)
+      const stock = res.data
+      setSelectedStock({
+        id: stock.id,
+        prdt_name: stock.prdt_name,
+        price: stock.price
+
+      })
+      console.log(stock);
+      setOpen(true)
+    } catch (e) {
+      const err = e as HttpError
+      alert(`주식 정보를 불러오지 못했습니다: ${err.message}`)
+    }
   }
+
+  
   return (
     <div className="w-full bg-primary-4 pb-20">
       <div className="flex justify-center items-center gap-2 pt-4 pb-7">
         <h2 className="text-head-06 text-neutral-1">전체 주식 목록</h2>
         <img src="/icons/refresh.png" alt="새로고침" className="w-5 h-5" />
       </div>
-      <StockList stocks={stocks} onClickBtn={handleBuy} btnLab="사기"/>
+      <StockList stocks={stocks} 
+                  onClickBtn={handleStockDetail} 
+                  btnLab="사기" 
+                  onClickRow={(id) => {
+                    router.push(`/invest/stockDetail?id=${id}`)
+                  }}
+                  />
+
+
+      {/* 바텀시트 컴포넌트 */}
+      {selectedStock && (
+        <BottomSheetBuyStock
+          open={open}
+          setOpen={setOpen}
+          price={Number(String(selectedStock.price).replace(/,/g, ""))}
+          availableStocks={1000000}
+          maxQuantity={20}
+          onConfirm={(quantity) => {
+            alert(`${selectedStock.prdt_name} ${quantity}주 매수`)
+            setOpen(false)
+          }}
+          onCancel={() => setOpen(false)}
+        />
+      )}
     </div>
   )
 }

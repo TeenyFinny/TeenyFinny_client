@@ -234,7 +234,7 @@ export function BottomSheetBuyStock({
       onClick={handleBackdropClick}
     >
       <div
-        className={`w-full max-w-[480px] h-[85vh] rounded-t-[24px] bg-neutral-6 pb-[24px] shadow-lg transition-transform duration-300 overflow-hidden ${
+        className={`w-full max-w-[480px] h-[85vh] rounded-t-[24px] bg-monochrome-lightgray pb-[24px] shadow-lg transition-transform duration-300 overflow-hidden ${
           open ? "translate-y-0" : "translate-y-full"
         }`}
         style={sheetStyle}
@@ -298,7 +298,7 @@ export function BottomSheetBuyStock({
           {/* 백스페이스 버튼 */}
           <button
             onClick={handleBackspace}
-            className="h-[40px] flex items-center justify-center rounded-[12px] text-neutral-2 hover:bg-monochrome-lightgray active:bg-neutral-5"
+            className="h-[40px] flex items-center justify-center rounded-[12px] text-neutral-2 hover:bg-monochrome-lightgray active:bg-monochrome-gray"
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
@@ -309,7 +309,7 @@ export function BottomSheetBuyStock({
           {/* 취소 버튼 */}
           <button
             onClick={handleCancel}
-            className="flex-1 h-[56px] rounded-[16px] bg-monochrome-gray text-body-04 text-neutral-1 hover:bg-monochrome-lightgray active:bg-neutral-5"
+            className="flex-1 h-[56px] rounded-[16px] bg-monochrome-gray text-body-04 text-neutral-1 hover:bg-monochrome-lightgray active:bg-monochrome-gray"
           >
             취소
           </button>
@@ -317,7 +317,7 @@ export function BottomSheetBuyStock({
           <button
             onClick={handleConfirm}
             disabled={!quantity || Number.parseInt(quantity) === 0}
-            className="flex-1 h-[56px] rounded-[16px] bg-primary-1 text-body-04 text-neutral-6 hover:bg-[#005a96] active:bg-[#004d80] disabled:opacity-50"
+            className="flex-1 h-[56px] rounded-[16px] bg-primary-1 text-body-04 text-monochrome-lightgray hover:bg-[#005a96] active:bg-[#004d80] disabled:opacity-50"
           >
             사기
           </button>
