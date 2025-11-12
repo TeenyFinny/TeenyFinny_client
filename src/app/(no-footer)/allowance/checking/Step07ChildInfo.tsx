@@ -188,7 +188,7 @@ export default function Step07ChildInfoInput({ onNext }: { onNext: () => void })
         open={isPasswordSheetOpen}
         setOpen={setIsPasswordSheetOpen}
         pinLength={4}
-        title="비밀번호 설정"
+        title="결제 비밀번호 설정"
         onComplete={handlePasswordComplete}
       />
     </div>
