@@ -5,7 +5,7 @@ import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled";
 import { PhoneNumberInput } from "@/components/custom/allowance/PhoneNumberInput";
 import { ResidentNumberInput } from "@/components/custom/allowance/ResidentNumberInput";
-import NameInput from "@/components/custom/allowance/NameInput";
+import { NameInput } from "@/components/custom/allowance/NameInput";
 import { useRegisterStore } from "@/store/registerStore";
 
 type Step03VerificationProps = Readonly<{ onNext: () => void }>;
