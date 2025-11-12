@@ -31,7 +31,7 @@ export default function GoalAccountCreateTermsPage() {
   // ✅ 초기 동의 상태
   const initialConsents = useMemo(
     () => Object.fromEntries(consentItems.map((item) => [item.id, false])),
-    []
+    [consentItems],
   )
   const [consents, setConsents] = useState<Record<string, boolean>>(initialConsents)
 

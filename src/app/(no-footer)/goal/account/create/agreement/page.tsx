@@ -14,12 +14,6 @@ interface ConsentItem {
 export default function GoalAccountCreateAgreementPage() {
   const router = useRouter()
   const [isExpanded, setIsExpanded] = useState(true)
-  const [consents, setConsents] = useState<Record<string, boolean>>({
-    service: false,
-    privacy: false,
-    identification: false,
-    telecom: false,
-  })
 
   const consentItems: ConsentItem[] = [
     { id: "service", label: "서비스 이용약관 동의" },
@@ -27,6 +21,9 @@ export default function GoalAccountCreateAgreementPage() {
     { id: "identification", label: "고유식별정보 처리 동의" },
     { id: "telecom", label: "통신사 이용약관 동의" },
   ]
+  const [consents, setConsents] = useState<Record<string, boolean>>(
+    Object.fromEntries(consentItems.map((item) => [item.id, false]))
+  )
 
   const allChecked = Object.values(consents).every(Boolean)
 
@@ -107,14 +104,13 @@ export default function GoalAccountCreateAgreementPage() {
 
       {/* 버튼 */}
       <div
-        className={`flex flex-col gap-5 items-center mb-[56px] ${
-          isExpanded ? "mt-[221px]" : "mt-[402px]"
-        }`}
+        className={`flex flex-col gap-5 items-center mb-[56px] ${isExpanded ? "mt-[221px]" : "mt-[402px]"
+          }`}
       >
         {allChecked ? (
           <BigButtonActivated label="동의하고 진행하기" onClick={handleNext} />
         ) : (
-          <BigButtonDisabled label="동의하고 진행하기" onClick={() => {}} />
+          <BigButtonDisabled label="동의하고 진행하기" onClick={() => { }} />
         )}
       </div>
     </div>
