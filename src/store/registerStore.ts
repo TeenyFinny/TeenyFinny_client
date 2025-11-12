@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 /**
  * @typedef {Object} TermsState
@@ -20,25 +20,21 @@ export interface TermsState {
  * @property {TermsState} terms - 약관 동의 상태 (1단계)
  * @property {"PARENT" | "CHILD" | null} role - 사용자 역할 (2단계)
  * @property {string} phoneNumber - 휴대폰 번호 (3단계)
- * @property {string} authCode - 인증번호 입력값 (3단계)
  * @property {boolean} isVerified - 본인인증 완료 여부 (3단계)
  * @property {string} name - 이름 (4단계)
  * @property {string} email - 이메일 (4단계)
  * @property {string} birthDate - 생년월일 (YYYYMMDD) 형식 (4단계)
- * @property {string} password - 로그인용 비밀번호 (4단계)
- * @property {string} simplePassword - 6자리 간편비밀번호 (5단계)
+ * @property {"M" | "F" | null} gender - 성별 (3단계)
  */
 export interface RegisterForm {
   terms: TermsState;
   role: "PARENT" | "CHILD" | null;
   phoneNumber: string;
-  authCode: string;
   isVerified: boolean;
   name: string;
   email: string;
   birthDate: string;
-  password: string;
-  simplePassword: string;
+  gender: "M" | "F" | null;
 }
 
 /** 회원가입 폼의 초기 상태 (중복 방지용 상수) */
@@ -51,13 +47,11 @@ const initialForm: RegisterForm = {
   },
   role: null,
   phoneNumber: "",
-  authCode: "",
   isVerified: false,
   name: "",
   email: "",
   birthDate: "",
-  password: "",
-  simplePassword: "",
+  gender: null,
 };
 
 /**
@@ -77,6 +71,8 @@ interface RegisterStore {
   isStepValid: (step: number) => boolean;
 }
 
+const EMAIL_REGEX = /^[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}$/;
+
 /**
  * useRegisterStore
  *
@@ -95,8 +91,8 @@ interface RegisterStore {
  * | 1 | 약관 동의 | 4개 항목 모두 true |
  * | 2 | 역할 선택 | `role`이 비어있지 않음 |
  * | 3 | 본인인증 | `isVerified`가 true |
- * | 4 | 개인정보 입력 | 이름 존재, 이메일 형식 유효, 생년월일 8자리, 비밀번호 8자 이상 |
- * | 5 | 간편비밀번호 | 숫자 6자리 정규식 일치 |
+ * | 4 | 개인정보 입력 | 이름 존재, 이메일 형식 유효, 생년월일 8자리 |
+ * | 5 | 간편비밀번호 | `isStepValid` 함수에서 검증` |
  */
 export const useRegisterStore = create<RegisterStore>()(
   persist(
@@ -141,17 +137,18 @@ export const useRegisterStore = create<RegisterStore>()(
           case 4:
             return (
               Boolean(f.name) &&
-              /\S+@\S+\.\S+/.test(f.email) &&
-              f.birthDate.length === 8 &&
-              f.password.length >= 8
+              EMAIL_REGEX.test(f.email) &&
+              f.birthDate.length === 8
             );
-          case 5:
-            return /^\d{6}$/.test(f.simplePassword);
           default:
             return false;
         }
       },
     }),
-    { name: "register-form-storage" } // localStorage key
+    {
+      name: "register-form-storage",
+      /** sessionStorage 기반 persist */
+      storage: createJSONStorage(() => sessionStorage),
+    }
   )
 );

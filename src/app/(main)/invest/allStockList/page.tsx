@@ -1,5 +1,4 @@
 "use client"
-import { InvestStatus } from "@/components/ui/invest/InvestStatus";
 import { StockList } from "@/components/ui/invest/StockList";
 import { HttpError } from "@/types/axios/httpError.t";
 import api from "@/lib/axios/axios";
@@ -11,20 +10,17 @@ import { useRouter } from "next/navigation";
 export default function Page() {
   const router = useRouter();
   const [stocks, setStocks] = useState<any[]>([]);
-  const [investSummary, setInvestSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
 
     (async () => {
       try {
-        const [stockRes, investRes] = await Promise.all([
+        const [stockRes] = await Promise.all([
           api.get(requests.stockList),
-          api.get(requests.investSummary),
         ]);
         // const res = await api.get(requests.stockList);
         setStocks(stockRes.data ?? []);
-        setInvestSummary(investRes.data ?? []);
       } catch (e) {
 	      // 커스텀 에러관리
         const err = e as HttpError;
@@ -43,9 +39,6 @@ export default function Page() {
     })();
   }, [router]);
 
-  const handleSell = (stockId: string) => {
-    console.log("Selling stock:", stockId)
-  }
 
   if (loading) {
     return (
@@ -55,23 +48,16 @@ export default function Page() {
     );
   }
 
+  const handleBuy = (stockId: string) => {
+    router.push(`/invest/buyStock?id=${stockId}`)
+  }
   return (
-    <main className="min-h-screen flex bg-primary-4">
-      <div className="flex flex-col items-center pt-6">
-        {investSummary && <InvestStatus
-            userName={investSummary.userName}
-            currentAmount={investSummary.currentAmount}
-            profitAmount={investSummary.profitAmount}
-            profitRate={investSummary.profitRate}
-            availableAmount={investSummary.availableAmount}
-            isPositive={investSummary.isPositive}
-            />
-        }
-        <h2 className="text-head-06 text-neutral-2 px-4 pt-12 self-start">
-          내가 산 주식
-        </h2>
-        <StockList stocks={stocks} onClickBtn={handleSell} btnLab="사기"/>
+    <div className="w-full bg-primary-4 pb-20">
+      <div className="flex justify-center items-center gap-2 pt-4 pb-7">
+        <h2 className="text-head-06 text-neutral-1">전체 주식 목록</h2>
+        <img src="/icons/refresh.png" alt="새로고침" className="w-5 h-5" />
       </div>
-    </main>
+      <StockList stocks={stocks} onClickBtn={handleBuy} btnLab="사기"/>
+    </div>
   )
 }

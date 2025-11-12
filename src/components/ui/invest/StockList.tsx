@@ -14,16 +14,13 @@ interface Stock {
 
 interface StockListProps {
   stocks: Stock[]
-  onSell?: (stockId: string) => void
+  onClickBtn?: (stockId: string) => void
   btnLab?: string
 }
 
-export function StockList({ stocks, onSell, btnLab="팔기" }: StockListProps) {
+export function StockList({ stocks, onClickBtn, btnLab="팔기" }: StockListProps) {
   return (
     <div className="w-[376px] h-[267px] flex flex-col">
-      <h2 className="text-head-06 text-neutral-2 px-[16px] self-start">
-          내가 산 주식
-      </h2>
       <div className="flex items-center justify-between px-[16px] pt-[18px] pb-[12px]">
         <div className="text-neutral-2 text-body-07">종목명</div>
         <div className="text-neutral-2 text-body-07">평균단가</div>
@@ -48,7 +45,7 @@ export function StockList({ stocks, onSell, btnLab="팔기" }: StockListProps) {
                   <p className="text-head-04 text-neutral-1">{stock.price} 원</p>
                   <p className={`text-body-08 ${stock.isPositive ? "text-error" : "text-primary-1"}`}>{stock.changePercent}% {stock.isPositive ? "↑" : "↓"}</p>
                 </div>
-                <TinyButton label={btnLab} onClick={() => onSell?.(stock.id)} />
+                <TinyButton label={btnLab} onClick={() => onClickBtn?.(stock.id)} />
               </div>
             </div>
             {index < stocks.length - 1 && <div className="mx-[16px] h-[1px] bg-monochrome-gray" />}
