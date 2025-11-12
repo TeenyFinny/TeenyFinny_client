@@ -34,7 +34,7 @@ interface TermsState {
 
 export default function StockTerms() {
     const router = useRouter()
-    const user_id = 1
+    const user_id = 1// TODO: 전역 상태에서 실제 사용자 ID 가져오기
     const [terms, setTerms] = useState<TermsState>({
         investment: false,
         account: false,
@@ -221,7 +221,6 @@ export default function StockTerms() {
                     description="부모님이 투자 계좌 생성을 허락할 때까지 기다려요" // ← 설명 비워둠
                     confirmText="확인" // ← 버튼 텍스트 비워둠
                     onConfirm={handleConfirm}
-                //TODO: 부모님께 투자계좌개설요청 푸시알림을 보내야하고, 더이상 투자계좌개설요청 페이지에 접근할 수 없어야 함.  request_completed=>true
                 />
 
 

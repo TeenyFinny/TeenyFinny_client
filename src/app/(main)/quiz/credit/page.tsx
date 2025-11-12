@@ -61,7 +61,7 @@ export default function Page() {
         {request_completed ? (
           <BigButtonDisabled label="계좌 생성 요청 완료" onClick={() => { }} />
         ) : (
-          <BigButtonActivated label="계좌 생성하기" onClick={()=> {router.push("/quiz/credit/request")}} />
+          <BigButtonActivated label="계좌 생성하기" onClick={()=> router.push("/quiz/credit/request")} />
         )}
       </div>
     </main>

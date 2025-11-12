@@ -51,7 +51,7 @@ export default function Page() {
   }, [setQuizData])
 
   //퀴즈 가능 여부 확인
-  const quizActive = !course_completed && !monthly_reward && today_solved < 2 
+  const quizActive = !course_completed && !monthly_reward && today_solved < 2
 
   // ---------------------------
   // 배지 텍스트

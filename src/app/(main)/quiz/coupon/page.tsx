@@ -32,10 +32,8 @@ export default function Page() {
  */
   const handleConfirmClick = () => {
     if (course_completed && !request_completed) {
-      window.history.replaceState({ from: "/quiz" }, "", window.location.href);
       router.push("/quiz/credit");
     } else {
-      window.history.replaceState({ from: "/quiz" }, "", window.location.href);
       router.push("/quiz");
     }
   };
@@ -88,7 +86,7 @@ export default function Page() {
       <div className="w-[327px]">
         <BigButtonActivated
           label="확인"
-          onClick={handleConfirmClick} // TODO: 주식 크레딧 획득 화면으로 이동하는 분기 추가
+          onClick={handleConfirmClick}
         />
       </div>
     </main>

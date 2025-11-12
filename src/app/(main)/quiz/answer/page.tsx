@@ -52,37 +52,37 @@ export default function Page() {
  * @param setQuizData - 상태를 업데이트하는 함수
  * @returns 업데이트된 today_solved 값
  */
-const updateTodaySolved = async (user_id: number, today_solved: number, setQuizData: any) => {
-  const updatedSolved = today_solved + 1
-  const res = await api.patch(requests.updateProgress(user_id), { today_solved: updatedSolved })
-  setQuizData({ today_solved: updatedSolved })
-  return updatedSolved
-}
+  const updateTodaySolved = async (user_id: number, today_solved: number) => {
+    const updatedSolved = today_solved + 1
+    const res = await api.patch(requests.updateProgress(user_id), { today_solved: updatedSolved })
+    setQuizData({ today_solved: updatedSolved })
+    return updatedSolved
+  }
 
-/**
- * 월간 보상 지급 및 쿠폰 수를 서버에 PATCH 요청으로 업데이트하고,
- * 전역 상태를 갱신합니다.
- *
- * @param user_id - 현재 사용자 ID
- * @param coupon - 현재 쿠폰 개수
- * @param setQuizData - 상태를 업데이트하는 함수
- */
-const updateMonthlyReward = async (user_id: number, coupon: number, setQuizData: any) => {
-  await api.patch(requests.updateProgress(user_id), { monthly_reward: true, coupon: coupon + 1 })
-  setQuizData({ monthly_reward: true, coupon: coupon + 1 })
-}
+  /**
+   * 월간 보상 지급 및 쿠폰 수를 서버에 PATCH 요청으로 업데이트하고,
+   * 전역 상태를 갱신합니다.
+   *
+   * @param user_id - 현재 사용자 ID
+   * @param coupon - 현재 쿠폰 개수
+   * @param setQuizData - 상태를 업데이트하는 함수
+   */
+  const updateMonthlyReward = async (user_id: number, coupon: number) => {
+    await api.patch(requests.updateProgress(user_id), { monthly_reward: true, coupon: coupon + 1 })
+    setQuizData({ monthly_reward: true, coupon: coupon + 1 })
+  }
 
-/**
- * 교육과정 완료 상태를 서버에 PATCH 요청으로 업데이트하고,
- * 전역 상태를 갱신합니다.
- *
- * @param user_id - 현재 사용자 ID
- * @param setQuizData - 상태를 업데이트하는 함수
- */
-const updateCourseCompleted = async (user_id: number, setQuizData: any) => {
-  await api.patch(requests.updateProgress(user_id), { course_completed: true })
-  setQuizData({ course_completed: true })
-}
+  /**
+   * 교육과정 완료 상태를 서버에 PATCH 요청으로 업데이트하고,
+   * 전역 상태를 갱신합니다.
+   *
+   * @param user_id - 현재 사용자 ID
+   * @param setQuizData - 상태를 업데이트하는 함수
+   */
+  const updateCourseCompleted = async (user_id: number) => {
+    await api.patch(requests.updateProgress(user_id), { course_completed: true })
+    setQuizData({ course_completed: true })
+  }
 
   /**
  * 퀴즈 완료 처리 함수
@@ -93,31 +93,31 @@ const updateCourseCompleted = async (user_id: number, setQuizData: any) => {
  * - updatedSolved === 2 → 보상 지급, 교육과정 완료 처리, 일반 이동
  * - PATCH 요청 실패 시 콘솔에 에러 로그 출력
  */
-const handleCompleteQuiz = async () => {
-  try {
-    const updatedSolved = await updateTodaySolved(user_id, today_solved, setQuizData)
+  const handleCompleteQuiz = async () => {
+    try {
+      const updatedSolved = await updateTodaySolved(user_id, today_solved)
 
-    if (updatedSolved === 1) {
-      router.push("/quiz/info")
-    } else if (updatedSolved === 2) {
-      // 보상 / 이동 처리 로직
-      if (streak_days === STREAK_DAYS_FOR_REWARD && !monthly_reward) {
-        if (quiz_date === EDUCATION_COURSE_LAST_DAY && !course_completed) {
-          await updateCourseCompleted(user_id, setQuizData)
+      if (updatedSolved === 1) {
+        router.push("/quiz/info")
+      } else if (updatedSolved === 2) {
+        // 보상 / 이동 처리 로직
+        if (streak_days === STREAK_DAYS_FOR_REWARD && !monthly_reward) {
+          if (quiz_date === EDUCATION_COURSE_LAST_DAY && !course_completed) {
+            await updateCourseCompleted(user_id)
+          }
+          await updateMonthlyReward(user_id, coupon)
+          router.push("/quiz/coupon")
+        } else if (quiz_date === EDUCATION_COURSE_LAST_DAY && !course_completed) {
+          await updateCourseCompleted(user_id)
+          router.push("/quiz/credit")
+        } else {
+          router.push("/quiz")
         }
-        await updateMonthlyReward(user_id, coupon, setQuizData)
-        router.push("/quiz/coupon")
-      } else if (quiz_date === EDUCATION_COURSE_LAST_DAY && !course_completed) {
-        await updateCourseCompleted(user_id, setQuizData)
-        router.push("/quiz/credit")
-      } else {
-        router.push("/quiz")
       }
+    } catch (err) {
+      console.error("진행도 업데이트 실패:", err)
     }
-  } catch (err) {
-    console.error("진행도 업데이트 실패:", err)
   }
-}
 
 
   return (
@@ -168,7 +168,7 @@ const handleCompleteQuiz = async () => {
         {today_solved === 0 ? (
           <BigButtonActivated
             label="다음 문제로"
-            onClick={() => router.push("/quiz/info")}
+            onClick={handleCompleteQuiz}
           />
         ) : today_solved === 1 ? (
           <BigButtonActivated
