@@ -4,11 +4,7 @@ import Image from "next/image"
 import React, { useEffect, useState } from "react"
 import { StateBadge } from "@/components/ui/badge/StateBadge"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
-import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled"
 import { useRouter } from "next/navigation"
-import { HttpError } from "@/types/axios/httpError.t"
-import api from "@/lib/axios/axios"
-import requests from "@/lib/axios/requests"
 import { useQuizStore } from "@/store/quizStore"
 
 /**
@@ -21,10 +17,7 @@ export default function Page() {
   const router = useRouter()
   const {
     setQuizData,
-    streak_days,
     course_completed,
-    monthly_reward,
-    today_solved,
     quiz_date,
   } = useQuizStore()
 
@@ -37,7 +30,7 @@ export default function Page() {
 
   return (
     <main
-      aria-label="퀴즈 시작 페이지"
+      aria-label="용돈조르기권 획득 페이지"
       className="relative w-full max-w-[375px] mx-auto h-full max-h-[800px] bg-[var(--color-primary-4)] font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
     >
       {/* ===============================
@@ -76,7 +69,7 @@ export default function Page() {
       <div className="w-[327px]">
         <BigButtonActivated
           label="확인"
-          onClick={() => router.push("/quiz")}
+          onClick={() => router.push("/quiz")} // TODO: 주식 크레딧 획득 화면으로 이동하는 분기 추가
         />
       </div>
     </main>
