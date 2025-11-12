@@ -14,7 +14,7 @@ import {
 import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog";
 
 /**
- * Step1Terms
+ * StockTerms
  *
  * 계좌 개설 동의 페이지
  * - 기존 회원가입 Step1Terms 구성과 동일하지만,
@@ -29,7 +29,7 @@ interface TermsState {
     guardian: boolean
 };
 
-export default function Step1Terms() {
+export default function StockTerms() {
     const router = useRouter();
 
     const [terms, setTerms] = useState<TermsState>({
