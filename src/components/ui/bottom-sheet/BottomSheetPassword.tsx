@@ -184,7 +184,7 @@ export function BottomSheetPassword({ open, setOpen, onComplete }: BottomSheetPa
       onClick={handleBackdropClick}
     >
       <div
-        className={`w-full max-w-[480px] h-[60vh] relative rounded-t-[24px] bg-neutral-6 pb-[32px] shadow-lg transition-transform duration-300 overflow-hidden ${
+        className={`w-full max-w-[480px] h-[60vh] relative rounded-t-[24px] bg-neutral-7 pb-[32px] shadow-lg transition-transform duration-300 overflow-hidden ${
           open ? "translate-y-0" : "translate-y-full"
         }`}
         style={sheetStyle}
@@ -244,7 +244,7 @@ export function BottomSheetPassword({ open, setOpen, onComplete }: BottomSheetPa
           </button>
 
           {/* 0 버튼 */}
-          <button onClick={() => handleNumberClick("0")} className="text-head-00 text-neutral-2">
+          <button onClick={() => handleNumberClick("0")} className="h-[40px] text-head-00 text-neutral-2 rounded-[12px] hover:bg-monochrome-lightgray active:bg-monochrome-gray">
             0
           </button>
 
