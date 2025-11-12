@@ -15,10 +15,11 @@ interface Stock {
 interface StockListProps {
   stocks: Stock[]
   onClickBtn?: (stockId: string) => void
+  onClickRow?: (stockId: string) => void
   btnLab?: string
 }
 
-export function StockList({ stocks, onClickBtn, btnLab="팔기" }: StockListProps) {
+export function StockList({ stocks, onClickBtn, onClickRow, btnLab="팔기" }: StockListProps) {
   return (
     <div className="w-[376px] h-[267px] flex flex-col">
       <div className="flex items-center justify-between px-[16px] pt-[18px] pb-[12px]">
@@ -31,7 +32,7 @@ export function StockList({ stocks, onClickBtn, btnLab="팔기" }: StockListProp
           <div key={stock.id}>
             <div className="flex items-center justify-between px-[16px] py-[12px]">
               {/* Left Side - Stock Info */}
-              <div className="flex gap-[8px]">
+              <div className="flex gap-[8px]" onClick={() => onClickRow?.(stock.id)}>
                 <div className={`w-[12px] h-[12px] rounded-full flex-shrink-0 translate-y-[6px] ${stock.isPositive ? "bg-error" : "bg-primary-1"}`} />
                 <div className="flex flex-col gap-[4px]">
                   <h3 className="text-head-04 text-neutral-1">{stock.name}</h3>
