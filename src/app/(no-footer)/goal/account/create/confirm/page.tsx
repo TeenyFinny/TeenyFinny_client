@@ -61,15 +61,6 @@ export default function GoalSettingReviewPage() {
         router.push("/goal/account/create/complete")
     }
 
-    // ✅ 로딩 중 처리 (API 요청 중 표시)
-    if (!goalData) {
-        return (
-            <div className="flex h-[712px] flex-col items-center justify-center bg-primary-4 text-neutral-3">
-                <div className="animate-pulse text-body-05">목표 데이터를 불러오는 중...</div>
-            </div>
-        )
-    }
-
     // ✅ 에러 처리
     if (!goalData) {
         return (
