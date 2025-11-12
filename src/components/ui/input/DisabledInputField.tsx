@@ -40,7 +40,7 @@ export function DisabledInputField({ label, content }: DisabledInputFieldProps) 
       </label>
 
       {/** disabled input field: 320x64, 라운드 6px */}
-      <div className="w-full h-16 rounded-[6px] bg-neutral-6 px-4 flex items-center text-body-06 text-neutral-3 whitespace-pre-line cursor-not-allowed">
+      <div className="w-full h-16 rounded-[6px] bg-monochrome-lightgray px-4 flex items-center text-body-06 text-neutral-3 whitespace-pre-line cursor-not-allowed">
         {content}
       </div>
     </div>
