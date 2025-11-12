@@ -4,12 +4,7 @@ import { useState } from "react"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled"
 import { NormalInput2 } from "@/components/ui/input/NormalInput2"
-
-/**
- * Step08ChildInfoInputProps
- * @typedef {Object} Step07ChildInfoInputProps
- * @property {() => void} onNext - 모든 입력 완료 시 실행되는 콜백 함수입니다.
- */
+import { BottomSheetPassword } from "@/components/ui/bottom-sheet/BottomSheetPassword"
 
 /**
  * Step08ChildInfoInput
@@ -22,15 +17,10 @@ import { NormalInput2 } from "@/components/ui/input/NormalInput2"
  * - 휴대폰 번호는 숫자만 허용하며, 최대 11자리까지만 입력할 수 있습니다.
  * - 생년월일은 숫자만 허용하며, 6자리(YYMMDD)로 입력해야 합니다.
  * - 모든 입력이 올바르게 완료되면 하단의 "모두 입력했어요" 버튼이 활성화됩니다.
- * - 각 입력 필드 아래에는 고정 높이(20px)의 에러 메시지 영역이 존재합니다.
- *
- * ### 화면 구성
- * - 제목: "자녀 정보를 입력해 주세요"
- * - 입력 필드 5개: 이름 / 휴대폰 번호 / 생년월일 / 집주소 / 상세주소
- * - 하단 버튼: "모두 입력했어요" (활성/비활성 상태 구분)
+ * - 버튼 클릭 시 비밀번호 설정 바텀시트가 열리고, 4자리 입력 완료 시 onNext 실행.
  *
  * @component
- * @param {Step07ChildInfoInputProps} props - 컴포넌트 속성
+ * @param {{ onNext: () => void }} props
  * @returns {React.ReactElement}
  */
 export default function Step07ChildInfoInput({ onNext }: { onNext: () => void }) {
@@ -44,27 +34,28 @@ export default function Step07ChildInfoInput({ onNext }: { onNext: () => void })
   const [phoneError, setPhoneError] = useState("")
   const [birthError, setBirthError] = useState("")
 
-/* 한글 이름 입력 시 한글만 허용 */
-const handleNameChange = (value: string) => {
-  // 한글만 허용 (완성형 한글 + 자음/모음 조합 중)
-  const koreanRegex = /^[ㄱ-ㅎㅏ-ㅣ가-힣\s]*$/
-  
-  if (koreanRegex.test(value)) {
-    setChildName(value)
-    setNameError("")
-  } else {
-    setNameError("이름은 한글만 입력할 수 있습니다.")
-  }
-}
+  // 비밀번호 설정 바텀시트 상태
+  const [isPasswordSheetOpen, setIsPasswordSheetOpen] = useState(false)
 
-  /* 생년월일 입력 시 숫자만 허용하고 6자리(YYMMDD)까지만 입력 가능 */
+  /** 이름 입력 시 한글만 허용 */
+  const handleNameChange = (value: string) => {
+    const koreanRegex = /^[ㄱ-ㅎㅏ-ㅣ가-힣\s]*$/
+    if (koreanRegex.test(value)) {
+      setChildName(value)
+      setNameError("")
+    } else {
+      setNameError("이름은 한글만 입력할 수 있습니다.")
+    }
+  }
+
+  /** 생년월일 입력: 숫자만 허용, 6자리(YYMMDD) */
   const handleBirthChange = (value: string) => {
     const numericOnly = value.replace(/[^0-9]/g, "")
     const limitedValue = numericOnly.slice(0, 6)
     setBirth(limitedValue)
 
     if (value !== numericOnly) {
-      setBirthError("생년월일은 6자리로 입력해주세요")
+      setBirthError("생년월일은 숫자만 입력할 수 있습니다.")
     } else if (limitedValue.length > 0 && limitedValue.length !== 6) {
       setBirthError("생년월일은 6자리여야 합니다.")
     } else {
@@ -72,7 +63,7 @@ const handleNameChange = (value: string) => {
     }
   }
 
-  /* 휴대폰 번호 입력 시 숫자만 허용하고 11자리까지만 입력 가능 */
+  /** 휴대폰 번호 입력: 숫자만 허용, 11자리 */
   const handlePhoneChange = (value: string) => {
     const numericOnly = value.replace(/[^0-9]/g, "")
     const limitedValue = numericOnly.slice(0, 11)
@@ -87,7 +78,7 @@ const handleNameChange = (value: string) => {
     }
   }
 
-  /* 모든 입력 필드가 유효한지 검사 */
+  /** 모든 입력 필드 검증 */
   const allChecked =
     childName !== "" &&
     childPhone !== "" &&
@@ -97,6 +88,17 @@ const handleNameChange = (value: string) => {
     nameError === "" &&
     phoneError === "" &&
     birthError === ""
+
+  /** "모두 입력했어요" 버튼 클릭 시 바텀시트 열기 */
+  const handleButtonClick = () => {
+    setIsPasswordSheetOpen(true)
+  }
+
+  /** 비밀번호 입력 완료 시 다음 단계 이동 */
+  const handlePasswordComplete = (password: string) => {
+    setIsPasswordSheetOpen(false)
+    onNext()
+  }
 
   return (
     <div className="flex flex-col px-[24px] h-full mb-[0px]">
@@ -174,11 +176,20 @@ const handleNameChange = (value: string) => {
       {/* 하단 버튼 */}
       <div className="mt-[62px] mb-[56px]">
         {allChecked ? (
-          <BigButtonActivated label="모두 입력했어요" onClick={onNext} />
+          <BigButtonActivated label="모두 입력했어요" onClick={handleButtonClick} />
         ) : (
           <BigButtonDisabled label="모두 입력했어요" onClick={() => {}} />
         )}
       </div>
+
+      {/* 비밀번호 바텀시트 (한 번만 설정) */}
+      <BottomSheetPassword
+        open={isPasswordSheetOpen}
+        setOpen={setIsPasswordSheetOpen}
+        pinLength={4}
+        title="결제 비밀번호 설정"
+        onComplete={handlePasswordComplete}
+      />
     </div>
   )
 }
