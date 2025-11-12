@@ -19,7 +19,26 @@ export default function Page() {
     setQuizData,
     course_completed,
     quiz_date,
+    request_completed,
   } = useQuizStore()
+
+
+  /**
+ * 확인 버튼 클릭 시 실행되는 함수
+ *
+ * - 교육과정이 완료되고(`course_completed`), 아직 요청을 완료하지 않은 상태(`request_completed === false`)라면
+ *   주식 크레딧 페이지(`/quiz/credit`)로 이동합니다.
+ * - 그 외 경우에는 일반 퀴즈 페이지(`/quiz`)로 이동합니다.
+ */
+  const handleConfirmClick = () => {
+    if (course_completed && !request_completed) {
+      window.history.replaceState({ from: "/quiz" }, "", window.location.href);
+      router.push("/quiz/credit");
+    } else {
+      window.history.replaceState({ from: "/quiz" }, "", window.location.href);
+      router.push("/quiz");
+    }
+  };
 
   // ---------------------------
   // 배지 텍스트
@@ -69,7 +88,7 @@ export default function Page() {
       <div className="w-[327px]">
         <BigButtonActivated
           label="확인"
-          onClick={() => router.push("/quiz")} // TODO: 주식 크레딧 획득 화면으로 이동하는 분기 추가
+          onClick={handleConfirmClick} // TODO: 주식 크레딧 획득 화면으로 이동하는 분기 추가
         />
       </div>
     </main>

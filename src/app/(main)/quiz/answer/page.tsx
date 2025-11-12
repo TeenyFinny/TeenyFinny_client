@@ -6,6 +6,8 @@ import { StateBadge } from "@/components/ui/badge/StateBadge"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 import { useRouter } from "next/navigation"
 import { useQuizStore } from "@/store/quizStore"
+import api from "@/lib/axios/axios"
+import requests from "@/lib/axios/requests"
 
 /**
  * QuizAnswerPage
@@ -15,6 +17,7 @@ import { useQuizStore } from "@/store/quizStore"
  */
 export default function Page() {
   const router = useRouter()
+  const user_id = 1
   const {
     setQuizData,
     streak_days,
@@ -38,11 +41,88 @@ export default function Page() {
     ? "이번 달 도전 완료"
     : `${streak_days}일 연속 도전!`
 
-  const rightBadgeText = `${today_solved} / 2 문제`
+  const rightBadgeText = `${today_solved + 1} / 2 문제`
+
+  /**
+ * today_solved 값을 1 증가시키고 서버에 PATCH 요청으로 업데이트합니다.
+ * 또한 전역 상태를 갱신합니다.
+ *
+ * @param user_id - 현재 사용자 ID
+ * @param today_solved - 현재 푼 퀴즈 수
+ * @param setQuizData - 상태를 업데이트하는 함수
+ * @returns 업데이트된 today_solved 값
+ */
+const updateTodaySolved = async (user_id: number, today_solved: number, setQuizData: any) => {
+  const updatedSolved = today_solved + 1
+  const res = await api.patch(requests.updateProgress(user_id), { today_solved: updatedSolved })
+  setQuizData({ today_solved: updatedSolved })
+  return updatedSolved
+}
+
+/**
+ * 월간 보상 지급 및 쿠폰 수를 서버에 PATCH 요청으로 업데이트하고,
+ * 전역 상태를 갱신합니다.
+ *
+ * @param user_id - 현재 사용자 ID
+ * @param coupon - 현재 쿠폰 개수
+ * @param setQuizData - 상태를 업데이트하는 함수
+ */
+const updateMonthlyReward = async (user_id: number, coupon: number, setQuizData: any) => {
+  await api.patch(requests.updateProgress(user_id), { monthly_reward: true, coupon: coupon + 1 })
+  setQuizData({ monthly_reward: true, coupon: coupon + 1 })
+}
+
+/**
+ * 교육과정 완료 상태를 서버에 PATCH 요청으로 업데이트하고,
+ * 전역 상태를 갱신합니다.
+ *
+ * @param user_id - 현재 사용자 ID
+ * @param setQuizData - 상태를 업데이트하는 함수
+ */
+const updateCourseCompleted = async (user_id: number, setQuizData: any) => {
+  await api.patch(requests.updateProgress(user_id), { course_completed: true })
+  setQuizData({ course_completed: true })
+}
+
+  /**
+ * 퀴즈 완료 처리 함수
+ *
+ * - today_solved를 1 증가시키고 서버에 PATCH 요청
+ * - updatedSolved 값에 따라 페이지 이동 및 보상/교육과정 완료 상태 처리
+ * - updatedSolved === 1 → /quiz/info(다음 문제)로 이동
+ * - updatedSolved === 2 → 보상 지급, 교육과정 완료 처리, 일반 이동
+ * - PATCH 요청 실패 시 콘솔에 에러 로그 출력
+ */
+const handleCompleteQuiz = async () => {
+  try {
+    const updatedSolved = await updateTodaySolved(user_id, today_solved, setQuizData)
+
+    if (updatedSolved === 1) {
+      router.push("/quiz/info")
+    } else if (updatedSolved === 2) {
+      // 보상 / 이동 처리 로직
+      if (streak_days === STREAK_DAYS_FOR_REWARD && !monthly_reward) {
+        if (quiz_date === EDUCATION_COURSE_LAST_DAY && !course_completed) {
+          await updateCourseCompleted(user_id, setQuizData)
+        }
+        await updateMonthlyReward(user_id, coupon, setQuizData)
+        router.push("/quiz/coupon")
+      } else if (quiz_date === EDUCATION_COURSE_LAST_DAY && !course_completed) {
+        await updateCourseCompleted(user_id, setQuizData)
+        router.push("/quiz/credit")
+      } else {
+        router.push("/quiz")
+      }
+    }
+  } catch (err) {
+    console.error("진행도 업데이트 실패:", err)
+  }
+}
+
 
   return (
     <main
-      aria-label="퀴즈 시작 페이지"
+      aria-label="퀴즈 정답 페이지"
       className="h-[600px] bg-[var(--color-primary-4)] font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
     >
       {/* ===============================
@@ -85,28 +165,15 @@ export default function Page() {
 
       {/* 시작 버튼 */}
       <div className="w-[327px]">
-        {today_solved === 1 ? (
+        {today_solved === 0 ? (
           <BigButtonActivated
             label="다음 문제로"
             onClick={() => router.push("/quiz/info")}
           />
-        ) : today_solved === 2 ? (
+        ) : today_solved === 1 ? (
           <BigButtonActivated
             label="오늘의 퀴즈 완료"
-            onClick={() => {
-              if (streak_days === STREAK_DAYS_FOR_REWARD && !monthly_reward)//3일 연속 퀴즈를 풀었으면서, 아직 용돈조르기권을 받지 않은 경우 용돈조르기권 지급 페이지로
-              {
-                setQuizData({ monthly_reward: true, coupon: coupon + 1 })
-                router.push("/quiz/coupon")
-              } else if (quiz_date === EDUCATION_COURSE_LAST_DAY)//교육과정 마지막날인 경우 주식 크레딧 지급 페이지로 이동
-              {
-                setQuizData({ quiz_date: quiz_date + 1, course_completed: true })
-                router.push("/quiz/credit")
-              }
-              else {
-                router.push("/quiz")
-              }
-            }}
+            onClick={handleCompleteQuiz}
           />
         ) : null}
       </div>

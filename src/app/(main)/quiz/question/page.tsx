@@ -16,11 +16,10 @@ import { useState } from "react"
  */
 export default function Page() {
   const router = useRouter()
-  const {  
+  const {
     answer,
-    question, 
-    today_solved, 
-    setQuizData 
+    question,
+    setQuizData
   } = useQuizStore()
 
   // 오답 상태
@@ -29,20 +28,15 @@ export default function Page() {
   /**
    * O / X 클릭 시 실행되는 함수
    */
-  const handleAnswerClick = (selected: "o" | "x") => {
+  const handleAnswerClick = async (selected: "o" | "x") => {
     if (selected === answer) {
-      // 정답
-      setQuizData({ today_solved: today_solved + 1 })
-      //TODO: 바뀐 today_solved를 db에 저장해야함
-
       router.push("/quiz/answer")
     } else {
-      // 오답
       setIsWrong(true)
-      setTimeout(() => setIsWrong(false), 400) // 흔들림+붉은 효과 종료
-      console.log("오답입니다.")
+      setTimeout(() => setIsWrong(false), 400)
     }
   }
+
 
   return (
     <main

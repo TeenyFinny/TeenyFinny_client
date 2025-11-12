@@ -19,20 +19,21 @@ import { useQuizStore } from "@/store/quizStore"
  */
 export default function Page() {
   const router = useRouter()
+  const user_id = 1;//TODO: 유저ID 전역변수가 생기면 대체
   const {
     setQuizData,
-    streak_days,
-    course_completed,
-    monthly_reward,
-    today_solved,
-    quiz_date,
+    streak_days,        //연속 풀이 일수
+    course_completed,   //교육과정 완료 여부
+    monthly_reward,     //용돈조르기권 획즉 여부
+    today_solved,       //오늘 푼 문제 수
+    quiz_date,          //교육과정진행일자
   } = useQuizStore()
 
-  // ✅ useEffect로 API 요청
+  // ✅ useEffect로 API 요청 
   useEffect(() => {
     (async () => {
       try {
-        const res = await api.get(requests.fetchProgress)
+        const res = await api.get(`${requests.fetchProgress}?user_id=${user_id}`)
         const data = res.data
         setQuizData(data) // 전역 상태 저장
       } catch (e) {
@@ -49,7 +50,8 @@ export default function Page() {
     })()
   }, [setQuizData])
 
-  const quizActive = !course_completed && !monthly_reward && today_solved < 2
+  //퀴즈 가능 여부 확인
+  const quizActive = !course_completed && !monthly_reward && today_solved < 2 
 
   // ---------------------------
   // 배지 텍스트

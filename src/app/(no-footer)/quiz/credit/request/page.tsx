@@ -12,6 +12,9 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog";
+import api from "@/lib/axios/axios";
+import requests from "@/lib/axios/requests";
+import { useQuizStore } from "@/store/quizStore";
 
 /**
  * StockTerms
@@ -30,14 +33,16 @@ interface TermsState {
 };
 
 export default function StockTerms() {
-    const router = useRouter();
-
+    const router = useRouter()
+    const user_id = 1
     const [terms, setTerms] = useState<TermsState>({
         investment: false,
         account: false,
         responsibility: false,
         guardian: false,
     });
+    const { setQuizData } = useQuizStore()
+
 
     const [isExpanded, setIsExpanded] = useState(true);
     const [openModalId, setOpenModalId] = useState<string | null>(null);
@@ -72,10 +77,36 @@ export default function StockTerms() {
         if (allChecked) setOpenConfirm(true);
     };
 
-    /** 모달에서 확인 → 홈으로 이동 */
-    const handleConfirm = () => {
-        router.push("/home");
+    /**
+ * 확인 모달 확인 버튼 클릭
+ * - 부모님에게 투자계좌 개설 요청 푸시 전송
+ * - request_completed를 true로 업데이트
+ * - 완료 후 홈으로 이동
+ */
+    const handleConfirm = async () => {
+        try {
+            // 1️⃣ PATCH 요청: request_completed 업데이트
+            await api.patch(requests.updateProgress(user_id), {
+                request_completed: true,
+            });
+
+            // 2️⃣ 전역 상태 반영
+            setQuizData({ request_completed: true });
+
+            // // 3️⃣ (선택) 부모님 푸시 알림 보내기
+            // await api.post(requests.sendParentNotification(user_id), {
+            //     type: "account_request",
+            //     message: "자녀가 투자 계좌 생성을 요청했습니다.",
+            // });
+
+            // 4️⃣ 홈으로 이동
+            router.push("/home");
+        } catch (err) {
+            console.error("투자계좌 요청 실패:", err);
+            alert("요청 중 오류가 발생했습니다. 다시 시도해주세요.");
+        }
     };
+
     return (
         <main className="px-6 flex flex-col items-center">
             <div className="w-full max-w-[327px] flex flex-col">
@@ -190,9 +221,9 @@ export default function StockTerms() {
                     description="부모님이 투자 계좌 생성을 허락할 때까지 기다려요" // ← 설명 비워둠
                     confirmText="확인" // ← 버튼 텍스트 비워둠
                     onConfirm={handleConfirm}
-                    //TODO: 부모님께 투자계좌개설요청 푸시알림을 보내야하고, 더이상 투자계좌개설요청 페이지에 접근할 수 없어야 함.  request_completed=>true
+                //TODO: 부모님께 투자계좌개설요청 푸시알림을 보내야하고, 더이상 투자계좌개설요청 페이지에 접근할 수 없어야 함.  request_completed=>true
                 />
-                 
+
 
 
                 {/* 약관 보기 모달 */}
