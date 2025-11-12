@@ -61,7 +61,7 @@ export default function GoalAccountCreateTermsPage() {
 
   // ✅ 비밀번호 입력 완료 시
   const handlePasswordComplete = (pin: string) => {
-    console.log("입력된 PIN:", pin)
+    // console.log("입력된 PIN:", pin)
     setIsPasswordSheetOpen(false)
     router.push("/goal/account/create/confirm") // ✅ 완료 페이지로 이동
   }
