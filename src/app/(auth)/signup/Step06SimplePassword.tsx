@@ -7,12 +7,10 @@ import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled";
 
 type Step06SimplePasswordProps = Readonly<{
   onComplete: (simplePassword: string) => void;
-  onNext: () => void;
 }>;
 
 export default function Step06SimplePassword({
-  onComplete,
-  onNext,
+  onComplete
 }: Step06SimplePasswordProps) {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -41,7 +39,6 @@ export default function Step06SimplePassword({
     setSubmitted(true);
     if (isValid) {
       onComplete(password);
-      onNext();
     }
   };
 

@@ -101,7 +101,6 @@ export default function RegisterPage() {
         {step === 6 && (
           <Step06SimplePassword
             onComplete={(simplePassword) => handleSignup(simplePassword)}
-            onNext={next}
           />
         )}
       </div>
