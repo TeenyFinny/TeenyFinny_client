@@ -15,6 +15,7 @@ interface QuizState {
     question: string
     answer: string
     explanation: string
+    request_completed : boolean
     setQuizData: (data: Partial<QuizState>) => void
 }
 
@@ -33,6 +34,7 @@ export const useQuizStore = create(
             question: "",
             answer: "",
             explanation: "",
+            request_completed: false,
             setQuizData: (data) => set((state) => ({ ...state, ...data })),
         }),
         {

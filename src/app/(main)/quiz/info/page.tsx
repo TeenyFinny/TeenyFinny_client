@@ -1,10 +1,8 @@
 "use client"
 
-
 import React, { useEffect } from "react"
 import { StateBadge } from "@/components/ui/badge/StateBadge"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
-import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled"
 import { useRouter } from "next/navigation"
 import api from "@/lib/axios/axios"
 import requests from "@/lib/axios/requests"
@@ -68,7 +66,7 @@ export default function Page() {
 
     return (
         <main
-            aria-label="퀴즈 시작 페이지"
+            aria-label="퀴즈 정보 페이지"
             className="relative w-full max-w-[375px] mx-auto h-full max-h-[800px] bg-[var(--color-primary-4)] font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
         >
             {/* ===============================

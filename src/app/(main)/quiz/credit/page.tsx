@@ -3,20 +3,19 @@
 import Image from "next/image"
 import React, { useEffect } from "react"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
+import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled"
 import { useRouter } from "next/navigation"
 import { useQuizStore } from "@/store/quizStore"
 
 /**
  * QuizCreditPage
- * - 퀴즈 탭의 주식크레딧페이지
+ * - 퀴즈 탭의 주식크레딧 페이지
  * - 상단 상태바 / 하단 네비게이션은 기본 레이아웃에서 제공
  * - 본 페이지에서는 중앙 이미지, 설명 텍스트, 버튼만 렌더링
  */
 export default function Page() {
   const router = useRouter()
-  const {
-    course_completed,
-  } = useQuizStore()
+  const { course_completed, request_completed } = useQuizStore()
 
   useEffect(() => {
     if (!course_completed) {
@@ -57,12 +56,13 @@ export default function Page() {
         </p>
       </div>
 
-      {/* 시작 버튼 */}
+      {/* 계좌 생성 버튼 */}
       <div className="w-[327px]">
-        <BigButtonActivated
-          label="계좌 생성하기"
-          onClick={() => router.push("/quiz/credit/request")}
-        />
+        {request_completed ? (
+          <BigButtonDisabled label="계좌 생성 요청 완료" onClick={() => { }} />
+        ) : (
+          <BigButtonActivated label="계좌 생성하기" onClick={()=> router.push("/quiz/credit/request")} />
+        )}
       </div>
     </main>
   )

@@ -6,6 +6,7 @@ const requests = {
   login: `/auth/login`,
   fetchGoal: `/goal`,
   fetchProgress: '/quiz/progress',
+  updateProgress: (user_id: number) => `/quiz/progresses/${user_id}`,
   fetchQuiz: '/quiz/info',
   stockList: `/invest/stockList`,
   investSummary: `/invest/investSummary`,
