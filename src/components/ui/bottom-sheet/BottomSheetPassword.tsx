@@ -216,7 +216,7 @@ export function BottomSheetPassword({
 
         {/* 제목 */}
         <h2 className="text-head-01 text-center text-neutral-1 mt-[40px] mb-[28px] whitespace-pre-line">
-          간편비밀번호
+          {title}
         </h2>
 
         {/* 비밀번호 입력 표시 - 6개의 동그라미 */}
