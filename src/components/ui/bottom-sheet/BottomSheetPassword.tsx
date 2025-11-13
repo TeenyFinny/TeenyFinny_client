@@ -182,9 +182,11 @@ export function BottomSheetPassword({
           } catch {
             setError(true);
 
-            // 0.5초 뒤 다시 입력할 수 있도록 기본 상태로 복귀
-            setTimeout(() => setError(false), 600);
-            setTimeout(() => setPin(""), 600);
+            // 0.6초 뒤 다시 입력할 수 있도록 기본 상태로 복귀
+            setTimeout(() => {
+              setError(false);
+              setPin("");
+            }, 600);
           }
         }, 200);
       }
@@ -256,19 +258,16 @@ export function BottomSheetPassword({
           <div className="flex justify-center items-center gap-[18px]">
             {Array.from({ length: pinLength }).map((_, i) => {
               const isFilled = pin.length > i;
-              const filledClass = error
-                ? "border-error bg-error"
-                : "border-neutral-4 bg-neutral-4";
-
-              const emptyClass = error
-                ? "border-error bg-transparent"
-                : "border-neutral-4 bg-transparent";
+              const borderColorClass = error
+                ? "border-error"
+                : "border-neutral-4";
+              const filledBgClass = error ? "bg-error" : "bg-neutral-4";
 
               return (
                 <div
                   key={i}
-                  className={`w-4 h-4 rounded-full border ${
-                    isFilled ? filledClass : emptyClass
+                  className={`w-4 h-4 rounded-full border ${borderColorClass} ${
+                    isFilled ? filledBgClass : "bg-transparent"
                   }`}
                 />
               );
