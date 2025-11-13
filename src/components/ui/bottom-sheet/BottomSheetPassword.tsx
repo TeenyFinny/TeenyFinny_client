@@ -166,8 +166,7 @@ export function BottomSheetPassword({
    * - `onComplete`가 성공하면 추가 동작 없이 종료됩니다.
    * - `onComplete`가 실패(throw)하면:
    *    - 에러 상태(`error`)를 true로 변경해 동그라미 색상을 에러 표시로 변경하고
-   *    - PIN을 즉시 빈 문자열로 초기화한 뒤
-   *    - 0.5초 후 에러 상태를 자동으로 해제하여 재입력할 수 있도록 합니다.
+   *    - 0.6초 후 에러 상태를 자동으로 해제하여 재입력할 수 있도록 합니다.
    *
    * @param {string} num - 클릭된 숫자 문자열
    */
