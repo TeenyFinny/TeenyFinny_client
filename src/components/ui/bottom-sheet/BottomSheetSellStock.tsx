@@ -9,31 +9,31 @@ import { ArrowLeft } from "lucide-react"
  * @typedef {Object} BottomSheetSellStock
  * @property {boolean} open - 바텀시트의 열림 여부를 제어합니다. `true`일 때 바텀시트가 표시됩니다.
  * @property {(open: boolean) => void} setOpen - 바텀시트의 열림 상태를 변경하는 setter 함수입니다.
- * @property {number} price - 주식의 1주당 구매 가격입니다.
- * @property {number} maxQuantity - 구매 가능한 최대 주식 수량입니다.
+ * @property {number} price - 주식의 1주당 판매 가격입니다.
+ * @property {number} maxQuantity - 판매 가능한 최대 주식 수량입니다.
  * @property {(quantity: number, totalPrice: number) => void} onConfirm - 팔기 버튼 클릭 시 선택한 수량, 총 판매 가격을 전달하는 콜백 함수입니다.
  * @property {() => void} [onCancel] - 취소 버튼 클릭 시 실행될 콜백 함수입니다. (선택사항)
  */
-interface BottomSheetSellStock {
+interface BottomSheetSellStockProps {
   open: boolean
   setOpen: (open: boolean) => void
   price: number
   maxQuantity: number
-  onConfirm: (quantity: number, totalPrice: number) => void
+  onConfirm: (quantity: number, totalPrice: number) => void | Promise<void>
   onCancel?: () => void
 }
 
 /**
  * BottomSheetSellStock
  *
- * 주식 구매를 위한 수량 입력 바텀시트 컴포넌트입니다.
+ * 주식 판매를 위한 수량 입력 바텀시트 컴포넌트입니다.
  *
  * ### 특징
  * - `open` 상태를 기반으로 렌더링 여부가 결정됩니다.
  * - 배경 클릭 시 `setOpen(false)`로 닫힙니다.
  * - 아래로 스와이프하여 바텀시트를 닫을 수 있습니다 (100px 이상 드래그 시).
  * - 하단에서 슬라이드 업 애니메이션으로 나타납니다.
- * - 숫자 키패드를 통해 구매 수량을 입력할 수 있습니다.
+ * - 숫자 키패드를 통해 판매 수량을 입력할 수 있습니다.
  * - 입력한 수량에 따라 예상 체결가가 자동으로 계산됩니다.
  * - 최대 수량을 초과하는 입력 시 자동으로 최대 수량으로 제한됩니다.
  * - 취소 버튼 클릭 시 바텀시트가 닫히고 `onCancel` 콜백이 실행됩니다.
@@ -63,7 +63,7 @@ interface BottomSheetSellStock {
  *   price={280000}
  *   maxQuantity={3}
  *   onConfirm={(quantity) => {
- *     console.log(`구매 수량: ${quantity}주`)
+ *     console.log(`판매 수량: ${quantity}주`)
  *     setOpen(false)
  *   }}
  *   onCancel={() => setOpen(false)}
@@ -77,7 +77,7 @@ export function BottomSheetSellStock({
   maxQuantity,
   onConfirm,
   onCancel,
-}: BottomSheetSellStock) {
+}: BottomSheetSellStockProps) {
   // 사용자가 입력한 주식 수량 (문자열로 관리하여 입력 중 상태 유지)
   const [quantity, setQuantity] = useState<string>("")
 
@@ -311,7 +311,7 @@ export function BottomSheetSellStock({
           >
             취소
           </button>
-          {/* 구매(팔기) 버튼 - 수량이 입력되지 않았거나 0이면 비활성화 */}
+          {/* 판매(팔기) 버튼 - 수량이 입력되지 않았거나 0이면 비활성화 */}
           <button
             onClick={handleConfirm}
             disabled={!quantity || Number.parseInt(quantity) === 0}

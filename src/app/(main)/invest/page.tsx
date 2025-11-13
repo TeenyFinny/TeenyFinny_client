@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation";
 import api from "@/lib/axios/axios";
 import { TradeHistory } from "@/components/ui/tx-history-ui/TradeHistory";
+import { Link } from "lucide-react";
 
 
 export default function Page(){
@@ -109,7 +110,7 @@ export default function Page(){
       {/* Trading Buttons */}
       <div className="flex items-center justify-center gap-4 mb-5 mt-6">
         {/* Buy Button */}
-        <a href="/invest/allStockList?mode=BUY" className="flex flex-col items-center hover:opacity-80 transition-opacity bg-neutral-7 w-[162px] h-[120px] rounded-[16px] shadow-lg">
+        <Link href="/invest/allStockList?mode=BUY" className="flex flex-col items-center hover:opacity-80 transition-opacity bg-neutral-7 w-[162px] h-[120px] rounded-[16px] shadow-lg">
           <img
             src="/images/invest/illust_invest_characoin.png"
             alt="주식 사기"
@@ -118,10 +119,10 @@ export default function Page(){
           <span className="text-head-04">
             주식 <span className="text-error">사기</span>
           </span>
-        </a>
+        </Link>
 
         {/* Sell Button */}
-        <a href="/invest/allStockList?mode=SELL" className="flex flex-col items-center hover:opacity-80 transition-opacity bg-neutral-7 w-[162px] h-[120px] rounded-[16px] shadow-lg">
+        <Link href="/invest/allStockList?mode=SELL" className="flex flex-col items-center hover:opacity-80 transition-opacity bg-neutral-7 w-[162px] h-[120px] rounded-[16px] shadow-lg">
           <img
             src="/images/invest/illust_invest_characoin.png"
             alt="주식 사기"
@@ -130,7 +131,7 @@ export default function Page(){
           <span className="text-head-04">
             주식 <span className="text-primary-1">팔기</span>
           </span>
-        </a>
+        </Link>
       </div>
 
       {/* Investment Report Link */}
