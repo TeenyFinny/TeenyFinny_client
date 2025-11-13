@@ -1,4 +1,4 @@
-export default function moveToInvest() {
+export default function MoveToInvest() {
   return (
     <div className="flex flex-col items-center px-6 pt-13">
       {/* Title Section */}
@@ -17,22 +17,22 @@ export default function moveToInvest() {
       </div>
 
       {/* Information Section */}
-      <div className="w-full space-y-6 px-2">
-        <div className="flex gap-3">
+      <ul className="w-full space-y-6 px-2">
+        <li className="flex gap-3">
           <span className="text-body-06 text-neutral-2 flex-shrink-0">•</span>
           <p className="text-body-06 text-neutral-2 leading-relaxed">
             본 서비스는 우리은행의 제휴사인 우리투자증권에서 제공합니다.
           </p>
-        </div>
+        </li>
 
-        <div className="flex gap-3">
+        <li className="flex gap-3">
           <span className="text-body-06 text-neutral-2 flex-shrink-0">•</span>
           <p className="text-body-06 text-neutral-2 leading-relaxed">
             우리은행은 서비스 페이지에 연결하는 역할을 하며 서비스의 제공과 책임은 우리투자증권에 있습니다.
           </p>
-        </div>
+        </li>
 
-        <div className="flex gap-3">
+        <li className="flex gap-3">
           <span className="text-body-06 text-neutral-2 flex-shrink-0">•</span>
           <p className="text-body-06 text-neutral-2 leading-relaxed">
             문의: 우리투자증권 고객센터{" "}
@@ -40,8 +40,8 @@ export default function moveToInvest() {
               1588-1000
             </a>
           </p>
-        </div>
-      </div>
+        </li>
+      </ul>
     </div>
   )
 }
