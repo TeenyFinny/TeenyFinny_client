@@ -31,14 +31,13 @@ export default function AddChildCard() {
         setIsPasswordModalOpen(false);
         router.push("/family");
       } else {
-        // TODO: BottomSheetPassword 에러메시지 처리 필요
-        alert("간편 비밀번호가 일치하지 않습니다.");
+        throw new Error("간편 비밀번호가 일치하지 않습니다.");
       }
     } catch (err) {
       if (process.env.NODE_ENV === "development") {
         console.error("간편 비밀번호 인증 실패:", err);
       }
-      alert("간편 비밀번호 인증에 실패했습니다.");
+      throw new Error("간편 비밀번호 인증에 실패했습니다.");
     }
   };
 
