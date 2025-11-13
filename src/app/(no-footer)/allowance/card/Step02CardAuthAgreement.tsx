@@ -18,9 +18,9 @@ interface ConsentItem {
 }
 
 /**
- * Step03AuthAgreement
+ * Step02CardAuthAgreement
  *
- * 휴대폰 본인확인을 위한 필수 약관 동의 페이지입니다.
+ * 카드 발급을 위한 필수 약관 동의 페이지입니다.
  *
  * ### 특징
  * - 전체 동의 체크박스를 통해 모든 하위 항목을 한번에 동의할 수 있습니다.
@@ -28,7 +28,7 @@ interface ConsentItem {
  * - 개별 동의 항목은 각각 체크/해제할 수 있습니다.
  * - 모든 항목에 동의해야 "동의하고 진행하기" 버튼이 활성화됩니다.
  * 
- ### 시각적 구성
+ * ### 시각적 구성
  * - 체크되지 않은 항목: `text-monochrome-gray` (회색)
  * - 체크된 항목: `text-success` (녹색)
  * - 모든 항목 체크 시 버튼: `text-primary-1` (파란색)
