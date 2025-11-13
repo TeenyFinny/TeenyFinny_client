@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { ArrowLeft, X } from "lucide-react"
+import { useState, useEffect } from "react";
+import { ArrowLeft, X } from "lucide-react";
 
 /**
  * BottomSheetPasswordProps
@@ -11,13 +11,15 @@ import { ArrowLeft, X } from "lucide-react"
  * @property {boolean} open - 바텀시트의 열림 여부를 제어합니다. `true`일 때 바텀시트가 표시됩니다.
  * @property {(open: boolean) => void} setOpen - 바텀시트의 열림 상태를 변경하는 setter 함수입니다.
  * @property {(pin: string) => void} onComplete - 6자리 비밀번호 입력 완료 시 실행될 콜백 함수입니다.
+ * @property {boolean} [shouldOverlayBottomBar] - 하단바를 가릴지 여부. `true`일 때 하단바 위에 표시됩니다. 기본값: `false`
  */
 interface BottomSheetPasswordProps {
-  open: boolean
-  setOpen: (open: boolean) => void
-  onComplete: (pin: string) => void
-  pinLength?: number
-  title?: string
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  onComplete: (pin: string) => void;
+  pinLength?: number;
+  title?: string;
+  shouldOverlayBottomBar?: boolean;
 }
 
 /**
@@ -59,21 +61,22 @@ interface BottomSheetPasswordProps {
  * />
  * ```
  */
-export function BottomSheetPassword({ 
-  open, 
-  setOpen, 
+export function BottomSheetPassword({
+  open,
+  setOpen,
   onComplete,
   pinLength = 6,
-  title = "간편비밀번호"
+  title = "간편비밀번호",
+  shouldOverlayBottomBar = false,
 }: BottomSheetPasswordProps) {
   // 입력된 비밀번호를 저장하는 상태
-  const [pin, setPin] = useState("")
+  const [pin, setPin] = useState("");
   // 드래그 시작 Y 좌표
-  const [dragStartY, setDragStartY] = useState(0)
+  const [dragStartY, setDragStartY] = useState(0);
   // 드래그 중 현재 Y 좌표
-  const [dragCurrentY, setDragCurrentY] = useState(0)
+  const [dragCurrentY, setDragCurrentY] = useState(0);
   // 드래그 중인지 여부
-  const [isDragging, setIsDragging] = useState(false)
+  const [isDragging, setIsDragging] = useState(false);
 
   /**
    * 바텀시트가 열리거나 닫힐 때 실행되는 효과
@@ -83,23 +86,23 @@ export function BottomSheetPassword({
   useEffect(() => {
     if (open) {
       // 바텀시트가 열릴 때 뒷 페이지 스크롤 방지
-      document.body.style.overflow = "hidden"
+      document.body.style.overflow = "hidden";
       // 바텀시트가 새로 열릴 때마다 PIN 초기화
-      setPin("")
+      setPin("");
     } else {
       // 바텀시트가 닫힐 때 스크롤 복원
-      document.body.style.overflow = ""
+      document.body.style.overflow = "";
       // 드래그 상태 초기화
-      setDragStartY(0)
-      setDragCurrentY(0)
-      setIsDragging(false)
+      setDragStartY(0);
+      setDragCurrentY(0);
+      setIsDragging(false);
     }
 
     // 컴포넌트 언마운트 시 스크롤 복원
     return () => {
-      document.body.style.overflow = ""
-    }
-  }, [open])
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   /**
    * 바텀시트의 반투명 배경(backdrop)을 클릭했을 때 닫히도록 하는 이벤트 핸들러입니다.
@@ -108,8 +111,8 @@ export function BottomSheetPassword({
    * @param {React.MouseEvent<HTMLDivElement>} e - 클릭 이벤트 객체
    */
   const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) setOpen(false)
-  }
+    if (e.target === e.currentTarget) setOpen(false);
+  };
 
   /**
    * 터치 시작 이벤트 핸들러
@@ -118,9 +121,9 @@ export function BottomSheetPassword({
    * @param {React.TouchEvent<HTMLDivElement>} e - 터치 이벤트 객체
    */
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    setDragStartY(e.touches[0].clientY)
-    setIsDragging(true)
-  }
+    setDragStartY(e.touches[0].clientY);
+    setIsDragging(true);
+  };
 
   /**
    * 터치 이동 이벤트 핸들러
@@ -130,11 +133,11 @@ export function BottomSheetPassword({
    * @param {React.TouchEvent<HTMLDivElement>} e - 터치 이벤트 객체
    */
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
-    if (!isDragging) return
-    const diff = e.touches[0].clientY - dragStartY
+    if (!isDragging) return;
+    const diff = e.touches[0].clientY - dragStartY;
     // 아래 방향으로만 드래그 가능
-    if (diff > 0) setDragCurrentY(diff)
-  }
+    if (diff > 0) setDragCurrentY(diff);
+  };
 
   /**
    * 터치 종료 이벤트 핸들러
@@ -142,14 +145,14 @@ export function BottomSheetPassword({
    * 그렇지 않으면 원래 위치로 복귀합니다.
    */
   const handleTouchEnd = () => {
-    if (!isDragging) return
+    if (!isDragging) return;
     // 100px 이상 드래그하면 바텀시트 닫기
-    if (dragCurrentY > 100) setOpen(false)
+    if (dragCurrentY > 100) setOpen(false);
     // 드래그 상태 초기화
-    setIsDragging(false)
-    setDragStartY(0)
-    setDragCurrentY(0)
-  }
+    setIsDragging(false);
+    setDragStartY(0);
+    setDragCurrentY(0);
+  };
 
   /**
    * 숫자 버튼 클릭 이벤트 핸들러
@@ -160,39 +163,49 @@ export function BottomSheetPassword({
    */
   const handleNumberClick = (num: string) => {
     if (pin.length < pinLength) {
-      const newPin = pin + num
-      setPin(newPin)
+      const newPin = pin + num;
+      setPin(newPin);
       // 6자리 완성 시 300ms 후 onComplete 실행
       if (newPin.length === pinLength) {
-        setTimeout(() => onComplete(newPin), 300)
+        setTimeout(() => onComplete(newPin), 300);
       }
     }
-  }
+  };
 
   /**
    * 백스페이스 버튼 클릭 이벤트 핸들러
    * 마지막 입력된 숫자 하나를 삭제합니다.
    */
-  const handleDelete = () => setPin(pin.slice(0, -1))
+  const handleDelete = () => setPin(pin.slice(0, -1));
 
   /**
    * 전체삭제 버튼 클릭 이벤트 핸들러
    * 입력된 모든 숫자를 삭제합니다.
    */
-  const handleReset = () => setPin("")
+  const handleReset = () => setPin("");
 
   // 드래그 중일 때 바텀시트를 Y축으로 이동시키는 스타일
-  const sheetStyle = isDragging ? { transform: `translateY(${dragCurrentY}px)`, transition: "none" } : {}
+  const sheetStyle = isDragging
+    ? { transform: `translateY(${dragCurrentY}px)`, transition: "none" }
+    : {};
+
+  // z-index 설정: 하단바를 가릴 경우 z-[60], 아닐 경우 z-50
+  const zIndexClass = shouldOverlayBottomBar ? "z-[60]" : "z-50";
+
+  // 하단 여백 설정: 하단바를 가릴 경우 여백 없음, 아닐 경우 하단바 높이만큼 여백
+  const bottomMarginClass = shouldOverlayBottomBar ? "" : "mb-[86px]";
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex justify-center items-end bg-neutral-1/50 transition-opacity duration-300 ${
-        open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      className={`fixed inset-0 ${zIndexClass} flex justify-center items-end bg-neutral-1/50 transition-opacity duration-300 ${
+        open
+          ? "opacity-100 pointer-events-auto"
+          : "opacity-0 pointer-events-none"
       }`}
       onClick={handleBackdropClick}
     >
       <div
-        className={`w-full max-w-[375px] h-[60vh] relative rounded-t-[24px] bg-neutral-7 pb-[32px] shadow-lg transition-transform duration-300 overflow-hidden ${
+        className={`w-full max-w-[375px] h-[60vh] relative rounded-t-[24px] bg-neutral-7 pb-[32px] ${bottomMarginClass} shadow-lg transition-transform duration-300 overflow-hidden ${
           open ? "translate-y-0" : "translate-y-full"
         }`}
         style={sheetStyle}
@@ -252,19 +265,25 @@ export function BottomSheetPassword({
           </button>
 
           {/* 0 버튼 */}
-          <button onClick={() => handleNumberClick("0")} className="h-[40px] text-head-00 text-neutral-2 rounded-[12px] hover:bg-monochrome-lightgray active:bg-monochrome-gray">
+          <button
+            onClick={() => handleNumberClick("0")}
+            className="h-[40px] text-head-00 text-neutral-2 rounded-[12px] hover:bg-monochrome-lightgray active:bg-monochrome-gray"
+          >
             0
           </button>
 
           {/* 백스페이스 버튼 - 마지막 입력 삭제 */}
-          <button onClick={handleDelete} className="flex items-center justify-center">
+          <button
+            onClick={handleDelete}
+            className="flex items-center justify-center"
+          >
             <ArrowLeft className="w-6 h-6 text-neutral-2" />
           </button>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 // 다른 이름으로도 export하여 호환성 유지
-export const PasswordBottomSheet = BottomSheetPassword
+export const PasswordBottomSheet = BottomSheetPassword;
