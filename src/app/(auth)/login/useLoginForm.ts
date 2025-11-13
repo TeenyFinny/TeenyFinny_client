@@ -122,7 +122,7 @@ export function useLoginForm() {
       setUser(
         user.name,
         user.role.toLowerCase() as "parent" | "child",
-        user.id ?? user.userId ?? undefined, // userId는 optional
+        user.userId ?? user.id, // userId는 optional
         Array.isArray(user.children) && user.children.length > 0
       );
 

@@ -63,14 +63,14 @@ export default function Page() {
           : [];
 
         // Zustand 상태 갱신
-        useUserStore.getState().setUser(
-          userPayload.name ?? "",
-          normalizedRole,
-          (userPayload as any).userId ??
-            (userPayload as any).userId ??
-            undefined, // userId는 optional
-          children.length > 0
-        );
+        useUserStore
+          .getState()
+          .setUser(
+            userPayload.name ?? "",
+            normalizedRole,
+            (userPayload as any).userId,
+            children.length > 0
+          );
 
         if (normalizedRole === "parent") {
           setParentData({
