@@ -1,9 +1,12 @@
+// components/custom/home/parent-dashboard/AddChildCard.tsx
 "use client";
 
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { BottomSheetPassword } from "@/components/ui/bottom-sheet/BottomSheetPassword";
+import api from "@/lib/axios/axios";
+import requests from "@/lib/axios/requests";
 
 /**
  * 자녀 추가 카드 컴포넌트.
@@ -20,17 +23,21 @@ export default function AddChildCard() {
    */
   const handlePasswordComplete = async (simplePassword: string) => {
     try {
-      // TODO: 간편 비밀번호 인증 API 호출
+      const res = await api.post(requests.verifySimplePassword, {
+        simplePassword,
+      });
 
-      // 임시 처리: API가 구현되기 전까지는 인증 없이 바로 이동 (개발용)
-      setIsPasswordModalOpen(false);
-      router.push("/family");
+      if (res.data?.matched === true) {
+        setIsPasswordModalOpen(false);
+        router.push("/family");
+      } else {
+        throw new Error("간편 비밀번호가 일치하지 않습니다.");
+      }
     } catch (err) {
-      // 에러 처리 (API 구현 후 활성화)
-      // 에러 발생 시 모달은 열어둠 (재시도 가능)
       if (process.env.NODE_ENV === "development") {
         console.error("간편 비밀번호 인증 실패:", err);
       }
+      throw new Error("간편 비밀번호 인증에 실패했습니다.");
     }
   };
 
@@ -56,7 +63,9 @@ export default function AddChildCard() {
       {/* 간편 비밀번호 입력 모달 */}
       <BottomSheetPassword
         open={isPasswordModalOpen}
-        setOpen={setIsPasswordModalOpen}
+        setOpen={(open) => {
+          setIsPasswordModalOpen(open);
+        }}
         onComplete={handlePasswordComplete}
         title="간편 비밀번호"
         shouldOverlayBottomBar={true}
