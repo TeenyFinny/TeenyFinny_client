@@ -65,7 +65,7 @@ export default function Step04CardOptions({ onNext }: { onNext?: () => void }) {
               />
             </div>
             {/* 카드 하단 중앙 체크 */}
-            <div className="mt-[8px]">
+            <div className="mt-[8px]" onClick={() => setSelectedCard("bear")}>
               <Image
                 src="/icons/check-circle.png"
                 alt="체크"
@@ -97,7 +97,7 @@ export default function Step04CardOptions({ onNext }: { onNext?: () => void }) {
               />
             </div>
             {/* 카드 하단 중앙 체크 */}
-            <div className="mt-[8px]">
+            <div className="mt-[8px]" onClick={() => setSelectedCard("rabbit")}>
               <Image
                 src="/icons/check-circle.png"
                 alt="체크"
