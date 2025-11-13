@@ -1,7 +1,16 @@
 "use client"
 
-import React, { useState, useRef, useEffect } from "react"
+import React, { useState, useRef } from "react"
 
+/**
+ * ResidentNumberInputProps
+ * @typedef {Object} ResidentNumberInputProps
+ * @property {string} label - 입력 필드 내부에 표시될 라벨 텍스트입니다.
+ * @property {string} front - 주민번호 앞 6자리 값입니다.
+ * @property {string} back - 주민번호 뒤 첫 1자리 값입니다.
+ * @property {(value: string) => void} onFrontChange - 앞자리 변경 콜백입니다.
+ * @property {(value: string) => void} onBackChange - 뒷자리 변경 콜백입니다.
+ */
 interface ResidentNumberInputProps {
   label: string
   front: string
@@ -14,9 +23,10 @@ interface ResidentNumberInputProps {
  * ResidentNumberInput
  *
  * 주민등록번호 입력 컴포넌트
- * - 앞 6자리(생년월일), 뒤 1자리만 입력 가능 (나머지 ●●●●●● 고정 표시)
- * - 숫자만 입력 가능, 자동 포커스 이동
- * - 앞자리 입력 완료 시 뒷자리 입력칸 초기화 후 자동 포커스 이동
+ * - 입력 필드 내부에 라벨이 표시됨
+ * - 앞 6자리, 뒤 1자리 입력 가능 (나머지 ●●●●●● 고정)
+ * - 숫자만 허용, 자동 포커스 이동
+ * - 에러 메시지 고정 영역 포함
  */
 export function ResidentNumberInput({
   label,
@@ -31,36 +41,28 @@ export function ResidentNumberInput({
   /** 앞자리 입력 처리 */
   const handleFrontChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    if (/[^0-9]/.test(value)) {
-      setError(true)
-    } else {
-      setError(false)
-    }
+    if (/[^0-9]/.test(value)) setError(true)
+    else setError(false)
 
     const numeric = value.replace(/[^0-9]/g, "")
     if (numeric.length <= 6) {
       onFrontChange(numeric)
-
-      // ✅ 6자리 완성 시 — 뒷자리 값 초기화 후 포커스 이동
+      // 6자리 완성 시 → 뒷자리 초기화 + 포커스 이동
       if (numeric.length === 6) {
-        onBackChange("") // 이전 입력값 초기화
+        onBackChange("")
         setTimeout(() => backRef.current?.focus(), 0)
       }
     }
   }
 
-  /** 뒷자리 첫 숫자 입력 */
+  /** 뒷자리 입력 처리 */
   const handleBackChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    if (/[^0-9]/.test(value)) {
-      setError(true)
-    } else {
-      setError(false)
-    }
+    if (/[^0-9]/.test(value)) setError(true)
+    else setError(false)
+
     const numeric = value.replace(/[^0-9]/g, "")
-    if (numeric.length <= 1) {
-      onBackChange(numeric)
-    }
+    if (numeric.length <= 1) onBackChange(numeric)
   }
 
   /** 포커스 시 에러 제거 */
@@ -68,56 +70,60 @@ export function ResidentNumberInput({
 
   return (
     <div className="flex flex-col gap-[4px]">
-      {/* 라벨 */}
-      <label className="text-body-03 text-neutral-2">{label}</label>
-
-      {/* 입력 박스 */}
+      {/* 입력 영역 */}
       <div
-        className="flex items-center justify-start w-[320px] h-[64px] px-[16px]
-        bg-neutral-7 rounded-[6px] shadow-[0_8px_24px_-6px_rgba(0,0,0,0.04)]
-        text-body-01 text-neutral-1 focus-within:ring-2 focus-within:ring-primary-1 relative"
+        className="w-[320px] h-[64px] rounded-[6px] shadow-[0_8px_24px_-6px_rgba(0,0,0,0.04)]
+          pt-[11px] pb-[11px] flex flex-col justify-start transition-shadow
+          bg-neutral-7 focus-within:ring-2 focus-within:ring-primary-1 relative px-[16px]"
       >
-        {/* 앞자리 입력 */}
-        <input
-          type="text"
-          inputMode="numeric"
-          pattern="[0-9]*"
-          maxLength={6}
-          value={front}
-          onChange={handleFrontChange}
-          onFocus={handleFocus}
-          placeholder="010101"
-          className="w-[90px] text-neutral-1 placeholder:text-neutral-2 text-body-04
-            focus:outline-none bg-transparent"
-        />
+        {/* 내부 라벨 */}
+        <label className="whitespace-pre-line text-body-08 leading-[14px] tracking-[-0.6px] text-neutral-3 mb-[9px]">
+          {label}
+        </label>
 
-        {/* 구분선 */}
-        <span className="mx-[21px] text-neutral-1 text-body-4">-</span>
-
-        {/* 뒷자리 입력 */}
-        <div className="flex items-center w-full">
+        {/* 주민번호 입력 */}
+        <div className="flex items-center">
+          {/* 앞자리 입력 */}
           <input
-            ref={backRef}
             type="text"
             inputMode="numeric"
-            maxLength={1}
-            value={back}
-            onChange={handleBackChange}
+            maxLength={6}
+            value={front}
+            onChange={handleFrontChange}
             onFocus={handleFocus}
-            placeholder="_"
-            className="w-[16px] text-neutral-1 placeholder:text-neutral-2 text-body-04
-              focus:outline-none bg-transparent"
+            placeholder="앞 6자리"
+            className="w-[90px] text-body-04 text-neutral-1 placeholder:text-neutral-3
+              bg-transparent border-0 outline-none"
           />
-          <span className="ml-[2px] text-neutral-1 tracking-[2px] select-none">
-            ●●●●●●
-          </span>
+
+          {/* 구분선 */}
+          <span className="mx-[21px] text-neutral-1 text-body-04">-</span>
+
+          {/* 뒷자리 입력 */}
+          <div className="flex items-center w-full">
+            <input
+              ref={backRef}
+              type="text"
+              inputMode="numeric"
+              maxLength={1}
+              value={back}
+              onChange={handleBackChange}
+              onFocus={handleFocus}
+              placeholder="_"
+              className="w-[16px] text-neutral-1 placeholder:text-neutral-3 text-body-04
+                bg-transparent border-0 outline-none"
+            />
+            <span className="text-neutral-1 tracking-[2px] select-none">
+              ●●●●●●
+            </span>
+          </div>
         </div>
       </div>
-        {/* 🚨 내부 고정 에러 메시지 (레이아웃 유지됨) */}
-      <div className="h-[16px] mt-[4px]">
+
+      {/* 에러 메시지 (고정 높이 유지) */}
+      <div className="h-[20px] mt-[4px]">
         {error && <p className="text-error text-body-03">숫자만 입력하세요.</p>}
       </div>
-
     </div>
   )
 }

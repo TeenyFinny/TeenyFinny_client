@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useState } from "react"
-import { NormalInput } from "../../ui/input/NormalInput"
+import { NormalInput2 } from "@/components/ui/input/NormalInput2"
 
 /**
  * NameInputProps
@@ -50,7 +50,7 @@ export default function NameInput({ value, onChange }: NameInputProps) {
     <div className="flex flex-col gap-[4px]">
       {/* 입력 박스 */}
       <div className="">
-        <NormalInput
+        <NormalInput2
           label="이름"
           value={value}
           placeholder="홍길동"
