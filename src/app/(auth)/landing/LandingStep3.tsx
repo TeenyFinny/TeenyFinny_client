@@ -17,10 +17,10 @@ export default function LandingStep3() {
     <div className="flex flex-col items-center mt-[36px] text-center">
       {/* 텍스트 */}
       <p className="text-center">
-        <span className="text-head-00 font-bold text-[var(--color-primary-1)]">한 번의 송금</span>
-        <span className="text-head-03 font-bold text-[var(--color-neutral-1)]">으로</span>
+        <span className="text-head-00 font-bold text-primary-1">한 번의 송금</span>
+        <span className="text-head-03 font-bold text-neutral-1">으로</span>
         <br />
-        <span className="text-head-03 font-bold text-[var(--color-neutral-1)]">용돈과 투자금을 자동 분리해요</span>
+        <span className="text-head-03 font-bold text-neutral-1">용돈과 투자금을 자동 분리해요</span>
       </p>
 
       {/* 이미지 1: 텍스트와 35px 간격 */}

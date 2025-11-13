@@ -16,12 +16,12 @@ export default function LandingStep4() {
   return (
     <div className="relative w-full flex flex-col items-center mt-[114px] text-center">
       <p className="text-center">
-        <span className="text-landing-01 font-bold text-[var(--color-neutral-1)]">모두가 </span>
+        <span className="text-landing-01 font-bold text-neutral-1)]">모두가 </span>
         <br />
-        <span className="text-landing-01 font-bold text-[var(--color-primary-1)]">워렌버핏</span>
-        <span className="text-landing-01 font-bold text-[var(--color-neutral-1)]">이 </span>
+        <span className="text-landing-01 font-bold text-primary-1">워렌버핏</span>
+        <span className="text-landing-01 font-bold text-neutral-1">이 </span>
         <br />
-        <span className="text-landing-01 font-bold text-[var(--color-neutral-1)]">되는 세상</span>
+        <span className="text-landing-01 font-bold text-neutral-1">되는 세상</span>
       </p>
 
       {/* 중앙 이미지 */}

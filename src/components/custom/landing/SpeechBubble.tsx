@@ -4,52 +4,67 @@ import React from "react";
 
 interface SpeechBubbleProps {
   text: string;
-  bgColor?: string;
-  textColor?: string;
-  /** 꼬리 위치: left 또는 right. 기본은 center */
+  /** 배경색: 'blue' | 'gray' | 'skyblue' */
+  bgColor?: "blue" | "gray" | "skyblue";
+  /** 글자색: 'blue' | 'gray' | 'skyblue' | 'black' */
+  textColor?: "blue" | "gray" | "skyblue" | "black" | "white";
+  /** 꼬리 위치: left, right, center */
   tailPosition?: "left" | "right" | "center";
 }
 
 /**
  * SpeechBubble
  *
- * 말풍선 형태의 UI 컴포넌트
+ * Tailwind 기반 말풍선 UI 컴포넌트
  * - 기본 크기: 230 x 64
- * - 배경색, 텍스트 색, 텍스트 내용 커스터마이징 가능
- * - 꼬리 위치: 왼쪽, 오른쪽, 중앙 가능
+ * - Tailwind 색상 키워드로 배경색/글자색 적용
+ * - 꼬리 위치 선택 가능
  */
 export default function SpeechBubble({
   text,
-  bgColor = "var(--color-primary-4)",
-  textColor = "var(--color-neutral-1)",
+  bgColor = "blue",
+  textColor = "gray",
   tailPosition = "center",
 }: SpeechBubbleProps) {
-  /** 꼬리 위치에 따른 클래스 계산 */
-  let tailClass = "absolute bottom-[-8px] w-0 h-0";
+  /** Tailwind 배경색 매핑 */
+  const bgClassMap: Record<string, string> = {
+    blue: "bg-primary-1",
+    gray: "bg-monochrome-gray",
+    skyblue: "bg-primary-4",
+  };
+
+  /** Tailwind 글자색 매핑 */
+  const textClassMap: Record<string, string> = {
+    blue: "text-primary-1",
+    gray: "text-neutral-1",
+    skyblue: "text-primary-4",
+    black: "text-black",
+    white: "text-white",
+  };
+
+  /** 꼬리 위치 클래스 */
+  let tailPosClass = "absolute bottom-[-8px] w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent";
   if (tailPosition === "center") {
-    tailClass += " left-1/2 -translate-x-1/2";
+    tailPosClass += " left-1/2 -translate-x-1/2";
   } else if (tailPosition === "left") {
-    tailClass += " left-[16px] translate-x-0";
+    tailPosClass += " left-[16px]";
   } else if (tailPosition === "right") {
-    tailClass += " right-[16px] translate-x-0";
+    tailPosClass += " right-[16px]";
   }
 
+  /** Tailwind 꼬리 색 클래스 */
+  const tailColorClassMap: Record<string, string> = {
+    blue: "border-t-primary-1",
+    gray: "border-t-monochrome-gray",
+    skyblue: "border-t-primary-4",
+  };
+
   return (
-    <div
-      className="relative flex items-center justify-center w-[230px] h-[64px] rounded-[16px] px-4 text-center"
-      style={{ backgroundColor: bgColor, color: textColor }}
-    >
-      <p className="text-body-04 font-medium">{text}</p>
+    <div className={`relative flex items-center justify-center w-[230px] h-[64px] rounded-[16px] px-4 text-center ${bgClassMap[bgColor]}`}>
+      <p className={`text-body-04 font-medium ${textClassMap[textColor]}`}>{text}</p>
 
       {/* 꼬리 */}
-      <div
-        className={tailClass}
-        style={{
-          borderLeft: "8px solid transparent",
-          borderRight: "8px solid transparent",
-          borderTop: `9px solid ${bgColor}`,
-        }}
-      />
+      <div className={`${tailPosClass} ${tailColorClassMap[bgColor]} border-t-[9px]`} />
     </div>
   );
 }

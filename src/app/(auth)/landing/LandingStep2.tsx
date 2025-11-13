@@ -14,9 +14,9 @@ import Image from "next/image";
 export default function LandingStep2() {
     return (
         <div className="flex flex-col items-center mt-[36px] text-center">
-            <p className="text-[var(--color-neutral-1)] text-head-03 font-bold">스스로 목표를 정해</p>
-            <p className="text-[var(--color-neutral-1)] text-head-00 font-bold">
-                <span className="text-[var(--color-primary-1)]">올바른 소비 습관을 형성</span>해요
+            <p className="text-neutral-1 text-head-03 font-bold">스스로 목표를 정해</p>
+            <p className="text-neutral-1 text-head-00 font-bold">
+                <span className="text-primary-1">올바른 소비 습관을 형성</span>해요
             </p>
             {/* 이미지 1: 텍스트와 15px 간격 */}
             <div className="mt-[15px]">

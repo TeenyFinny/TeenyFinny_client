@@ -23,8 +23,8 @@ export default function LandingProgressBar({ current, total }: LandingProgressBa
           key={step}
           className={`h-[4px] w-[66px] rounded-full transition-colors duration-300 ${
             current === step
-              ? "bg-[var(--color-primary-1)]"
-              : "bg-[var(--color-neutral-3)]"
+              ? "bg-primary-1"
+              : "bg-neutral-3"
           }`}
         />
       ))}

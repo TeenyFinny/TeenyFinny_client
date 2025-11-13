@@ -16,20 +16,20 @@ export default function LandingStep1() {
   return (
     <div className="flex flex-col items-center w-[375px] mt-[36px] text-center">
   {/* 윗부분 텍스트 */}
-  <p className="text-head-03 font-bold text-[var(--color-neutral-1)]">
+  <p className="text-head-03 font-bold text-neutral-1">
     아이 금융 교육 막막하셨나요?
   </p>
 
   {/* 아랫부분 텍스트 */}
-  <p className="text-head-00 font-bold text-[var(--color-neutral-1)]">
-    <span className="text-[var(--color-primary-1)]">티니피니</span>가 대신 알려줄게요
+  <p className="text-head-00 font-bold text-neutral-1">
+    <span className="text-primary-1">티니피니</span>가 대신 알려줄게요
   </p>
 
   {/* 말풍선 1 */}
   <div className="self-start ml-[53px] mt-[25px]">
     <SpeechBubble
       text="엄마 주식이 뭐에요?"
-      bgColor="var(--color-monochrome-gray)"
+      bgColor="gray"
       textColor="black"
       tailPosition="right"
     />
@@ -50,8 +50,8 @@ export default function LandingStep1() {
   <div className="self-start ml-[103px] mt-[17px]">
     <SpeechBubble
       text="어디서부터 설명을 해 줘야 하지..."
-      bgColor="var(--color-primary-1)"
-      textColor="var(--color-primary-4)"
+      bgColor="blue"
+      textColor="white"
       tailPosition="left"
     />
   </div>
