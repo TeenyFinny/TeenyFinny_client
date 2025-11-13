@@ -5,8 +5,9 @@ import api from "@/lib/axios/axios";
 
 import requests from "@/lib/axios/requests"
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { BottomSheetBuyStock } from "@/components/ui/bottom-sheet/BottomSheetBuyStock";
+import { BottomSheetSellStock } from "@/components/ui/bottom-sheet/BottomSheetSellStock";
 
 
 interface StockDetail {
@@ -19,10 +20,17 @@ interface StockDetail {
 
 export default function Page() {
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+
+  // "mode" 값 받아오기 ("buy" or "sell")
+  const mode = searchParams.get("mode") ?? "buy";
+
+
   const [stocks, setStocks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [selectedStock, setSelectedStock] = useState<StockDetail | null>(null)
+  const [selectedStock, setSelectedStock] = useState<StockDetail | null>(null);
 
   useEffect(() => {
 
@@ -80,6 +88,30 @@ export default function Page() {
     }
   }
 
+   // 매도 API 요청 함수 (axios POST)
+  const handleSellStock = async (quantity: number, totalPrice: number) => {
+    if (!selectedStock) return;
+
+    try {
+      const sellData = {
+        stockId: selectedStock.id,
+        prdtName: selectedStock.prdt_name,
+        pricePerStock: Number(String(selectedStock.price).replace(/,/g, "")),
+        quantity,
+        totalPrice,
+      };
+
+      const res = await api.post(requests.sellStock, sellData);
+      alert(`${selectedStock.prdt_name} ${quantity}주 판매 완료!\n총액: ${totalPrice.toLocaleString()}원`);
+      console.log("판매 결과:", res.data);
+
+      setOpen(false);
+    } catch (e) {
+      const err = e as HttpError;
+      alert(`매도 요청 실패: ${err.message}`);
+      console.error(err);
+    }
+  };
   
   return (
     <div className="w-full bg-primary-4 pb-20">
@@ -89,15 +121,30 @@ export default function Page() {
       </div>
       <StockList stocks={stocks} 
                   onClickBtn={handleStockDetail} 
-                  btnLab="사기" 
+                  btnLab={mode === "buy" ? "사기" : "팔기"}
                   onClickRow={(id) => {
                     router.push(`/invest/stockDetail?id=${id}`)
                   }}
                   />
 
 
-      {/* 바텀시트 컴포넌트 */}
-      {selectedStock && (
+      {/* 팔기 바텀시트 컴포넌트 */}
+      {selectedStock && mode === "sell" && (
+        <BottomSheetSellStock
+          open={open}
+          setOpen={setOpen}
+          price={Number(String(selectedStock.price).replace(/,/g, ""))}
+          maxQuantity={selectedStock.maxQuantity}
+          onConfirm={(quantity, totalPrice) => {
+            alert(`${quantity}주 판매 (${totalPrice}원)`);
+            setOpen(false)
+          }}
+          onCancel={() => setOpen(false)}
+        />
+      )}
+
+      {/* 사기 바텀시트 컴포넌트 */}
+      {selectedStock && mode === "buy" && (
         <BottomSheetBuyStock
           open={open}
           setOpen={setOpen}

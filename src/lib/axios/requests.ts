@@ -13,6 +13,7 @@ const requests = {
   dashMyStockList: `/invest/myStockList`,
   fetchGoalConfirm: `/goal/account/create/confirm`,
   stockDetail: `/invest/stockDetail`,
+  sellStock: `/invest/sellStock`,
 };
 
 export default requests;
