@@ -16,9 +16,10 @@ interface ParentDashboardState {
 
 interface HomeApiResponse {
   user: {
-    name?: string;
-    role?: string;
-    email?: string;
+    userId: number;
+    name: string;
+    role: string;
+    email: string;
     balance?: number;
     children?: ChildSummary[];
   };
@@ -55,7 +56,7 @@ export default function Page() {
         // 자녀 목록 추출
         const children: ChildSummary[] = Array.isArray(userPayload.children)
           ? userPayload.children.map((child) => ({
-              id: Number(child.id ?? 0),
+              userId: Number(child.userId ?? 0),
               name: child.name ?? "",
               balance: Number(child.balance ?? 0),
             }))
@@ -64,7 +65,12 @@ export default function Page() {
         // Zustand 상태 갱신
         useUserStore
           .getState()
-          .setUser(userPayload.name ?? "", normalizedRole, children.length > 0);
+          .setUser(
+            userPayload.name ?? "",
+            normalizedRole,
+            (userPayload as any).userId,
+            children.length > 0
+          );
 
         if (normalizedRole === "parent") {
           setParentData({
