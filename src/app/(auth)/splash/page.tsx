@@ -9,7 +9,7 @@ import Image from "next/image";
  *
  * 스플래시 화면
  * - 중앙에 텍스트 + 이미지
- * - 1초 후 자동으로 /landing 페이지로 이동
+ * - 1.5초 후 자동으로 /landing 페이지로 이동
  */
 export default function SplashPage() {
     const router = useRouter();
@@ -34,8 +34,8 @@ export default function SplashPage() {
                 <Image
                     src="/logos/202X135.png" // 실제 이미지 경로
                     alt="Splash Logo"
-                    width={200}
-                    height={200}
+                    width={202}
+                    height={135}
                     priority
                 />
             </div>
