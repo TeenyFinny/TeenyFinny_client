@@ -6,12 +6,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import api from "@/lib/axios/axios";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { BottomSheetBuyStock } from "@/components/ui/bottom-sheet/BottomSheetBuyStock";
+import { BottomSheetSellStock } from "@/components/ui/bottom-sheet/BottomSheetSellStock";
+import { createTradeOrder } from "@/lib/api/tradeOrder";
 
 
 export default function Page(){
   const router = useRouter();
   const params = useSearchParams();
   const stockId = params.get("id");
+  const mode = params.get("mode");
 
   const [stock, setStock] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -56,6 +59,33 @@ export default function Page(){
     );
   }
 
+  /** 주문 공통 처리 (BUY / SELL) */
+    const handleTradeOrder = async (quantity: number, totalPrice?: number) => {
+      if (!stock) return
+  
+      const type = mode === "BUY" ? "BUY" : "SELL";
+      const price = stock.price;
+  
+      try {
+        const res = await createTradeOrder(
+          stock.id,
+          stock.prdt_name,
+          price,
+          quantity,
+          type
+        )
+  
+        alert(`${stock.prdt_name} ${quantity}주 ${mode === "BUY" ? "매수" : "매도"} 완료!`)
+        console.log(`${type} 주문 결과:`, res)
+      } catch (e) {
+        console.error(`${mode} 주문 실패:`, e)
+        alert("주문 실패")
+      } finally {
+        setOpen(false)
+      }
+    }
+
+
   return (
     <div>
       {/* Main Content */}
@@ -99,23 +129,34 @@ export default function Page(){
 
         {/* Buy Button */}
         <div className="mt-1">
-          <BigButtonActivated label="주식 사기" onClick={() => setOpen(true)} />
+          <BigButtonActivated label={mode === "BUY" ? "주식 사기" : "주식 팔기"} onClick={() => setOpen(true)} />
         </div>
       </main>
 
+      {/* 팔기 바텀시트 컴포넌트 */}
+      {stock && mode === "SELL" && (
+        <BottomSheetSellStock
+          open={open}
+          setOpen={setOpen}
+          price={Number(String(stock.price).replace(/,/g, ""))}
+          maxQuantity={stock.maxQuantity}
+          onConfirm={handleTradeOrder}
+          onCancel={() => setOpen(false)}
+        />
+      )}
+
       {/* 바텀시트 컴포넌트 */}
-      <BottomSheetBuyStock
-        open={open}
-        setOpen={setOpen}
-        price={Number(String(stock.price).replace(/,/g, ""))}
-        availableStocks={Number(String(stock.availableStocks).replace(/,/g, ""))}
-        maxQuantity={stock.maxQuantity}
-        onConfirm={(quantity) => {
-          console.log(`${stock.name} ${quantity}주 매수)`)
-          setOpen(false)
-        }}
-        onCancel={() => setOpen(false)}
-      />
+      {stock && mode === "BUY" && (
+        <BottomSheetBuyStock
+          open={open}
+          setOpen={setOpen}
+          price={Number(String(stock.price).replace(/,/g, ""))}
+          availableStocks={Number(String(stock.availableStocks).replace(/,/g, ""))}
+          maxQuantity={stock.maxQuantity}
+          onConfirm={handleTradeOrder}
+          onCancel={() => setOpen(false)}
+        />
+        )}
 
     </div>
   )

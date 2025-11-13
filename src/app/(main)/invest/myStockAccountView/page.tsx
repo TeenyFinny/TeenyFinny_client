@@ -8,6 +8,7 @@ import requests from "@/lib/axios/requests"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation";
 import { BottomSheetSellStock } from "@/components/ui/bottom-sheet/BottomSheetSellStock";
+import { createTradeOrder } from "@/lib/api/tradeOrder";
 
 interface StockDetail {
   id: string
@@ -56,9 +57,31 @@ export default function Page() {
     })();
   }, [router]);
 
-  const handleSell = (stockId: string) => {
-    console.log("Selling stock:", stockId)
-  }
+  /** 주문 공통 처리 (SELL) */
+    const handleTradeOrder = async (quantity: number, totalPrice?: number) => {
+      if (!selectedStock) return
+  
+      const type = "SELL";
+      const price = selectedStock.price;
+  
+      try {
+        const res = await createTradeOrder(
+          selectedStock.id,
+          selectedStock.prdt_name,
+          price,
+          quantity,
+          type
+        )
+  
+        alert(`${selectedStock.prdt_name} ${quantity}주 매도 완료!`)
+        console.log(`${type} 주문 결과:`, res)
+      } catch (e) {
+        console.error(`SELL 주문 실패:`, e)
+        alert("주문 실패")
+      } finally {
+        setOpen(false)
+      }
+    }
 
   if (loading) {
     return (
@@ -105,7 +128,13 @@ export default function Page() {
         <h2 className="text-head-06 text-neutral-2 px-4 pt-12 self-start">
           내가 산 주식
         </h2>
-        <StockList stocks={stocks} onClickBtn={handleStockDetail} btnLab="팔기"/>
+        <StockList stocks={stocks} 
+        onClickBtn={handleStockDetail} 
+        btnLab="팔기"
+        onClickRow={(id) => {
+                    router.push(`/invest/stockDetail?id=${id}&mode=SELL`);
+                  }}
+                  />
       </div>
 
       {/* 팔기 바텀시트 컴포넌트 */}
@@ -115,10 +144,7 @@ export default function Page() {
           setOpen={setOpen}
           price={Number(String(selectedStock.price).replace(/,/g, ""))}
           maxQuantity={selectedStock.maxQuantity}
-          onConfirm={(quantity, totalPrice) => {
-            alert(`${quantity}주 판매 (${totalPrice}원)`);
-            setOpen(false)
-          }}
+          onConfirm={handleTradeOrder}
           onCancel={() => setOpen(false)}
         />
       )}
