@@ -4,7 +4,7 @@
 import HeaderbarWrapper from "@/components/layout/headerbar/HeaderbarWrapper";
 import React from "react";
 import { RegisterStepProvider, useRegisterStep } from "./useRgisterStep";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useRegisterStore } from "@/store/registerStore";
 
 /**
@@ -57,19 +57,29 @@ function SignupLayoutShell({
   children: React.ReactNode;
 }>) {
   const router = useRouter();
+  const pathname = usePathname();
   const { step, prev } = useRegisterStep();
   const { reset } = useRegisterStore();
 
   /** 단계별 진행률 퍼센트 값 */
   const PROGRESS_STEPS = [10, 20, 40, 60, 80, 100] as const;
-  const progressWidth =
-    PROGRESS_STEPS[Math.min(step - 1, PROGRESS_STEPS.length - 1)];
+  const progressWidth = (() => {
+    if (pathname?.includes("/signup/complete")) return 100;
+    if (step === 5 || step === 6) return 80; // 간편 비밀번호 안내 & 간편 비밀번호 입력 단계는 고정
+    return PROGRESS_STEPS[Math.min(step - 1, PROGRESS_STEPS.length - 1)];
+  })();
 
   return (
     <div className="mx-auto flex h-full w-full max-w-[375px] flex-col bg-primary-4">
       {/* 상단 헤더 (뒤로가기 버튼 포함) */}
       <HeaderbarWrapper
         onBack={() => {
+          if (pathname?.includes("/signup/complete")) {
+            reset();
+            router.push("/login");
+            return;
+          }
+          
           if (step > 1) {
             prev();
             return;
