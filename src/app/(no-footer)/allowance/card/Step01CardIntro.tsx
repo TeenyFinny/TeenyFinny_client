@@ -4,41 +4,37 @@ import Image from "next/image"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 
 /**
- * Page
+ * 카드 상품 소개 페이지 컴포넌트입니다.
  *
- * WON 계좌 개설 시작 페이지 컴포넌트입니다.
+ * 카드 발급 절차의 첫 번째 단계로, 사용자에게 카드 발급의 이점을 안내합니다.
  *
  * ### 특징
- * - 계좌 개설 전 안내 화면을 표시합니다.
- * - "개설하기" 버튼 클릭 시 step2 페이지로 라우팅됩니다.
- * - 일러스트를 통해 친근한 UX를 제공합니다.
+ * - 카드 발급 전 안내 화면을 표시합니다.
+ * - "발급하기" 버튼 클릭 시 `onNext` 콜백을 호출하여 다음 단계로 진행합니다.
+ * - 일러스트를 통해 사용자에게 친근한 경험을 제공합니다.
  *
  * ### 시각적 구성
- * - 상단: "WON" 로고 텍스트 (파란색, #0067ac)
- * - 제목: "통장으로 금융의 첫 걸음 시작!" (검정색)
- * - 부제: "계좌를 만들기만 해도\n수수료 면제" (회색)
- * - 중앙: 토끼와 코인 일러스트 이미지
- * - 하단 안내: "자녀가 보유한 계좌가 없습니다." (회색)
- * - 하단 버튼: "개설하기" (파란색 배경, 흰색 텍스트)
+ * - 상단: "TeenyFinny" 로고
+ * - 제목: "카드로 금융의 첫 걸음 시작!"
+ * - 부제: "카드를 만들기만 해도\n수수료 면제"
+ * - 중앙: 카드 발급을 나타내는 일러스트 이미지
+ * - 하단 버튼: "발급하기"
  *
- * @component
- * @returns {React.ReactElement} 계좌 개설 시작 페이지
+ * @param {Step1IntroProps} props - 컴포넌트에 전달되는 props입니다.
+ * @returns {React.ReactElement} 카드 상품 소개 페이지 UI
  *
  * @example
- * \`\`\`tsx
- * // app/page.tsx에서 직접 사용
- * export default function Page() {
- *   return <Page />
- * }
- * \`\`\`
+ * ```tsx
+ * <Step01CardIntro onNext={() => setStep(2)} />
+ * ```
  */
 
-interface Step1IntroProps {
+interface Step1CardIntroProps {
   onNext: () => void // 이게 핵심
 }
-export default function Step01CardIntro({ onNext }: Step1IntroProps) {
+export default function Step01CardIntro({ onNext }: Step1CardIntroProps) {
   /**
-   * 개설하기 버튼 클릭 시 step2 페이지로 이동하는 핸들러입니다.
+   * 발급하기 버튼 클릭 시 step2 페이지로 이동하는 핸들러입니다.
    */
 
   return (
