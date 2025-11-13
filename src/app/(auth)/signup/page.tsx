@@ -34,7 +34,6 @@ export default function RegisterPage() {
   /** 회원가입 POST 요청 */
   const handleSignup = async (simplePassword: string) => {
     try {
-
       // 요청 payload
       const payload = {
         email: form.email,
@@ -44,11 +43,18 @@ export default function RegisterPage() {
         simplePassword: simplePassword,
         birthDate: form.birthDate,
         gender: form.gender,
-        phoneNumber: form.phoneNumber        
-      }
+        phoneNumber: form.phoneNumber,
+      };
 
       const res = await api.post(requests.signup, payload);
       if (res?.data?.email && res?.data?.role) {
+        // 완료 페이지에서 사용할 role을 sessionStorage에 저장
+        if (globalThis.window !== undefined && form.role) {
+          globalThis.window.sessionStorage.setItem(
+            "signup-complete-role",
+            form.role
+          );
+        }
         reset();
         router.push("/signup/complete");
       } else {

@@ -3,9 +3,25 @@
 import Image from "next/image";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function SignupCompletePage() {
   const router = useRouter();
+  const [role, setRole] = useState<"PARENT" | "CHILD" | null>(null);
+
+  useEffect(() => {
+    // sessionStorage에서 role 읽기
+    if (globalThis.window !== undefined) {
+      const savedRole = globalThis.window.sessionStorage.getItem(
+        "signup-complete-role"
+      ) as "PARENT" | "CHILD" | null;
+      if (savedRole) {
+        setRole(savedRole);
+        // 사용 후 sessionStorage에서 제거
+        globalThis.window.sessionStorage.removeItem("signup-complete-role");
+      }
+    }
+  }, []);
 
   return (
     <main className="px-6 flex flex-col items-center">
@@ -42,10 +58,17 @@ export default function SignupCompletePage() {
 
       {/* 하단 버튼 */}
       <div className="fixed bottom-[56px] w-full max-w-[327px]">
-        <BigButtonActivated
-          label="내 계좌 불러오기"
-          onClick={() => router.push("/home")} // TODO: 계좌 연동 페이지로 이동
-        />
+        {role === "PARENT" ? (
+          <BigButtonActivated
+            label="내 계좌 불러오기"
+            onClick={() => router.push("/home")} // TODO: 계좌 연동 페이지로 이동
+          />
+        ) : (
+          <BigButtonActivated
+            label="가족 등록하기"
+            onClick={() => {}} // TODO: 가족 등록 페이지로 이동
+          />
+        )}
       </div>
     </main>
   );
