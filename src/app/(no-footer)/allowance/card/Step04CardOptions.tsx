@@ -242,7 +242,7 @@ export default function Step04CardOptions({ onNext }: { onNext: () => void }) {
               open={isPasswordSheetOpen}
               setOpen={setIsPasswordSheetOpen}
               pinLength={4}
-              title="결제 비밀번호 설정"
+              title="카드 비밀번호"
               onComplete={handlePasswordComplete}
               shouldOverlayBottomBar={true}
             />
