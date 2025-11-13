@@ -145,7 +145,7 @@ export function PhoneNumberInput({
           {/* 드롭다운 */}
           {open && (
             <div
-              className="absolute top-[60px] left-0 w-[100px] bg-white border
+              className="absolute top-[60px] left-0 w-[110px] bg-white border
               rounded-[10px] shadow-[0_8px_24px_-6px_rgba(0,0,0,0.08)] z-10 overflow-hidden"
             >
               {carriers.map((item) => (
