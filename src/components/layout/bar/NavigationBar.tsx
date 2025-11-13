@@ -30,7 +30,7 @@ interface NavigationBarProps {
  * ### 사용 가이드
  * - 각 navItem에 `activePaths` 배열을 넣어주세요.
  * - `pathname.startsWith()`를 사용하므로, 하위 페이지 경로도 자동으로 포함됩니다.
- * - 예: `/quiz` 아이콘을 하이라이트하려면 `activePaths: ["/quiz", "/answer"]` 처럼 작성
+ * - 예: `/quiz` 아이콘을 하이라이트하려면 `activePaths: ["/quiz"]` 처럼 작성
  *
  * @param props NavigationBarProps
  * @returns React.ReactElement | null
@@ -57,7 +57,7 @@ export function NavigationBar({
       path: "/account",
       label: "아이관리",
       iconPath: "/icons/child-management.png",
-      activePaths: ["/account"], // 필요시 /account/* 형태도 추가 가능
+      activePaths: ["/account"],
     },
     {
       path: "/profile",
@@ -79,7 +79,7 @@ export function NavigationBar({
       path: "/quiz",
       label: "퀴즈",
       iconPath: "/icons/quiz.png",
-      activePaths: ["/quiz", "/answer"], // /quiz/*와 /answer/* 포함
+      activePaths: ["/quiz"], // /quiz/*= 포함
     },
     {
       path: "/invest",
