@@ -189,6 +189,7 @@ export default function Step07ChildInfoInput({ onNext }: { onNext: () => void })
         pinLength={4}
         title="결제 비밀번호 설정"
         onComplete={handlePasswordComplete}
+        shouldOverlayBottomBar={true}
       />
     </div>
   )
