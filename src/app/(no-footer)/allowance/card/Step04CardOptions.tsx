@@ -5,6 +5,7 @@ import Image from "next/image";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled";
 import { NormalInput2 } from "@/components/ui/input/NormalInput2";
+import { BottomSheetPassword } from "@/components/ui/bottom-sheet/BottomSheetPassword";
 
 /**
  * Step04CardOptions
@@ -37,11 +38,15 @@ import { NormalInput2 } from "@/components/ui/input/NormalInput2";
  * <Step04CardOptions onNext={() => setStep(5)} />
  * ```
  */
-export default function Step04CardOptions({ onNext }: { onNext?: () => void }) {
+export default function Step04CardOptions({ onNext }: { onNext: () => void }) {
   const [selectedCard, setSelectedCard] = useState<"bear" | "rabbit">("bear");
   const [englishName, setEnglishName] = useState("");
   const [nameError, setNameError] = useState("");
   const [useTransitCard, setUseTransitCard] = useState<"yes" | "no">("yes");
+
+  // 비밀번호 설정 바텀시트 상태
+  const [isPasswordSheetOpen, setIsPasswordSheetOpen] = useState(false)
+
 
   /** 영문 이름 입력 검증 */
   const handleNameChange = (value: string) => {
@@ -60,8 +65,14 @@ export default function Step04CardOptions({ onNext }: { onNext?: () => void }) {
 
   /** 다음 단계로 이동 */
   const handleNext = () => {
-    if (isButtonEnabled && onNext) onNext();
+    setIsPasswordSheetOpen(true)
   };
+
+  /** 비밀번호 입력 완료 시 다음 단계 이동 */
+  const handlePasswordComplete = (password: string) => {
+    setIsPasswordSheetOpen(false)
+    onNext()
+  }
 
   return (
     <div className="flex flex-col px-[24px]">
@@ -225,6 +236,16 @@ export default function Step04CardOptions({ onNext }: { onNext?: () => void }) {
           <BigButtonDisabled label="다음" onClick={() => {}} />
         )}
       </div>
+
+      {/* 비밀번호 바텀시트 (한 번만 설정) */}
+            <BottomSheetPassword
+              open={isPasswordSheetOpen}
+              setOpen={setIsPasswordSheetOpen}
+              pinLength={4}
+              title="결제 비밀번호 설정"
+              onComplete={handlePasswordComplete}
+              shouldOverlayBottomBar={true}
+            />
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { useState } from "react";
 import Step01CardIntro from "./Step01CardIntro";
 import Step02CardAuthAgreement from "./Step02CardAuthAgreement";
 import Step03CardAuth from "./Step03CardAuth";
-import Step04CardOptions from "./Step04Options";
+import Step04CardOptions from "./Step04CardOptions";
 export default function Page() {
   const [step, setStep] = useState(1);
   return (
