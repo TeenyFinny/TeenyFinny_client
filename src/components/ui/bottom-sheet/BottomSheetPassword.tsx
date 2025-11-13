@@ -10,13 +10,13 @@ import { ArrowLeft, X } from "lucide-react";
  * @typedef {Object} BottomSheetPasswordProps
  * @property {boolean} open - 바텀시트의 열림 여부를 제어합니다. `true`일 때 바텀시트가 표시됩니다.
  * @property {(open: boolean) => void} setOpen - 바텀시트의 열림 상태를 변경하는 setter 함수입니다.
- * @property {(pin: string) => void} onComplete - 6자리 비밀번호 입력 완료 시 실행될 콜백 함수입니다.
+ * @property {(pin: string) => Promise<void> | void} onComplete - 6자리 비밀번호 입력 완료 시 실행될 콜백 함수입니다.
  * @property {boolean} [shouldOverlayBottomBar] - 하단바를 가릴지 여부. `true`일 때 하단바 위에 표시됩니다. 기본값: `false`
  */
 interface BottomSheetPasswordProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  onComplete: (pin: string) => void;
+  onComplete: (pin: string) => Promise<void> | void;
   pinLength?: number;
   title?: string;
   shouldOverlayBottomBar?: boolean;
@@ -77,6 +77,8 @@ export function BottomSheetPassword({
   const [dragCurrentY, setDragCurrentY] = useState(0);
   // 드래그 중인지 여부
   const [isDragging, setIsDragging] = useState(false);
+  // 에러 메시지
+  const [error, setError] = useState(false);
 
   /**
    * 바텀시트가 열리거나 닫힐 때 실행되는 효과
@@ -89,6 +91,7 @@ export function BottomSheetPassword({
       document.body.style.overflow = "hidden";
       // 바텀시트가 새로 열릴 때마다 PIN 초기화
       setPin("");
+      setError(false);
     } else {
       // 바텀시트가 닫힐 때 스크롤 복원
       document.body.style.overflow = "";
@@ -156,18 +159,36 @@ export function BottomSheetPassword({
 
   /**
    * 숫자 버튼 클릭 이벤트 핸들러
-   * 6자리 미만일 때만 숫자를 추가하고,
-   * 6자리가 완성되면 onComplete 콜백을 실행합니다.
    *
-   * @param {string} num - 클릭된 숫자
+   * - 현재 입력된 PIN 길이가 `pinLength` 미만일 때만 숫자를 추가합니다.
+   * - 숫자를 누르면 즉시 PIN 상태가 업데이트됩니다.
+   * - PIN이 `pinLength`와 동일해지면 200ms 후 `onComplete` 콜백을 실행합니다.
+   * - `onComplete`가 성공하면 추가 동작 없이 종료됩니다.
+   * - `onComplete`가 실패(throw)하면:
+   *    - 에러 상태(`error`)를 true로 변경해 동그라미 색상을 에러 표시로 변경하고
+   *    - 0.6초 후 에러 상태를 자동으로 해제하여 재입력할 수 있도록 합니다.
+   *
+   * @param {string} num - 클릭된 숫자 문자열
    */
   const handleNumberClick = (num: string) => {
     if (pin.length < pinLength) {
       const newPin = pin + num;
       setPin(newPin);
-      // 6자리 완성 시 300ms 후 onComplete 실행
+
       if (newPin.length === pinLength) {
-        setTimeout(() => onComplete(newPin), 300);
+        setTimeout(async () => {
+          try {
+            await onComplete(newPin);
+          } catch {
+            setError(true);
+
+            // 0.6초 뒤 다시 입력할 수 있도록 기본 상태로 복귀
+            setTimeout(() => {
+              setError(false);
+              setPin("");
+            }, 600);
+          }
+        }, 200);
       }
     }
   };
@@ -235,14 +256,22 @@ export function BottomSheetPassword({
         {/* 비밀번호 입력 표시 - 6개의 동그라미 */}
         <div className="flex flex-col items-center pt-[16px] pb-[16px]">
           <div className="flex justify-center items-center gap-[18px]">
-            {Array.from({ length: pinLength }).map((_, i) => (
-              <div
-                key={i}
-                className={`w-4 h-4 rounded-full border border-neutral-4 ${
-                  pin.length > i ? "bg-neutral-4" : "bg-transparent"
-                }`}
-              />
-            ))}
+            {Array.from({ length: pinLength }).map((_, i) => {
+              const isFilled = pin.length > i;
+              const borderColorClass = error
+                ? "border-error"
+                : "border-neutral-4";
+              const filledBgClass = error ? "bg-error" : "bg-neutral-4";
+
+              return (
+                <div
+                  key={i}
+                  className={`w-4 h-4 rounded-full border ${borderColorClass} ${
+                    isFilled ? filledBgClass : "bg-transparent"
+                  }`}
+                />
+              );
+            })}
           </div>
         </div>
 
