@@ -105,7 +105,7 @@ export function NavigationBar({
 
   /** 아이콘 하이라이트 여부 판단 */
   const isActive = (paths: string[]) => paths.some(p => pathname.startsWith(p))
-  const highlightColor = "#0067AC" // 활성 아이콘 색상
+  const highlightColor = "bg-primary-1" // 활성 아이콘 색상
 
   return (
     <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 z-50 w-[375px] bg-transparent">
@@ -113,8 +113,8 @@ export function NavigationBar({
         <div className="flex items-start justify-around h-[56px] pt-[4px] bg-neutral-7">
           {navItems.map((item) => {
             const active = isActive(item.activePaths)
-            const iconColor = active ? highlightColor : "#CACACA"
-            const textColor = active ? "#343434" : "#CACACA"
+            const iconColor = active ? highlightColor : "bg-neutral-4"
+            const textColor = active ? "bg-neutral-1" : "bg-neutral-4"
 
             return (
               <button
