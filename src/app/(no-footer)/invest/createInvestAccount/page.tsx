@@ -10,14 +10,14 @@ export default function CreateInvestAccount() {
   return (
     <div className="flex flex-col">
       {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 pb-24">
+      <main className="flex-1 flex flex-col items-center justify-center px-6 pt-12">
         {/* Title */}
         <h1 className="text-center">
           <span className="text-account-title text-primary-1 block">우리투자증권</span>
         </h1>
 
         {/* Subtitle */}
-        <p className="text-landing-01 text-neutral-1 text-center mb-8">우리 아이 투자의 첫 걸음 시작!</p>
+        <p className="text-head-01 text-neutral-1 text-center mb-8">우리 아이 투자의 첫 걸음 시작!</p>
 
         {/* Description */}
         <div className="text-center mb-1">
@@ -29,7 +29,7 @@ export default function CreateInvestAccount() {
         </div>
 
         {/* Illustration */}
-        <div className=" flex justify-center">
+        <div className=" flex justify-center mb-21">
           <img
             src="/images/invest/illust_invest_1.png"
             alt="토끼가 금화를 들고 있는 일러스트"
