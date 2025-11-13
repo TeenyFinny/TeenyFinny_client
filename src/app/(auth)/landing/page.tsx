@@ -63,7 +63,7 @@ export default function LandingPage() {
     return (
         <main className="relative w-full h-screen flex max-h-[746px] flex-col justify-between bg-[var(--color-primary-4)]">
             {/* 메인 콘텐츠 영역 */}
-            <div className="flex-1 w-full flex justify-center mt-[56px]">
+            <div className="flex-1 w-full flex justify-center mt-[26px]">
                 {renderStep()}
             </div>
 

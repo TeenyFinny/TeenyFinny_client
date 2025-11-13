@@ -14,7 +14,7 @@ import Image from "next/image";
  */
 export default function LandingStep4() {
   return (
-    <div className="relative w-full flex flex-col items-center mt-[112px] text-center">
+    <div className="relative w-full flex flex-col items-center mt-[114px] text-center">
       <p className="text-center">
         <span className="text-landing-01 font-bold text-[var(--color-neutral-1)]">모두가 </span>
         <br />
