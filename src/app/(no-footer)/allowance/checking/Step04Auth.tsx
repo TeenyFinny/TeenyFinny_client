@@ -25,7 +25,7 @@ export default function Step04Auth({ onNext }: Step04AuthProps) {
     name.length > 0
 
   return (
-    <div className="flex flex-col px-[24px]">
+    <div className="flex flex-col h-full px-[24px]">
       {/* 타이틀 */}
       <div className="mt-[43px] mb-[24px] text-left">
         <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
@@ -55,7 +55,7 @@ export default function Step04Auth({ onNext }: Step04AuthProps) {
       <NameInput value={name} onChange={setName} />
 
       {/* 버튼 */}
-      <div className="flex flex-col gap-5 items-center mb-[56px] mt-[150px]">
+      <div className="flex flex-col gap-5 items-center mb-[56px] mt-[207px]">
         {isButtonEnabled ? (
           <BigButtonActivated label="다음" onClick={onNext} />
         ) : (
