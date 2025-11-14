@@ -2,9 +2,9 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import BottomSheetDetail from "@/components/custom/allowance/card/HistoryDetail";
 import { useUserStore } from "@/store/userStore";
 import { StateBadge } from "@/components/ui/badge/StateBadge";
+import { BottomSheetDetail } from "@/components/custom/account/BottomSheetDetail";
 
 /**
  * Transaction 타입
