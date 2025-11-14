@@ -40,10 +40,10 @@ export default function RegisterPage() {
         password,
         name: form.name,
         role: form.role,
-        simplePassword: simplePassword,
-        birthDate: form.birthDate,
+        simple_password: simplePassword,
+        birth_date: form.birthDate,
         gender: form.gender,
-        phoneNumber: form.phoneNumber,
+        phone_number: form.phoneNumber,
       };
 
       const res = await api.post(requests.signup, payload);

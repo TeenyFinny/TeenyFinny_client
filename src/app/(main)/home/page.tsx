@@ -16,7 +16,7 @@ interface ParentDashboardState {
 
 interface HomeApiResponse {
   user: {
-    userId: number;
+    user_id: number;
     name: string;
     role: string;
     email: string;
@@ -56,7 +56,7 @@ export default function Page() {
         // 자녀 목록 추출
         const children: ChildSummary[] = Array.isArray(userPayload.children)
           ? userPayload.children.map((child) => ({
-              userId: Number(child.userId ?? 0),
+              user_id: Number(child.user_id ?? 0),
               name: child.name ?? "",
               balance: Number(child.balance ?? 0),
             }))
