@@ -1,0 +1,29 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import MyPageItem from "./MyPageItem";
+
+export default function ChildMyPage() {
+  const router = useRouter();
+
+  return (
+    <main className="px-4 pt-6 pb-[100px] flex flex-col gap-[24px]">
+      <MyPageItem
+        label="내 정보 관리"
+        onClick={() => router.push("/mypage/profile")}
+      />
+      <MyPageItem
+        label="간편 비밀번호 설정"
+        onClick={() => router.push("/mypage/simple-password")}
+      />
+      <MyPageItem
+        label="서비스 알림 설정"
+        onClick={() => router.push("/mypage/notification")}
+      />
+      <MyPageItem
+        label="서비스 이용 약관"
+        onClick={() => router.push("/mypage/terms")}
+      />
+    </main>
+  );
+}
