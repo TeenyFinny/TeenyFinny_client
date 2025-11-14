@@ -47,7 +47,7 @@ export default function Page() {
           카드 영역 (중앙 콘텐츠) + 오답 효과
          =============================== */}
       <motion.div
-        className="relative w-[327px] h-[238px] mx-auto  bg-[var(--color-neutral-7)] rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col justify-center items-center mb-[39px] mt-[100px]"
+        className="relative w-[327px] h-[238px] mx-auto  bg-[var(--color-neutral-7)] rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col justify-center items-center mb-[39px] mt-[156px]"
         animate={
           isWrong
             ? {
