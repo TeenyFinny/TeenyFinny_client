@@ -135,7 +135,7 @@ export default function AccountTransactionHistory({
           </div>
 
           {/* 잔액 */}
-          <p className="text-account-title text-netural-1">
+          <p className="text-account-title text-neutral-1">
             {formatAmount(currentBalance)} 원
           </p>
         </div>
