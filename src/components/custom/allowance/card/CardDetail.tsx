@@ -56,12 +56,12 @@ export function CardDetail({
   expiry,
   cvc,
 }: CardDetailProps) {
-  // 🔹 드래그 상태 관리
+  // 드래그 상태 관리
   const [dragStartY, setDragStartY] = useState(0); // 드래그 시작 위치
   const [dragCurrentY, setDragCurrentY] = useState(0); // 현재 드래그 이동 거리
   const [isDragging, setIsDragging] = useState(false); // 드래그 중 여부
 
-  // 🔹 카드 이름 수정 상태 관리
+  // 카드 이름 수정 상태 관리
   const [isEditing, setIsEditing] = useState(false); // 수정 모드 여부
   const [cardName, setCardName] = useState(initialCardName); // 수정 가능한 카드 이름 값
 
@@ -134,12 +134,12 @@ export function CardDetail({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* 🔹 상단 핸들바 (바텀시트 닫기용 드래그 바) */}
+        {/* 상단 핸들바 (바텀시트 닫기용 드래그 바) */}
         <div className="flex justify-center pt-[12px] pb-[20px]">
           <div className="h-[5px] w-[60px] rounded-full bg-neutral-4/50" />
         </div>
 
-        {/* 🔹 닫기 버튼 (X 아이콘) */}
+        {/* 닫기 버튼 (X 아이콘) */}
         <button
           onClick={() => setOpen(false)}
           className="absolute top-[40px] right-[30px] text-neutral-2 hover:text-neutral-1"
@@ -148,7 +148,7 @@ export function CardDetail({
           <Image src="/icons/x.png" alt="닫기" width={27} height={27} unoptimized />
         </button>
 
-        {/* 🔹 카드 상세 정보 영역 */}
+        {/* 카드 상세 정보 영역 */}
         <div className="px-[24px] space-y-[22px]">
           {/* 카드 이름 */}
           <div>
@@ -166,24 +166,31 @@ export function CardDetail({
               </button>
             </div>
 
-            {/* 수정 모드일 경우 input으로 표시 */}
+            {/* 수정 모드 */}
             {isEditing ? (
-              <input
-                type="text"
-                value={cardName}
-                onChange={(e) => setCardName(e.target.value)}
-                onBlur={handleEditComplete}
-                onKeyDown={(e) => e.key === "Enter" && handleEditComplete()}
-                className="mt-[17px] text-head-08 text-neutral-1 bg-transparent border-b border-primary-1 outline-none w-full"
-                autoFocus
-              />
+              <>
+                <input
+                  type="text"
+                  value={cardName}
+                  onChange={(e) => setCardName(e.target.value)}
+                  onBlur={handleEditComplete}
+                  onKeyDown={(e) => e.key === "Enter" && handleEditComplete()}
+                  className="mt-[17px] text-head-08 text-neutral-1 bg-transparent outline-none w-full"
+                  autoFocus
+                />
+                {/* 기존 밑줄에 포커스 효과 추가 */}
+                <div
+                  className={`mt-[12px] border-b transition-colors duration-200 ${
+                    isEditing ? "border-primary-1" : "border-monochrome-gray"
+                  }`}
+                />
+              </>
             ) : (
-              // 일반 모드에서는 텍스트 표시
-              <p className="text-head-08 text-neutral-1 mt-[17px]">{cardName}</p>
+              <>
+                <p className="text-head-08 text-neutral-1 mt-[17px]">{cardName}</p>
+                <div className="mt-[12px] border-b border-monochrome-gray" />
+              </>
             )}
-
-            {/* 구분선 */}
-            <div className="mt-[12px] border-b border-monochrome-gray" />
           </div>
 
           {/* 카드 번호 */}
