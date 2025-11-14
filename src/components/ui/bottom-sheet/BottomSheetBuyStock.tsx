@@ -15,13 +15,13 @@ import { ArrowLeft } from "lucide-react"
  * @property {(quantity: number) => void} onConfirm - 사기 버튼 클릭 시 선택한 수량을 전달하는 콜백 함수입니다.
  * @property {() => void} [onCancel] - 취소 버튼 클릭 시 실행될 콜백 함수입니다. (선택사항)
  */
-interface BottomSheetBuyStock {
+interface BottomSheetBuyStockProps {
   open: boolean
   setOpen: (open: boolean) => void
   price: number
   availableStocks: number
   maxQuantity: number
-  onConfirm: (quantity: number) => void
+  onConfirm: (quantity: number) => void | Promise<void>
   onCancel?: () => void
 }
 
@@ -82,7 +82,7 @@ export function BottomSheetBuyStock({
   maxQuantity,
   onConfirm,
   onCancel,
-}: BottomSheetBuyStock) {
+}: BottomSheetBuyStockProps) {
   // 사용자가 입력한 주식 수량 (문자열로 관리하여 입력 중 상태 유지)
   const [quantity, setQuantity] = useState<string>("")
 

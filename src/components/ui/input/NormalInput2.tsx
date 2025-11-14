@@ -51,7 +51,7 @@ export function NormalInput2({
           readOnly={disabled}
           disabled={disabled}
           className={[
-            "w-full h-[19px] bg-transparent border-0 p-0 m-0 text-body-01 leading-[19px] tracking-[-0.6px]",
+            "w-full h-[19px] bg-transparent border-0 p-0 m-0 text-body-04 leading-[19px] tracking-[-0.6px]",
             disabled
               ? "text-neutral-3 placeholder:text-neutral-4"
               : "text-neutral-1 placeholder:text-neutral-3 focus:outline-none",

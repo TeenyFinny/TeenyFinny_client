@@ -1,5 +1,5 @@
 export interface ChildSummary {
-  id: number;
+  userId: number;
   name: string;
   balance: number;
 }

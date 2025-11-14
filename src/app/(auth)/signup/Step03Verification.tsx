@@ -3,9 +3,9 @@
 import { useState, useMemo } from "react";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled";
-import { PhoneNumberInput } from "@/components/custom/allowance/PhoneNumberInput";
-import { ResidentNumberInput } from "@/components/custom/allowance/ResidentNumberInput";
-import { NameInput } from "@/components/custom/allowance/NameInput";
+import { PhoneNumberInput } from "@/components/custom/allowance/checking/PhoneNumberInput";
+import { ResidentNumberInput } from "@/components/custom/allowance/checking/ResidentNumberInput";
+import NameInput from "@/components/custom/allowance/checking/NameInput";
 import { useRegisterStore } from "@/store/registerStore";
 
 type Step03VerificationProps = Readonly<{ onNext: () => void }>;
