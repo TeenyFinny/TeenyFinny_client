@@ -19,15 +19,6 @@ import { useUserStore } from "@/store/userStore";
  * - 서버로 OTP 검증 요청
  * - 검증 성공 시 `/home`으로 이동
  * - 요청 중 로딩 상태 관리
- *
- * ### 사용 예시
- * ```tsx
- * const child = useChildOtp(isChild);
- *
- * <OtpInput value={child.value} onChange={child.onChange} error={child.inputError} />
- * <BigButtonActivated onClick={child.submit} label="확인" />
- * ```
- *
  * @param {boolean} enabled - 이 훅이 동작해야 하는지 여부 (자녀 사용자일 때만 true)
  * @returns {{
  *   value: string;
@@ -117,7 +108,7 @@ export const useChildOtp = (enabled: boolean) => {
     } finally {
       setIsSubmitting(false);
     }
-  }, [enabled, value, router]);
+  }, [enabled, value, router, userId]);
 
   return {
     value,
