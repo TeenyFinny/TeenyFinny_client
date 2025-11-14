@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import BottomSheetDetail from "@/components/custom/allowance/card/HistoryDetail";
-
+import { useUserStore } from "@/store/userStore";
+import { StateBadge } from "@/components/ui/badge/StateBadge";
 
 /**
  * Transaction 타입
@@ -53,13 +54,14 @@ export default function AccountTransactionHistory({
   onTabClick,
   onTransactionClick,
 }: AccountTransactionHistoryProps) {
+  const { userType } = useUserStore();
   const [currentMonth, setCurrentMonth] = useState(initialMonth);
   const listRef = useRef<HTMLDivElement>(null);
 
-  /** 🔥 상세 내역 바텀시트 상태 */
+  /**  상세 내역 바텀시트 상태 */
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  /** 🔥 선택된 거래의 상세 데이터 */
+  /** 선택된 거래의 상세 데이터 */
   const [detailData, setDetailData] = useState<DetailData | null>(null);
 
   /** 현재 월 계산 */
@@ -117,9 +119,22 @@ export default function AccountTransactionHistory({
       {/* 상단 */}
       <div className="flex-shrink-0 mt-[36px]">
         <div className="h-[130px] mx-[18px] p-[24px] rounded-[16px] bg-primary-1/12 shadow-sm">
-          <p className="text-body-05 mb-[10px] text-neutral-3 whitespace-pre-line">
-            {childName}님의 {accountType} 계좌
-          </p>
+          {/* 제목 + 용돈조르기 버튼 */}
+          <div className="flex items-center justify-between mb-[10px]">
+            <p className="text-body-05 text-neutral-3 whitespace-pre-line">
+              {childName}님의 {accountType} 계좌
+            </p>
+
+            {userType === "child" && (
+              <StateBadge
+                enabled={true}
+                label="용돈조르기"
+                onClick={() => alert("버튼 클릭됨")}
+              />
+            )}
+          </div>
+
+          {/* 잔액 */}
           <p className="text-account-title text-netural-1">
             {formatAmount(currentBalance)} 원
           </p>
