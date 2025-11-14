@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 
 interface Transaction {
@@ -43,6 +42,10 @@ export default function AccountTransactionHistory({
 
   const isCurrentMonth = currentMonth === initialMonth;
 
+  // 🔥 추가: 최소 월 체크 (2025-01 이하에서는 이전 버튼 숨김)
+  const [currentYear, currentMonthNumber] = currentMonth.split("-").map(Number);
+  const isMinMonth = currentYear === 2025 && currentMonthNumber === 1;
+
   const handlePreviousMonth = () => {
     const [year, month] = currentMonth.split("-").map(Number);
     const prevMonth = month === 1 ? 12 : month - 1;
@@ -58,7 +61,7 @@ export default function AccountTransactionHistory({
   };
 
   const currentTransactions = transactionsByMonth?.[currentMonth] ?? [];
-  const displayMonth = `${parseInt(currentMonth.split("-")[1])}월`;
+  const displayMonth = `${parseInt(currentMonth.split("-")[1])}`;
   const formatAmount = (amount: number) => amount.toLocaleString("ko-KR");
 
   useEffect(() => {
@@ -79,17 +82,23 @@ export default function AccountTransactionHistory({
         </div>
 
         {/* 월 선택 */}
-        <div className="mx-[20px] mt-[36px] mb-[3px] flex items-center justify-center gap-[124px]">
-          <Image
-            src="/icons/arrow-left.png"
-            alt="보기"
-            width={24}
-            height={24}
-            onClick={handlePreviousMonth}
-          />
+        <div className="mx-[20px] mt-[36px] mb-[3px] flex items-center justify-between">
 
-          <span className="text-head-06 w-[32px] text-center text-neutral-1">
-            {displayMonth}
+          {/* 🔥 수정된 부분: 2025년 1월이면 왼쪽 화살표 숨김 */}
+          {!isMinMonth ? (
+            <Image
+              src="/icons/arrow-left.png"
+              alt="보기"
+              width={24}
+              height={24}
+              onClick={handlePreviousMonth}
+            />
+          ) : (
+            <div className="h-[24px] w-[24px]" />
+          )}
+
+          <span className="text-head-06 w-[50px] text-center text-neutral-1">
+            2025.{displayMonth}
           </span>
 
           {!isCurrentMonth ? (
@@ -101,9 +110,9 @@ export default function AccountTransactionHistory({
               className="rotate-180"
               onClick={handleNextMonth}
             />
-          ) : 
-          <div className="h-[24px] w-[24px]"> </div>
-          }
+          ) : (
+            <div className="h-[24px] w-[24px]" />
+          )}
         </div>
       </div>
 
