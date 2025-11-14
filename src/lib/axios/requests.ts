@@ -16,6 +16,8 @@ const requests = {
   dashMyStockList: `/invest/myStockList`,
   fetchGoalConfirm: `/goal/account/create/confirm`,
   stockDetail: `/invest/stockDetail`,
+
+  updateGoal: `/goal/update`
   sellStock: `/invest/sellStock`,
   tradeOrder: `/invest/tradeOrder`,
 };
