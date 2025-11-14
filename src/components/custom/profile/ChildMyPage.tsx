@@ -7,7 +7,7 @@ export default function ChildMyPage() {
   const router = useRouter();
 
   return (
-    <main className="px-4 pt-6 pb-[100px] flex flex-col gap-[24px]">
+    <main className="px-[24px] pt-6 flex flex-col gap-[24px]">
       <MyPageItem
         label="내 정보 관리"
         onClick={() => router.push("/mypage/profile")}
