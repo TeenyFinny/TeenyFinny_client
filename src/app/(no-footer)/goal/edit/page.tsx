@@ -137,7 +137,7 @@ export default function GoalSettingPage() {
                     )}
                 </div>
 
-                <div className="mt-17 flex gap-2.5 px-6">
+                <div className="mt-17 flex gap-2.5">
                     <SmallButtonDisabled label="취소" onClick={() => router.push("/goal")} />
                     <SmallButtonActivated label="수정" onClick={handleSave} />
                 </div>
