@@ -18,7 +18,7 @@ const requests = {
   stockDetail: `/invest/stockDetail`,
   sellStock: `/invest/sellStock`,
   tradeOrder: `/invest/tradeOrder`,
-  getChild: `/account/childs`,
+  getChild: `/account/children`,
   getTotalAccount: `/account/totalAccounts`,
 };
 
