@@ -20,6 +20,8 @@ const requests = {
   updateGoal: `/goal/update`
   sellStock: `/invest/sellStock`,
   tradeOrder: `/invest/tradeOrder`,
+  getChild: `/account/children`,
+  getTotalAccount: `/account/totalAccounts`,
 };
 
 export default requests;
