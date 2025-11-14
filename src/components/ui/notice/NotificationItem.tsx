@@ -34,7 +34,7 @@ export function NotificationItem({
       </div>
 
       {/* Time (위에서 14px 아래) */}
-      <div className="absolute right-5 top-[14px] text-body-08 text-neutral-2 shrink-0">
+      <div className="absolute right-5 top-3.5 text-body-08 text-neutral-2 shrink-0">
         {time}
       </div>
     </div>
