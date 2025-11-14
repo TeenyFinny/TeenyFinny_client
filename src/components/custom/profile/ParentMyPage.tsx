@@ -10,7 +10,7 @@ export default function ParentMyPage() {
     <main className="px-[24px] pt-6 flex flex-col gap-[24px]">
       <MyPageItem
         label="내 정보 관리"
-        onClick={() => router.push("/profile/my-page")}
+        onClick={() => router.push("/profile/mypage")}
       />
       <MyPageItem
         label="가족 관리"
