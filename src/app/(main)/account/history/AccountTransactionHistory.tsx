@@ -1,8 +1,8 @@
 "use client";
 
-import type React from "react";
 import { useState, useRef, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 
 interface Transaction {
   id: string;
@@ -14,7 +14,8 @@ interface Transaction {
 }
 
 interface AccountTransactionHistoryProps {
-  accountName: string;
+  childName: string;
+  accountType: string;
   currentBalance: number;
   transactionsByMonth: Record<string, Transaction[]>;
   initialMonth: string;
@@ -27,7 +28,8 @@ interface AccountTransactionHistoryProps {
 }
 
 export default function AccountTransactionHistory({
-  accountName,
+  childName,
+  accountType,
   currentBalance,
   transactionsByMonth,
   initialMonth,
@@ -64,50 +66,51 @@ export default function AccountTransactionHistory({
   }, [currentMonth]);
 
   return (
-    <div className="flex flex-col h-full bg-[#ffffff]">
+    <div className="flex flex-col h-full">
       {/* 상단 */}
-      <div className="flex-shrink-0">
-        <div className="mx-4 mb-6 rounded-[20px] bg-[#fafcff] px-6 py-8 shadow-sm">
-          <p className="text-body-07 mb-3 text-[#989898] whitespace-pre-line">
-            {accountName}
+      <div className="flex-shrink-0 mt-[36px]">
+        <div className="h-[130px] mx-[18px] p-[24px] rounded-[16px] bg-primary-1/12 shadow-sm">
+          <p className="text-body-05 mb-[10px] text-neutral-3 whitespace-pre-line">
+            {childName}님의 {accountType} 계좌
           </p>
-          <p className="text-account-title text-[#343434]">
+          <p className="text-account-title text-netural-1">
             {formatAmount(currentBalance)} 원
           </p>
         </div>
 
         {/* 월 선택 */}
-        <div className="mb-4 flex items-center justify-center gap-8">
-          <button
+        <div className="mx-[20px] mt-[36px] mb-[3px] flex items-center justify-center gap-[124px]">
+          <Image
+            src="/icons/arrow-left.png"
+            alt="보기"
+            width={24}
+            height={24}
             onClick={handlePreviousMonth}
-            className="flex h-8 w-8 items-center justify-center text-[#898989] transition-opacity hover:opacity-70 active:opacity-50"
-            aria-label="이전 월"
-          >
-            <ChevronLeft className="h-6 w-6" />
-          </button>
+          />
 
-          <span className="text-head-03 text-center text-[#343434]">
+          <span className="text-head-06 w-[32px] text-center text-neutral-1">
             {displayMonth}
           </span>
 
           {!isCurrentMonth ? (
-            <button
+            <Image
+              src="/icons/arrow-left.png"
+              alt="보기"
+              width={24}
+              height={24}
+              className="rotate-180"
               onClick={handleNextMonth}
-              className="flex h-8 w-8 items-center justify-center text-[#898989] transition-opacity hover:opacity-70 active:opacity-50"
-              aria-label="다음 월"
-            >
-              <ChevronRight className="h-6 w-6" />
-            </button>
-          ) : (
-            <div className="h-8 w-8" />
-          )}
+            />
+          ) : 
+          <div className="h-[24px] w-[24px]"> </div>
+          }
         </div>
       </div>
 
       {/* 거래내역 리스트 */}
       <div
         ref={listRef}
-        className="flex-1 overflow-y-auto px-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        className="flex-1 mt-[3px] overflow-y-auto px-[20px] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       >
         {currentTransactions.length > 0 ? (
           <div className="space-y-0">
@@ -117,31 +120,31 @@ export default function AccountTransactionHistory({
                 onClick={() =>
                   alert(`${transaction.merchant} / ${transaction.amount}원`)
                 }
-                className="flex items-center justify-between border-b border-[#f6f7f8] py-4 last:border-b-0"
+                className="flex h-[76px] items-center justify-between border-b border-monochrome-gray last:border-b-0"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-[12px]">
                   <div
-                    className={`h-2 w-2 rounded-full ${
+                    className={`h-[12px] w-[12px] rounded-full ${
                       transaction.type === "deposit"
-                        ? "bg-[#0d77cf]"
-                        : "bg-[#e24851]"
+                        ? "bg-chart-3"
+                        : "bg-chart-10"
                     }`}
                   />
                   <div>
-                    <p className="text-body-04 mb-1 text-[#343434]">
+                    <p className="text-head-04 mb-[5px] text-neutral-1">
                       {transaction.merchant}
                     </p>
-                    <p className="text-body-08 text-[#989898]">
+                    <p className="text-body-07 text-neutral-3">
                       {transaction.timestamp}
                     </p>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <p className="text-head-05 mb-1 text-[#343434]">
+                  <p className="text-head-08 mb-[5px] text-neutral-1">
                     {formatAmount(transaction.amount)}
                   </p>
-                  <p className="text-body-08 text-[#989898]">
+                  <p className="text-body-07 text-neutral-3">
                     {formatAmount(transaction.balanceAfter)}원
                   </p>
                 </div>
@@ -149,7 +152,7 @@ export default function AccountTransactionHistory({
             ))}
           </div>
         ) : (
-          <p className="text-center text-body-06 text-[#989898] py-10">
+          <p className="text-center text-body-06 text-neutral-2 py-10">
             거래 내역이 없습니다.
           </p>
         )}
