@@ -78,7 +78,7 @@ interface BottomSheetDetailProps {
  * />
  * ```
  */
-export function BottomSheetDetail({
+export default function BottomSheetDetail({
   open,
   setOpen,
   title = "상세 이용내역",
