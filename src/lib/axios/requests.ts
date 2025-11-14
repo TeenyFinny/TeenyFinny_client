@@ -6,7 +6,7 @@ const requests = {
   login: `/auth/login`,
   signup: `/auth/signup`,
   verifySimplePassword: `/auth/simplePassword/verify`,
-  fetchFamilyOtp: `/auth/otp`,
+  verifyFamilyOtp: `/auth/otp`, // OTP 검증
   fetchGoal: `/goal`,
   fetchProgress: "/quiz/progress",
   updateProgress: (user_id: number) => `/quiz/progresses/${user_id}`,
