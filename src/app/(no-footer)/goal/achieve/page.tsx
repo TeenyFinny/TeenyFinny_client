@@ -15,7 +15,7 @@ export default function DeleteConfirmationPage() {
             <main className="flex flex-col items-center px-6">
                 {/* Title */}
                 <h1 className="mt-[51px] text-head-01 text-neutral-1">
-                    <span className="text-primary-3">♥</span>목표 달성 완료
+                    <span className="text-primary-3">♥</span> 목표 달성 완료 {" "}
                     <span className="text-primary-3">♥</span>
                 </h1>
                 <p className="mt-2.5 text-body-05 text-neutral-3">
