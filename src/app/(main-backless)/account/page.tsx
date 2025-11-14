@@ -30,11 +30,11 @@ export default function Page() {
     const [currentChild, setCurrentChild] = useState<number>(0);
 
     const [total, setTotal] = useState<number>(-1);
-    const [allowance, setallowance] = useState<number>(-1);
-    const [invest, setinvest] = useState<number>(-1);
-    const [saving, setsaving] = useState<number>(-1);
+    const [allowance, setAllowance] = useState<number>(-1);
+    const [invest, setInvest] = useState<number>(-1);
+    const [saving, setSaving] = useState<number>(-1);
 
-    const { userType } = useUserStore()
+    const { userType, userId } = useUserStore()
 
     /* 상세 내용 보기 클릭 이벤트 */
     const handleViewDetails = (accountName: string) => {
@@ -68,7 +68,7 @@ export default function Page() {
                 // <ApiResponse<Notice>>는 없어도 작동함 (타입 지정)
                 const res = await api.get<ApiResponse<Child[]>>(requests.getChild, {
                     signal: controller.signal,
-                    params: { id: 2 }
+                    params: { id: userId }
                 });
 
                 if (controller.signal.aborted) return;
@@ -135,9 +135,9 @@ export default function Page() {
     useEffect(() => {
         if (accountData) {
             setTotal(accountData.total);
-            setallowance(accountData.allowance);
-            setinvest(accountData.invest);
-            setsaving(accountData.saving);
+            setAllowance(accountData.allowance);
+            setInvest(accountData.invest);
+            setSaving(accountData.saving);
         }
     }, [accountData]);
 
@@ -164,9 +164,9 @@ export default function Page() {
 
                 </div>
                 <div className="h-[21px] flex justify-between items-center">
-                    <a className="text-head-03 text-neutral-3 mb-[10px] mt-[22px]">
+                    <p className="text-head-03 text-neutral-3 mb-[10px] mt-[22px]">
                         총 잔액
-                    </a>
+                    </p>
                     {userType == "parent" ? <button className="w-[59px] h-[31px] text-body-03 font-light! text-neutral-7 bg-primary-2 rounded-2xl"
                         onClick={() => autoTransHandler()}>
                         자동이체

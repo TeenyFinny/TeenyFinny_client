@@ -1,14 +1,16 @@
 "use client"
 
+import Image from "next/image"
+
 /**
- * ChildSelector 컴포넌트
+ * ChildrenBadge 컴포넌트
  *
  * 자녀 프로필을 선택할 수 있는 버튼 컴포넌트입니다.
  * 성별에 따라 다른 아바타 이미지를 표시하고, 클릭 시 현재 선택된 자녀를 업데이트합니다.
  *
  * @example
  * \`\`\`tsx
- * <ChildSelector
+ * <ChildrenBadge
  *   name="김티니"
  *   gender={1}
  *   childId="child-1"
@@ -32,7 +34,6 @@ interface ChildSelectorProps {
 }
 
 export function ChildrenBadge({ name, gender, childId, currentChild, setCurrentChild }: ChildSelectorProps) {
-  // TODO : Gender에 따라 다른 이미지 적용안됨
   const avatarImage = Number(gender) === 1 ? "/images/profile/icon_profile_2.png" : "/images/profile/icon_profile_1.png"
 
   const isSelected = currentChild === childId
@@ -51,7 +52,7 @@ export function ChildrenBadge({ name, gender, childId, currentChild, setCurrentC
       {/* 아바타 이미지 */}
       <div className="w-[64px] h-[64px] rounded-full bg-[#fafcff] flex items-center justify-center overflow-hidden">
         {avatarImage ? (
-          <img src={avatarImage || "/placeholder.svg"} alt={name} className="w-full h-full object-cover" />
+          <Image src={avatarImage} alt={name} width={64} height={64} className="w-full h-full object-cover" />
         ) : (
           // 이미지가 없을 때 플레이스홀더
           <div className="w-full h-full flex items-center justify-center bg-[#f6f7f8]">
