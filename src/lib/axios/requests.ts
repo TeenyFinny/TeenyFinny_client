@@ -18,6 +18,8 @@ const requests = {
   stockDetail: `/invest/stockDetail`,
   sellStock: `/invest/sellStock`,
   tradeOrder: `/invest/tradeOrder`,
+  getChild: `/api/account/getChild`,
+  getTotalAccount: `/api/account/GetTotalAccount`,
 };
 
 export default requests;
