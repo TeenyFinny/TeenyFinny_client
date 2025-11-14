@@ -8,6 +8,7 @@ import ParentDashboard from "@/components/custom/home/parent-dashboard/ParentDas
 import requests from "@/lib/axios/requests";
 import api from "@/lib/axios/axios";
 import type { ChildSummary } from "@/types/user";
+import ChildDashboard from "@/components/custom/home/child-dashboard/ChildDashboard";
 
 interface ParentDashboardState {
   balance: number;
@@ -138,7 +139,20 @@ export default function Page() {
   if (userType === "child") {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        <p className="text-body-01">자녀 대시보드</p>
+        <ChildDashboard
+          data={{
+            user: {
+              user_id: 2,
+              name: "김티니",
+              role: "CHILD",
+              email: "child@teenyfinny.com",
+              total_balance: 10000,
+              deposit_balance: 1000,
+              investment_balance: 0,
+              saving_balance: 9000,
+            },
+          }}
+        />
       </div>
     );
   }
