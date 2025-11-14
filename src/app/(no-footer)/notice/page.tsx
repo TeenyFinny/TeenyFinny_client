@@ -6,6 +6,7 @@ import api from "@/lib/axios/axios"
 import requests from "@/lib/axios/requests"
 
 interface Notification {
+  id: number                // ✅ id 추가
   title: string
   created_at: string
   isRead: boolean
@@ -14,43 +15,27 @@ interface Notification {
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([])
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const res = await api.get(requests.fetchNotice)
-  //       setNotifications(res.data.notifications)
-  //     } catch (error) {
-  //       console.error("알림 데이터를 불러오지 못했습니다:", error)
-  //     }
-  //   }
-  //   fetchData()
-  // }, [])
-
   useEffect(() => {
-    const controller = new AbortController();
+    const controller = new AbortController()
     const fetchData = async () => {
       try {
-        const res = await api.get(requests.fetchNotice, { signal: controller.signal });
-        setNotifications(res.data.notifications);
+        const res = await api.get(requests.fetchNotice, { signal: controller.signal })
+        // ✅ id 포함된 mock 데이터 사용
+        setNotifications(res.data.notifications)
       } catch (error) {
-
-        console.error("알림 데이터를 불러오지 못했습니다:", error);
-
+        console.error("알림 데이터를 불러오지 못했습니다:", error)
       }
-    };
+    }
 
-    fetchData();
+    fetchData()
+    return () => controller.abort()
+  }, [])
 
-    return () => {
-      controller.abort();
-    };
-  }, []);
-
-  // ✅ 클릭 시 읽음 처리
-  const handleRead = (index: number) => {
+  // ✅ 클릭 시 읽음 처리 (id 기준)
+  const handleRead = (id: number) => {
     setNotifications(prev =>
-      prev.map((n, i) =>
-        i === index ? { ...n, isRead: true } : n
+      prev.map(n =>
+        n.id === id ? { ...n, isRead: true } : n
       )
     )
   }
@@ -64,12 +49,13 @@ export default function NotificationsPage() {
 
       {/* Notifications List */}
       <div>
-        {notifications.map((n, index) => (
+        {notifications.map(n => (
           <div
-            key={index}
-            onClick={() => handleRead(index)} // ✅ 클릭 시 상태 변경
-            className={`cursor-pointer transition-colors ${n.isRead ? "bg-transparent" : "bg-[rgba(0,103,172,0.15)]"
-              }`}
+            key={n.id} // ✅ id로 key 지정
+            onClick={() => handleRead(n.id)} // ✅ id로 클릭 처리
+            className={`cursor-pointer transition-colors ${
+              n.isRead ? "bg-transparent" : "bg-[rgba(0,103,172,0.15)]"
+            }`}
           >
             <NotificationItem
               message={n.title}
