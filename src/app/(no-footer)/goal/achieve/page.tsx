@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 
-export default function DeleteConfirmationPage() {
+export default function GoalAchievePage() {
     const router = useRouter()
 
     const handleConfirm = () => {
