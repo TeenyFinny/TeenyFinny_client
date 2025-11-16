@@ -2,123 +2,130 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import api from "@/lib/axios/axios";
+import requests from "@/lib/axios/requests";
 import { useUserStore } from "@/store/userStore";
 import { StateBadge } from "@/components/ui/badge/StateBadge";
 import { BottomSheetDetail } from "@/components/custom/account/BottomSheetDetail";
+import { useSearchParams } from "next/navigation";
 
-/**
- * Transaction 타입
- */
 interface Transaction {
   id: string;
   type: "deposit" | "withdrawal";
   merchant: string;
-  amount: number;
-  balanceAfter: number;
+  amount: string;
+  balanceAfter: string;
   timestamp: string;
 }
 
-/**
- * DetailData 타입 (바텀시트에서 필요)
- */
 interface DetailData {
   merchant: string;
-  amount: number;
+  amount: string;
   date: string;
   type: string;
   category: string;
-  approveAmount: number;
-  balanceAfter: number;
+  approveAmount: string;
+  balanceAfter: string;
 }
 
-interface AccountTransactionHistoryProps {
+interface Props {
   childName: string;
   accountType: string;
   currentBalance: number;
-  transactionsByMonth: Record<string, Transaction[]>;
-  initialMonth: string;
-  onBackClick?: () => void;
-  onNotificationClick?: () => void;
-  onTabClick?: (tabName: string) => void;
-  onTransactionClick?: (t: Transaction) => void;
 }
 
 export default function Page({
   childName,
   accountType,
   currentBalance,
-  transactionsByMonth,
-  initialMonth,
-  onTransactionClick,
-}: AccountTransactionHistoryProps) {
+}: Props) {
   const { userType } = useUserStore();
-  const [currentMonth, setCurrentMonth] = useState(initialMonth);
+  const params = useSearchParams();
+
+  const childId = params.get("childId");
+  const account = params.get("account");
+
+  // 기본 월
+  const now = new Date();
+  const defaultMonth = `${now.getFullYear()}-${String(
+    now.getMonth() + 1
+  ).padStart(2, "0")}`;
+
+  const [currentMonth, setCurrentMonth] = useState(defaultMonth);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [detail, setDetail] = useState<DetailData | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+
   const listRef = useRef<HTMLDivElement>(null);
 
-  /**  상세 내역 바텀시트 상태 */
-  const [sheetOpen, setSheetOpen] = useState(false);
+  // month split
+  const [year, month] = currentMonth.split("-").map(Number);
 
-  /** 선택된 거래의 상세 데이터 */
-  const [detailData, setDetailData] = useState<DetailData | null>(null);
-
-  /** 현재 월 계산 */
-  const isCurrentMonth = currentMonth === initialMonth;
-  const [currentYear, currentMonthNumber] = currentMonth.split("-").map(Number);
-  const isMinMonth = currentYear === 2025 && currentMonthNumber === 1;
-
-  /** 이전 / 다음 월 이동 */
-  const handlePreviousMonth = () => {
-    const [year, month] = currentMonth.split("-").map(Number);
+  /* 월 이동 */
+  const goPrevMonth = () => {
     const prevMonth = month === 1 ? 12 : month - 1;
     const prevYear = month === 1 ? year - 1 : year;
     setCurrentMonth(`${prevYear}-${String(prevMonth).padStart(2, "0")}`);
   };
 
-  const handleNextMonth = () => {
-    const [year, month] = currentMonth.split("-").map(Number);
+  const goNextMonth = () => {
     const nextMonth = month === 12 ? 1 : month + 1;
     const nextYear = month === 12 ? year + 1 : year;
     setCurrentMonth(`${nextYear}-${String(nextMonth).padStart(2, "0")}`);
   };
 
-  /** 현재 월 거래 리스트 */
-  const currentTransactions = transactionsByMonth?.[currentMonth] ?? [];
-  const displayMonth = `${parseInt(currentMonth.split("-")[1])}`;
-
-  /** 숫자 포맷 */
-  const formatAmount = (amount: number) => amount.toLocaleString("ko-KR");
-
-  /** 월 변경 시 스크롤 맨 위로 */
+  /* 거래내역 불러오기 */
   useEffect(() => {
-    listRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-  }, [currentMonth]);
+    if (!childId || !account) return;
 
-  /**  거래 클릭 시 상세 바텀시트 열기 */
-  const handleTransactionClick = (t: Transaction) => {
-    const detail: DetailData = {
-      merchant: t.merchant,
-      amount: t.amount,
-      date: t.timestamp.replace(".", "-"), // 날짜 형식 보정(optional)
-      type: t.type === "deposit" ? "입금" : "출금",
-      category: "쇼핑",
-      approveAmount: t.amount,
-      balanceAfter: t.balanceAfter,
+    const [yearStr, monthStr] = currentMonth.split("-");
+
+    const fetchHistory = async () => {
+      const res = await api.get(requests.fetchAccountHistory, {
+        params: {
+          childId: Number(childId),
+          accountType: account,
+          year: yearStr,
+          month: monthStr,
+        },
+      });
+
+      setTransactions(res.data);
     };
 
-    setDetailData(detail);
-    setSheetOpen(true);
+    fetchHistory();
+  }, [childId, account, currentMonth]);
 
-    onTransactionClick?.(t); // 필요하면 외부로도 전달
+  /* 거래 클릭 → id 저장 → 상세 가져오기 */
+  const handleTransactionClick = async (t: Transaction) => {
+    console.log(t.id);
+    setSelectedId(t.id);
+    setSheetOpen(true);
+    setLoadingDetail(true);
+
+    try {
+      const res = await api.get(requests.fetchTransactionDetail, {
+      params: {
+        transactionId: t.id,   // ← 쿼리 파라미터로 id 전달
+      },
+    });
+    console.log(res.data[0])
+      setDetail(res.data[0]);
+    } finally {
+      setLoadingDetail(false);
+    }
   };
 
   return (
     <div className="flex flex-col h-full">
-      {/* 상단 */}
-      <div className="flex-shrink-0 mt-[36px]">
-        <div className="h-[130px] mx-[18px] p-[24px] rounded-[16px] bg-primary-1/12 shadow-sm">
-          {/* 제목 + 용돈조르기 버튼 */}
-          <div className="flex items-center justify-between mb-[10px]">
-            <p className="text-body-05 text-neutral-3 whitespace-pre-line">
+      {/* 상단 카드 영역 */}
+      <div className="mt-[36px]">
+        <div className="h-[130px] mx-[18px] p-[24px] rounded-[16px] bg-primary-1/12">
+          <div className="flex justify-between mb-[10px]">
+            <p className="text-body-05 text-neutral-3">
               {childName}님의 {accountType} 계좌
             </p>
 
@@ -131,87 +138,72 @@ export default function Page({
             )}
           </div>
 
-          {/* 잔액 */}
           <p className="text-account-title text-neutral-1">
-            {formatAmount(currentBalance)} 원
+            {currentBalance} 원
           </p>
         </div>
 
         {/* 월 선택 */}
-        <div className="mx-[20px] mt-[36px] mb-[3px] flex items-center justify-between">
-          {!isMinMonth ? (
+        <div className="mx-[20px] mt-[36px] flex justify-between items-center">
+          {month !== 1 ? (
             <Image
               src="/icons/arrow-left.png"
-              alt="보기"
               width={24}
               height={24}
-              onClick={handlePreviousMonth}
+              alt="prev"
+              onClick={goPrevMonth}
+              className="cursor-pointer"
             />
           ) : (
-            <div className="h-[24px] w-[24px]" />
+            <div style={{ width: 24, height: 24 }} />
           )}
 
-          <span className="text-head-06 w-[50px] text-center text-neutral-1">
-            2025.{displayMonth}
-          </span>
+          <span className="text-head-06 text-neutral-1">{currentMonth}</span>
 
-          {!isCurrentMonth ? (
+          {month !== 12 ? (
             <Image
               src="/icons/arrow-left.png"
-              alt="보기"
               width={24}
               height={24}
-              className="rotate-180"
-              onClick={handleNextMonth}
+              className="rotate-180 cursor-pointer"
+              alt="next"
+              onClick={goNextMonth}
             />
           ) : (
-            <div className="h-[24px] w-[24px]" />
+            <div style={{ width: 24, height: 24 }} />
           )}
         </div>
       </div>
 
       {/* 거래 리스트 */}
-      <div
-        ref={listRef}
-        className="flex-1 mt-[3px] overflow-y-auto px-[20px] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-      >
-        {currentTransactions.length > 0 ? (
-          <div className="space-y-0">
-            {currentTransactions.map((transaction) => (
-              <div
-                key={transaction.id}
-                onClick={() => handleTransactionClick(transaction)} // 상세 바텀시트 열기
-                className="flex h-[76px] items-center justify-between border-b border-monochrome-gray last:border-b-0"
-              >
-                <div className="flex items-center gap-[12px]">
-                  <div
-                    className={`h-[12px] w-[12px] rounded-full ${
-                      transaction.type === "deposit"
-                        ? "bg-chart-3"
-                        : "bg-chart-10"
-                    }`}
-                  />
-                  <div>
-                    <p className="text-head-04 mb-[5px] text-neutral-1">
-                      {transaction.merchant}
-                    </p>
-                    <p className="text-body-07 text-neutral-3">
-                      {transaction.timestamp}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <p className="text-head-08 mb-[5px] text-neutral-1">
-                    {formatAmount(transaction.amount)}
-                  </p>
-                  <p className="text-body-07 text-neutral-3">
-                    {formatAmount(transaction.balanceAfter)}원
-                  </p>
+      <div ref={listRef} className="flex-1 mt-[3px] overflow-y-auto px-[20px]">
+        {transactions.length > 0 ? (
+          transactions.map((t) => (
+            <div
+              key={t.id}
+              onClick={() => handleTransactionClick(t)}
+              className="flex h-[76px] items-center justify-between border-b border-monochrome-gray cursor-pointer"
+            >
+              <div className="flex items-center gap-[12px]">
+                <div
+                  className={`w-[12px] h-[12px] rounded-full ${
+                    t.type === "deposit" ? "bg-chart-3" : "bg-chart-10"
+                  }`}
+                />
+                <div>
+                  <p className="text-head-04 text-neutral-1">{t.merchant}</p>
+                  <p className="text-body-07 text-neutral-3">{t.timestamp}</p>
                 </div>
               </div>
-            ))}
-          </div>
+
+              <div className="text-right">
+                <p className="text-head-08 text-neutral-1">{t.amount}원</p>
+                <p className="text-body-07 text-neutral-3">
+                  {t.balanceAfter}원
+                </p>
+              </div>
+            </div>
+          ))
         ) : (
           <p className="text-center text-body-06 text-neutral-2 py-10">
             거래 내역이 없습니다.
@@ -220,12 +212,12 @@ export default function Page({
       </div>
 
       {/* 상세 바텀시트 */}
-      {detailData && (
+      {selectedId && (
         <BottomSheetDetail
           open={sheetOpen}
           setOpen={setSheetOpen}
-          shouldOverlayBottomBar={true}
-          detail={detailData}
+          detail={detail}
+          shouldOverlayBottomBar
         />
       )}
     </div>

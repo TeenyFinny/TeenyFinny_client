@@ -23,6 +23,10 @@ const requests = {
   getChild: `/account/children`,
   getTotalAccount: `/account/totalAccounts`,
   fetchNotice: `/notice`,
+
+
+  fetchAccountHistory: `/account/history`,
+  fetchTransactionDetail: `/account/history/detail`
 };
 
 export default requests;
