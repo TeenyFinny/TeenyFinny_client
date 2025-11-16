@@ -1,5 +1,6 @@
 'use client'
 import { AccountCard } from "@/components/custom/account/AccountCard"
+import { CardDetail } from "@/components/custom/allowance/card/CardDetail";
 import { ChildrenBadge } from "@/components/ui/badge/ChildrenBadge";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
@@ -34,6 +35,10 @@ export default function Page() {
     const [invest, setInvest] = useState<number>(-1);
     const [saving, setSaving] = useState<number>(-1);
 
+    // 카드 정보 상태
+    const [cardOpen, setCardOpen] = useState(false)
+    const [cardInfo, setCardInfo] = useState<any | null>(null)
+
     const { userType, userId } = useUserStore()
 
     /* 상세 내용 보기 클릭 이벤트 */
@@ -41,10 +46,6 @@ export default function Page() {
         console.log("(id=" + currentChild + ")인 아이의 " + `${accountName} 상세 내역 보기`)
     };
 
-    /* 카드 뱃지 클릭 이벤트 */
-    const handleViewCard = () => {
-        console.log("(id=" + currentChild + ")인 아이의 카드 바텀시트 리다이렉트")
-    };
 
     const childHandler = (id: number) => {
         setCurrentChild(id);
@@ -57,6 +58,30 @@ export default function Page() {
     const reportHandler = () => {
         console.log("(id=" + currentChild + ")인 아이의 리포트 페이지와 리다이렉트")
     }
+    /* 카드 버튼 클릭 이벤트 */
+    const handleViewCard = async () => {
+        try {
+            const res = await api.get(requests.fetchChildCard(currentChild), {
+                params: { childId: currentChild },
+            });
+
+            /* 예상 응답 예시:
+            {
+              "statusCode": 200,
+              "data": {
+                "cardName": "용돈 체크카드",
+                "cardNumber": "1111 2222 3333 4444",
+                "expiry": "02/26",
+                "cvc": "123"
+              }
+            } */
+
+            setCardInfo(res.data); // 바텀시트 표시할 카드 정보 저장
+            setCardOpen(true);      // 바텀시트 열기
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     /* getChild api 호출부분 */
     useEffect(() => {
@@ -181,6 +206,16 @@ export default function Page() {
                     showCard={true}
                     onViewDetails={() => handleViewDetails("용돈 계좌")}
                     onCardClick={() => handleViewCard()}
+                />
+
+                 {/* 카드 상세 바텀시트 */}
+                <CardDetail
+                    open={cardOpen}
+                    setOpen={setCardOpen}
+                    cardName={cardInfo?.cardName ?? ""}
+                    cardNumber={cardInfo?.cardNumber ?? ""}
+                    expiry={cardInfo?.expiry ?? ""}
+                    cvc={cardInfo?.cvc ?? ""}
                 />
 
                 {/* 투자 계좌 */}

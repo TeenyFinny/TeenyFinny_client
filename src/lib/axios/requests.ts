@@ -23,6 +23,8 @@ const requests = {
   getChild: `/account/children`,
   getTotalAccount: `/account/totalAccounts`,
   fetchNotice: `/notice`,
+
+  fetchChildCard: (childId: number) => `/account/${childId}/card`,
 };
 
 export default requests;
