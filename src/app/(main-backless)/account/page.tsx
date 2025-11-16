@@ -61,9 +61,9 @@ export default function Page() {
     /* 카드 버튼 클릭 이벤트 */
     const handleViewCard = async () => {
         try {
-            const res = await api.get(requests.fetchChildCard(currentChild), {
-                params: { childId: currentChild },
-            });
+            const res = await api.get(requests.fetchChildCard, {
+            params: { childId: currentChild },
+        });
 
             /* 예상 응답 예시:
             {
