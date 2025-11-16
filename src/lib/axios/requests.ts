@@ -24,7 +24,7 @@ const requests = {
   getTotalAccount: `/account/totalAccounts`,
   fetchNotice: `/notice`,
 
-  fetchChildCard: (childId: number) => `/account/${childId}/card`,
+  fetchChildCard: `/account/card`,
 };
 
 export default requests;
