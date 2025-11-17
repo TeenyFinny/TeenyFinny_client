@@ -103,7 +103,7 @@ export default function Step07ChildInfoInput({ onNext }: { onNext: () => void })
   return (
     <div className="flex flex-col px-[27px] h-full mb-[0px]">
       {/* 제목 영역 */}
-      <div className="mt-[15x] mb-[26px] text-left">
+      <div className="mt-[15px] mb-[26px] text-left">
         <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
           {"자녀 정보를 입력해 주세요"}
         </h1>
