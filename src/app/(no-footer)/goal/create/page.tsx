@@ -113,7 +113,7 @@ export default function GoalSettingPage() {
         </div>
 
         {/* ✅ 버튼 */}
-        <div className="mt-[59.5px] flex justify-center">
+        <div className="absolute bottom-14 flex justify-center">
           {isAllFilled ? (
             <BigButtonActivated
               label="부모님께 허락 받기"

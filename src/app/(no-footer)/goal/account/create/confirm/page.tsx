@@ -129,7 +129,7 @@ export default function GoalSettingReviewPage() {
                 )}
 
                 {/* 버튼 */}
-                <div className="mt-[54.5px] flex">
+                <div className="absolute bottom-14 flex">
                     <BigButtonActivated label="목표 적금 생성하기" onClick={handleConfirm} />
                 </div>
             </main>

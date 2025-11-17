@@ -34,7 +34,7 @@ export default function DeleteReconfirmationPage() {
                 </h1>
 
                 {/* 버튼 영역 */}
-                <div className="mt-30 flex gap-2.5 px-6">
+                <div className="absolute bottom-14 flex gap-2.5 px-6">
                     <SmallButtonDisabled label="부모님께 알리기" onClick={handleConfirmClick} />
                     <SmallButtonActivated label="아니요" onClick={handleCancel} />
                 </div>

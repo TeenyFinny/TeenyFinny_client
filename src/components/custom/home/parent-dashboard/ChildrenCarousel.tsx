@@ -95,7 +95,7 @@ export default function ChildrenCarousel({
       >
         {normalizedChildren.map((child) => (
           <div
-            key={child.id}
+            key={child.userId}
             className="relative flex min-w-full select-none flex-col gap-4 rounded-2xl bg-primary-1/10 p-6"
           >
             <div className="text-body-05 text-neutral-3">
@@ -121,7 +121,7 @@ export default function ChildrenCarousel({
 
             <button
               className="mt-auto flex items-center justify-end gap-1"
-              onClick={() => console.log(`Navigate to ${child.id}`)}
+              onClick={() => console.log(`Navigate to ${child.userId}`)}
             >
               <span className="text-body-02 text-primary-1">
                 상세 내역 보기
@@ -135,7 +135,7 @@ export default function ChildrenCarousel({
       <div className="flex items-center justify-center gap-2">
         {normalizedChildren.map((child, idx) => (
           <div
-            key={child.id}
+            key={child.userId}
             className={cn(
               "h-2 w-2 rounded-full transition-colors",
               idx === currentIndex ? "bg-primary-1" : "bg-neutral-4"
