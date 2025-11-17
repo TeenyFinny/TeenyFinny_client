@@ -85,6 +85,7 @@ export default function Page() {
   return (
     <div className="px-[18px]">
       {/* <div className="flex flex-col items-center pt-6 pb-8"> */}
+      {investSummary && (
         <InvestStatusWithChart
           userName="민트"
           currentAmount={investSummary.currentAmount}
@@ -93,7 +94,7 @@ export default function Page() {
           availableAmount={investSummary.availableAmount}
           isPositive={investSummary.isPositive}
         />
-        
+      )}
         
       {/* </div> */}
       {/* My Stocks Section */}
