@@ -1,5 +1,7 @@
 // 호출 가능한 api를 한 파일에서 관리!
 
+import { p } from "framer-motion/client";
+
 const requests = {
   fetchTest: `/noticeTest`,
   fetchHome: `/home`,
@@ -22,6 +24,7 @@ const requests = {
   updateGoal: `/goal/update`,
   sellStock: `/invest/sellStock`,
   tradeOrder: `/invest/tradeOrder`,
+  portfolio: `/invest/portfolio`,
   getChild: `/account/children`,
   getTotalAccount: `/account/totalAccounts`,
   fetchNotice: `/notice`,
