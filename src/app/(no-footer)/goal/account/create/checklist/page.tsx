@@ -46,7 +46,7 @@ export default function GoalAccountCreateChecklistPage() {
       </div>
 
       {/* 버튼 */}
-      <div className="flex flex-col gap-5 items-center mb-[56px]">
+      <div className="absolute bottom-14 left-0 right-0 flex flex-col gap-5 items-center px-[24px]">
         <BigButtonActivated label="네, 확인했어요" onClick={handleNext} />
       </div>
     </div>

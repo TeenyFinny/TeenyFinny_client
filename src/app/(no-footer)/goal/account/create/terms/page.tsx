@@ -214,6 +214,7 @@ export default function GoalAccountCreateTermsPage() {
         onComplete={handlePinComplete}
         title="출금계좌 비밀번호"
         pinLength={4}
+        shouldOverlayBottomBar
       />
     </div>
   )

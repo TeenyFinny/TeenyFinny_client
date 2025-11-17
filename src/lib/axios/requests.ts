@@ -1,11 +1,15 @@
 // 호출 가능한 api를 한 파일에서 관리!
 
+import { p } from "framer-motion/client";
+
 const requests = {
   fetchTest: `/noticeTest`,
-  fetchHome: `/home/parent`, // TODO: /home/parent => 자녀 0, /home/noChild => 자녀 0, 자녀 대시보드 생성 후 /home 으로 통합 예정
+  fetchHome: `/home`,
+  devParentHome: `/home/parent`,
+  devChildHome: `/home/child`,
   login: `/auth/login`,
   signup: `/auth/signup`,
-  verifySimplePassword: `/auth/simplePassword/verify`,
+  verifySimplePassword: `/auth/simple-password/verify`,
   verifyFamilyOtp: `/auth/otp`, // OTP 검증
   fetchGoal: `/goal`,
   fetchProgress: "/quiz/progress",
@@ -23,6 +27,7 @@ const requests = {
   fetchChild: `/account/children`,
   fetchTotalAccount: `/account/totalAccounts`,
   fetchAutoTransfer: `/account/auto-transfers`,
+  portfolio: `/invest/portfolio`,
   fetchNotice: `/notice`,
 
   koreainvestmentStockList: `/uapi/domestic-stock/v1/quotations/intstock-multprice`,

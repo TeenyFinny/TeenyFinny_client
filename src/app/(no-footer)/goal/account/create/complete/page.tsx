@@ -41,7 +41,7 @@ export default function SavingAccountCreateCompletePage() {
         </div>
 
         {/* Buttons */}
-        <div className="mt-[113px] flex gap-2.5 px-6">
+        <div className="absolute bottom-14 flex gap-2.5 px-6">
           <BigButtonActivated label="홈으로 돌아가기" onClick={handleClick} />
         </div>
       </main>
