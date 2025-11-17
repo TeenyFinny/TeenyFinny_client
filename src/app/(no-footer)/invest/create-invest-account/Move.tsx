@@ -2,8 +2,10 @@ import { useEffect } from "react";
 
 export default function Move({ onNext }: { onNext: () => void }) {
 
+  const MOVE_PAGE_DELAY = 2500;
+
   useEffect(() => {
-    const t = setTimeout(onNext, 2500);
+    const t = setTimeout(onNext, MOVE_PAGE_DELAY);
     return () => clearTimeout(t);
   }, []);
 

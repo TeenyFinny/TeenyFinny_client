@@ -1,10 +1,8 @@
 "use client"
-import { useRouter } from "next/navigation";
 
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 
 export default function Intro({ onNext }: { onNext: () => void }) {
-    const router = useRouter();
   return (
     <div className="flex flex-col">
       {/* Main Content */}
@@ -34,7 +32,10 @@ export default function Intro({ onNext }: { onNext: () => void }) {
             className="w-[312px] h-[312px] object-contain"
           />
         </div>
-        <BigButtonActivated label="개설하기" onClick={onNext} />
+
+        <div className="fixed bottom-[56px] w-full max-w-[327px]">
+          <BigButtonActivated label="개설하기" onClick={onNext} />
+        </div>
       </main>
     </div>
   )
