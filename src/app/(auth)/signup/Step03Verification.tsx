@@ -7,6 +7,7 @@ import { PhoneNumberInput } from "@/components/custom/allowance/checking/PhoneNu
 import { ResidentNumberInput } from "@/components/custom/allowance/checking/ResidentNumberInput";
 import NameInput from "@/components/custom/allowance/checking/NameInput";
 import { useRegisterStore } from "@/store/registerStore";
+import { isValidBirthDate } from "@/lib/utils/validators";
 
 type Step03VerificationProps = Readonly<{ onNext: () => void }>;
 
@@ -61,6 +62,13 @@ export default function Step03Verification({
   const handleNext = () => {
     if (!yearPrefix) return; // 세기 미판별 시 방어
     const finalBirth = `${yearPrefix}${birthFront}`; // YYYYMMDD
+
+    //생년월일을 검증하는 함수, 생년월일이 부적합할시에 return;으로 방어, console.log("생년월일을 확인하세요") 출력
+    // 생년월일 유효성 검증
+    if (!isValidBirthDate(finalBirth)) {
+      console.log("생년월일을 확인하세요");
+      return;
+    }
     setField("birthDate", finalBirth);
     setField("gender", gender);
     setField("isVerified", true);
@@ -98,7 +106,7 @@ export default function Step03Verification({
         {isButtonEnabled ? (
           <BigButtonActivated label="다음" onClick={handleNext} />
         ) : (
-          <BigButtonDisabled label="다음" onClick={() => {}} />
+          <BigButtonDisabled label="다음" onClick={() => { }} />
         )}
       </div>
     </div>
