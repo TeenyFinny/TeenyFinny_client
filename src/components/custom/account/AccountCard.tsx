@@ -54,7 +54,7 @@ export function AccountCard({ accountName, balance, showCard = false, onViewDeta
 
       {/* 잔액 */}
       <div className="mb-[10px] pt-[1px]">
-        <p className="text-[#343434] text-[26px] leading-[31px] font-bold tracking-[-0.6px] whitespace-pre-line">
+        <p className="text-neutral-1 text-[26px] leading-[31px] font-bold tracking-[-0.6px] whitespace-pre-line">
           {formatCurrency(balance)} 원
         </p>
       </div>
@@ -65,10 +65,10 @@ export function AccountCard({ accountName, balance, showCard = false, onViewDeta
         className="absolute right-4 bottom-4 inline-flex items-center justify-end gap-1 h-[22px] w-[100px] py-[1px]"
         type="button"
       >
-        <span className="text-body-01 text-[#0067ac] leading-[17px] group-hover:text-[#0d77cf] transition-colors whitespace-pre-line">
+        <span className="text-body-01 text-primary-1 leading-[17px] group-hover:text-primary-2 transition-colors whitespace-pre-line">
           상세 내역 보기
         </span>
-        <ChevronRight className="w-5 h-5 text-[#0067ac] group-hover:text-[#0d77cf] transition-colors" />
+        <ChevronRight className="w-5 h-5 text-primary-1 group-hover:text-primary-2 transition-colors" />
       </button>
     </div>
   )
