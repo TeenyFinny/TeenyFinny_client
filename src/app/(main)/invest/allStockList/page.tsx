@@ -10,11 +10,25 @@ import { BottomSheetBuyStock } from "@/components/ui/bottom-sheet/BottomSheetBuy
 import { BottomSheetSellStock } from "@/components/ui/bottom-sheet/BottomSheetSellStock";
 import { createTradeOrder } from "@/lib/api/tradeOrder";
 
+interface Stock {
+  stck_shrn_iscd: string // 종목코드
+  hts_kor_isnm: string, // 종목명
+  stck_prpr: string, // 현재가
+  prdy_vrss: string, // 전일 대비 가격
+  prdy_ctrt: string, // 전일 대비 등락률(%)
+  acml_vol: string, // 누적 거래량
+  prdy_vrss_sign: string, // 등락 구분 (1: 상승, 2: 상한, 3: 보합, 4: 하한, 5: 하락)
+  // kospi_kosdaq_cls_name: string // 시장구분 (코스피, 코스닥)
+  // acml_tr_pbmn: string, // 누적 거래대금
+  // stck_oprc: string, // 시가
+  // stck_hgpr: string, // 고가
+  // stck_lwpr: string, // 저가
+}
 
 interface StockDetail {
-  id: string
-  prdt_name: string
-  price: string
+  stck_shrn_iscd: string
+  hts_kor_isnm: string
+  stck_prpr: string
   availableStocks: number
   maxQuantity: number
 }
@@ -28,7 +42,7 @@ export default function Page() {
   const mode = searchParams.get("mode") ?? "BUY";
 
 
-  const [stocks, setStocks] = useState<any[]>([]);
+  const [stocks, setStocks] = useState<Stock[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState<StockDetail | null>(null);
@@ -38,10 +52,10 @@ export default function Page() {
     (async () => {
       try {
         const [stockRes] = await Promise.all([
-          api.get(requests.stockList),
+          api.get(requests.koreainvestmentStockList),
         ]);
         // const res = await api.get(requests.stockList);
-        setStocks(stockRes.data ?? []);
+        setStocks(stockRes.output ?? []);
       } catch (e) {
 	      // 커스텀 에러관리
         const err = e as HttpError;
@@ -69,14 +83,14 @@ export default function Page() {
     );
   }
 
-  const handleStockDetail = async (stockId: string) => {
+  const handleStockDetail = async (stck_shrn_iscd: string) => {
     try {
-      const res = await api.get(`${requests.stockDetail}?id=${stockId}`)
-      const stock = res.data
+      const res = await api.get(`${requests.koreainvestmentStockDetail}?FID_COND_MRKT_DIV_CODE=J&FID_INPUT_ISCD=${stck_shrn_iscd}`)
+      const stock = res.output
       setSelectedStock({
-        id: stock.id,
-        prdt_name: stock.prdt_name,
-        price: stock.price,
+        stck_shrn_iscd: stock.stck_shrn_iscd,
+        hts_kor_isnm: stock.hts_kor_isnm,
+        stck_prpr: stock.stck_prpr,
         availableStocks: stock.availableStocks,
         maxQuantity: stock.maxQuantity,
 
@@ -94,18 +108,18 @@ export default function Page() {
     if (!selectedStock) return
 
     const type = mode === "BUY" ? "BUY" : "SELL";
-    const price = selectedStock.price;
+    const price = selectedStock.stck_prpr;
 
     try {
       const res = await createTradeOrder(
-        selectedStock.id,
-        selectedStock.prdt_name,
+        selectedStock.stck_shrn_iscd,
+        selectedStock.hts_kor_isnm,
         price,
         quantity,
         type
       )
 
-      alert(`${selectedStock.prdt_name} ${quantity}주 ${mode === "BUY" ? "매수" : "매도"} 완료!`)
+      alert(`${selectedStock.hts_kor_isnm} ${quantity}주 ${mode === "BUY" ? "매수" : "매도"} 완료!`)
       console.log(`${type} 주문 결과:`, res)
     } catch (e) {
       console.error(`${mode} 주문 실패:`, e)
@@ -124,8 +138,8 @@ export default function Page() {
       <StockList stocks={stocks} 
                   onClickBtn={handleStockDetail} 
                   btnLab={mode === "BUY" ? "사기" : "팔기"}
-                  onClickRow={(id) => {
-                    router.push(`/invest/stockDetail?id=${id}&mode=${mode}`);
+                  onClickRow={(stck_shrn_iscd) => {
+                    router.push(`/invest/stockDetail?stck_shrn_iscd=${stck_shrn_iscd}&mode=${mode}`);
                   }}
                   />
 
@@ -135,7 +149,7 @@ export default function Page() {
         <BottomSheetSellStock
           open={open}
           setOpen={setOpen}
-          price={Number(String(selectedStock.price).replace(/,/g, ""))}
+          stck_prpr={Number(String(selectedStock.stck_prpr).replace(/,/g, ""))}
           maxQuantity={selectedStock.maxQuantity}
           onConfirm={handleTradeOrder}
           onCancel={() => setOpen(false)}
@@ -147,7 +161,7 @@ export default function Page() {
         <BottomSheetBuyStock
           open={open}
           setOpen={setOpen}
-          price={Number(String(selectedStock.price).replace(/,/g, ""))}
+          stck_prpr={Number(String(selectedStock.stck_prpr).replace(/,/g, ""))}
           availableStocks={Number(String(selectedStock.availableStocks).replace(/,/g, ""))}
           maxQuantity={selectedStock.maxQuantity}
           onConfirm={handleTradeOrder}
