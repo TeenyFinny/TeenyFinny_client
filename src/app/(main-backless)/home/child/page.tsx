@@ -51,6 +51,7 @@ export default function Page() {
               userId: Number(child.userId ?? 0),
               name: child.name,
               balance: Number(child.balance ?? 0),
+              gender: Number(child.gender ?? 1), // 자녀 성별 기본값 1 (남자)
             }))
           : [];
 
