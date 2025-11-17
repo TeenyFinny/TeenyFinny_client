@@ -16,6 +16,7 @@ interface QuizState {
     answer: string
     explanation: string
     request_completed : boolean
+    first_quiz_id_today?: number // 오늘 첫 문제 ID
     setQuizData: (data: Partial<QuizState>) => void
 }
 
@@ -35,6 +36,7 @@ export const useQuizStore = create(
             answer: "",
             explanation: "",
             request_completed: false,
+            
             setQuizData: (data) => set((state) => ({ ...state, ...data })),
         }),
         {
