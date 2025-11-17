@@ -1,19 +1,13 @@
-// app/(main)/home/page.tsx
+// app/(main-backless)/home/child/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { useUserStore } from "@/store/userStore";
 import { HttpError } from "@/types/axios/httpError.t";
-import ParentDashboard from "@/components/custom/home/parent-dashboard/ParentDashboard";
 import requests from "@/lib/axios/requests";
 import api from "@/lib/axios/axios";
 import type { ChildSummary } from "@/types/user";
 import ChildDashboard from "@/components/custom/home/child-dashboard/ChildDashboard";
-
-interface ParentDashboardState {
-  balance: number;
-  children: ChildSummary[];
-}
 
 interface HomeApiResponse {
   user: {
@@ -28,13 +22,10 @@ interface HomeApiResponse {
 
 /**
  * 홈 페이지 엔트리 컴포넌트.
- * `/home` API를 호출해 사용자 정보를 불러오고 Zustand에 반영합니다.
+ * `/home/child` API를 호출해 사용자 정보를 불러오고 Zustand에 반영합니다.
  */
 export default function Page() {
-  const { userType, hasChildren } = useUserStore();
-  const [parentData, setParentData] = useState<ParentDashboardState | null>(
-    null
-  );
+  const { userType } = useUserStore();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,7 +35,7 @@ export default function Page() {
     const loadUser = async () => {
       try {
         // 명시적 타입 지정 (HomeApiResponse)
-        const res = await api.get<HomeApiResponse>(requests.fetchHome, {
+        const res = await api.get<HomeApiResponse>(requests.devChildHome, {
           signal: controller.signal,
         });
         const userPayload = res.data?.user ?? {};
@@ -72,16 +63,6 @@ export default function Page() {
             (userPayload as any).userId,
             children.length > 0
           );
-
-        if (normalizedRole === "parent") {
-          setParentData({
-            balance: Number(userPayload.balance ?? 0),
-            children,
-          });
-          setError(null);
-        } else {
-          setParentData(null);
-        }
       } catch (err) {
         if (controller.signal.aborted) return;
 
@@ -95,7 +76,6 @@ export default function Page() {
           console.error("사용자 정보를 불러오지 못했습니다.", err);
           setError("예기치 못한 오류가 발생했습니다.");
         }
-        setParentData(null);
       } finally {
         if (!controller.signal.aborted) setIsLoading(false);
       }
@@ -118,20 +98,6 @@ export default function Page() {
     return (
       <div className="flex h-full w-full items-center justify-center bg-primary-4">
         <p className="text-body-01 text-color-error">{error}</p>
-      </div>
-    );
-  }
-
-  if (userType === "parent" && parentData) {
-    return (
-      <div className="w-full bg-primary-4">
-        <div className="mx-auto w-full max-w-[375px] px-4.5 pt-4 pb-7.5">
-          <ParentDashboard
-            hasChildren={hasChildren}
-            balance={parentData.balance}
-            childAccounts={parentData.children}
-          />
-        </div>
       </div>
     );
   }
