@@ -23,6 +23,13 @@ type Accounts = {
     saving: number
 }
 
+type CardInfo = {
+  cardName: string;
+  cardNumber: string;
+  expiry: string;
+  cvc: string;
+};
+
 // app/saving/page.tsx
 export default function Page() {
     const router = useRouter();
@@ -37,7 +44,7 @@ export default function Page() {
 
     // 카드 정보 상태
     const [cardOpen, setCardOpen] = useState(false)
-    const [cardInfo, setCardInfo] = useState<any | null>(null)
+    const [cardInfo, setCardInfo] = useState<CardInfo | null>(null)
 
     const { userType, userId } = useUserStore()
 
@@ -61,22 +68,11 @@ export default function Page() {
     /* 카드 버튼 클릭 이벤트 */
     const handleViewCard = async () => {
         try {
-            const res = await api.get(requests.fetchChildCard, {
+            const res = await api.get<ApiResponse<CardInfo>>(requests.fetchChildCard, {
             params: { childId: currentChild },
         });
 
-            /* 예상 응답 예시:
-            {
-              "statusCode": 200,
-              "data": {
-                "cardName": "용돈 체크카드",
-                "cardNumber": "1111 2222 3333 4444",
-                "expiry": "02/26",
-                "cvc": "123"
-              }
-            } */
-
-            setCardInfo(res.data); // 바텀시트 표시할 카드 정보 저장
+            setCardInfo(res.data as CardInfo); // 바텀시트 표시할 카드 정보 저장
             setCardOpen(true);      // 바텀시트 열기
         } catch (e) {
             console.error(e);
