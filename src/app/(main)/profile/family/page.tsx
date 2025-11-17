@@ -1,11 +1,11 @@
 // src/app/(main)/profile/family/page.tsx
-"use client";
+"use client"
 
-import { ChildrenBadge } from "@/components/ui/badge/ChildrenBadge";
-import { useUserStore } from "@/store/userStore";
-import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
-import { redirect, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { ChildrenBadge } from "@/components/ui/badge/ChildrenBadge"
+import { useUserStore } from "@/store/userStore"
+import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 /**
  * AddFamilyPage
@@ -19,34 +19,33 @@ import { useEffect } from "react";
  * - "가족 등록하기" 버튼 클릭 시 가족 등록 플로우로 이동합니다.
  */
 export default function AddFamilyPage() {
-  const router = useRouter();
-  const children = useUserStore((state) => state.children);
-  const userType = useUserStore((state) => state.userType);
+  const router = useRouter()
+  const userType = useUserStore((state) => state.userType)
+  const children = useUserStore((state) => state.children)
+
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    if (userType !== "parent") {
-      router.replace("/home");
-    }
-  }, [userType, router]);
+    setMounted(true)
+  }, [])
 
-  // 리다이렉트 전 중간 렌더링을 막기 위함
-  if (userType !== "parent") {
-    return null;
-  }
+  useEffect(() => {
+    if (mounted && userType !== "parent") {
+      router.replace("/home")
+    }
+  }, [mounted, userType, router])
+
+  if (!mounted) return null
 
   return (
     <main className="px-6 overflow-y-auto">
       {/* 타이틀 */}
       <div className="flex flex-col">
         <div className="pt-[36px] pb-[10px] text-left flex items-center">
-          <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
-            가족 관리
-          </h1>
+          <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">가족 관리</h1>
         </div>
         <div className="text-left pb-[44px]">
-          <p className="text-body-06 text-neutral-3 whitespace-pre-line">
-            {`등록된 자녀를 관리할 수 있습니다.`}
-          </p>
+          <p className="text-body-06 text-neutral-3 whitespace-pre-line">{`등록된 자녀를 관리할 수 있습니다.`}</p>
         </div>
       </div>
 
@@ -55,15 +54,7 @@ export default function AddFamilyPage() {
         {children.length > 0 ? (
           <div className="flex flex-wrap justify-start items-start gap-6">
             {children.map((child) => (
-              <ChildrenBadge
-                key={child.userId}
-                name={child.name}
-                gender={child.gender}
-                childId={child.userId}
-                currentChild={0}
-                setCurrentChild={() => {}}
-                disabled={true}
-              />
+              <ChildrenBadge key={child.userId} name={child.name} gender={child.gender} childId={child.userId} currentChild={0} setCurrentChild={() => {}} disabled={true} />
             ))}
           </div>
         ) : (
@@ -71,11 +62,8 @@ export default function AddFamilyPage() {
         )}
       </div>
       <div className="fixed bottom-[134px] w-full max-w-[327px]">
-        <BigButtonActivated
-          label="가족 등록하기"
-          onClick={() => router.push("/family")}
-        />
+        <BigButtonActivated label="가족 등록하기" onClick={() => router.push("/family")} />
       </div>
     </main>
-  );
+  )
 }
