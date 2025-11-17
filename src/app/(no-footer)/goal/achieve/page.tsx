@@ -40,7 +40,7 @@ export default function GoalAchievePage() {
                 </p>
 
                 {/* Buttons */}
-                <div className="mt-24.5 flex">
+                <div className="absolute bottom-14 flex">
                     {/* "확인" → /home 페이지 */}
                     <BigButtonActivated label="확인" onClick={handleConfirm} />
                 </div>
