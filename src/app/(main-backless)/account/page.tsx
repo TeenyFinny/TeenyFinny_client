@@ -49,8 +49,9 @@ export default function Page() {
     const { userType, userId } = useUserStore()
 
     /* 상세 내용 보기 클릭 이벤트 */
-    const handleViewDetails = (accountName: string) => {
-        console.log("(id=" + currentChild + ")인 아이의 " + `${accountName} 상세 내역 보기`)
+    const handleViewDetails = (accountType: string) => {
+        console.log("(id=" + currentChild + ")인 아이의 " + `${accountType} 상세 내역 보기`)
+        router.push(`/account/history?childId=${currentChild}&account=${accountType}`);
     };
 
 

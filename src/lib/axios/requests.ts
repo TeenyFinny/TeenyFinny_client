@@ -24,6 +24,9 @@ const requests = {
   getTotalAccount: `/account/totalAccounts`,
   fetchNotice: `/notice`,
 
+
+  fetchAccountHistory: `/account/history`,
+  fetchTransactionDetail: `/account/history/detail`,
   fetchChildCard: `/account/card`,
 };
 
