@@ -7,6 +7,8 @@ import { PhoneNumberInput } from "@/components/custom/allowance/checking/PhoneNu
 import { ResidentNumberInput } from "@/components/custom/allowance/checking/ResidentNumberInput";
 import NameInput from "@/components/custom/allowance/checking/NameInput";
 import { useRegisterStore } from "@/store/registerStore";
+import { isValidBirthDate } from "@/lib/utils/validators";
+import { TitleOnlyDialog } from "@/components/ui/modal/TitleOnlyDialog";
 
 type Step03VerificationProps = Readonly<{ onNext: () => void }>;
 
@@ -28,6 +30,9 @@ export default function Step03Verification({
   // 주민번호 입력 로컬 상태 (store에는 최종 YYYYMMDD만 저장)
   const [birthFront, setBirthFront] = useState<string>(""); // YYMMDD
   const [birthBack, setBirthBack] = useState<string>(""); // 1자리
+
+  //생년월일 검증 모달 상태
+  const [openBirthErrorModal, setOpenBirthErrorModal] = useState(false);
 
   // 파생 상태: 성별/세기
   const { gender, yearPrefix } = useMemo(() => {
@@ -61,6 +66,12 @@ export default function Step03Verification({
   const handleNext = () => {
     if (!yearPrefix) return; // 세기 미판별 시 방어
     const finalBirth = `${yearPrefix}${birthFront}`; // YYYYMMDD
+
+    // 생년월일 유효성 검증
+    if (!isValidBirthDate(finalBirth)) {
+      setOpenBirthErrorModal(true);
+      return;
+    }
     setField("birthDate", finalBirth);
     setField("gender", gender);
     setField("isVerified", true);
@@ -98,9 +109,16 @@ export default function Step03Verification({
         {isButtonEnabled ? (
           <BigButtonActivated label="다음" onClick={handleNext} />
         ) : (
-          <BigButtonDisabled label="다음" onClick={() => {}} />
+          <BigButtonDisabled label="다음" onClick={() => { }} />
         )}
       </div>
+      <TitleOnlyDialog
+        open={openBirthErrorModal}
+        onOpenChange={setOpenBirthErrorModal}
+        title={"올바른 주민등록번호를 \n 입력해주세요."}
+        confirmText="확인"
+      />
     </div>
+
   );
 }
