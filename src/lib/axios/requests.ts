@@ -28,6 +28,9 @@ const requests = {
   fetchAccountHistory: `/account/history`,
   fetchTransactionDetail: `/account/history/detail`,
   fetchChildCard: `/account/card`,
+
+  verifyPhoneNumber: `/allowance/verify-identity`
+
 };
 
 export default requests;
