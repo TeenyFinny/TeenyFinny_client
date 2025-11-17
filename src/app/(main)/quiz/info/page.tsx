@@ -27,29 +27,49 @@ export default function Page() {
         today_solved,
         title,
         info,
+        first_quiz_id_today,
     } = useQuizStore()
 
-    // ✅ useEffect로 API 요청 
-    //  //TODO: 교육과정일 경우와 랜덤일 경우에 따라 퀴즈 ID를 정하는 알고리즘 추가
-    useEffect(() => {
-        (async () => {
-            try {
-                const res = await api.get(`${requests.fetchQuiz}?quiz_id=${quiz_date}`)
-                const data = res.data
-                setQuizData(data) // 전역 상태 저장
-            } catch (e) {
-                const err = e as HttpError
+    // 퀴즈 페이지에서 useEffect 예시
+useEffect(() => {
+  (async () => {
+    try {
+      let quizId: number;
 
-                if (err.statusCode === 403) {
-                    alert(err.message)
-                    router.push("/")
-                } else {
-                    console.error(err)
-                }
-                console.error(e)
-            }
-        })()
-    }, [setQuizData])
+      if (!course_completed) {
+        // 교육과정 문제: quiz_id 계산
+        quizId = quiz_date * 2 + today_solved;
+      } else {
+        // 랜덤 문제: 총 40문제 가정
+        const TOTAL_QUIZ = 3;
+        do {
+          quizId = Math.floor(Math.random() * TOTAL_QUIZ) + 1; // 1~40
+          console.log(quizId+"번 문제"+first_quiz_id_today);
+        } while (today_solved === 1 && quizId === first_quiz_id_today); 
+        // 오늘 두 번째 문제일 때 첫 번째 문제와 겹치지 않게
+      }
+
+      // today_solved === 0이면 오늘 첫 문제 ID 저장
+      if (today_solved === 0) {
+        setQuizData({ first_quiz_id_today: quizId });
+      }
+
+      // 퀴즈 정보 API 호출
+      const res = await api.get(`${requests.fetchQuiz}?quiz_id=${quizId}`);
+      setQuizData(res.data);
+
+    } catch (e) {
+      const err = e as HttpError;
+      if (err.statusCode === 403) {
+        alert(err.message);
+        router.push("/");
+      } else {
+        console.error(err);
+      }
+    }
+  })();
+}, [course_completed, today_solved, first_quiz_id_today, quiz_date, setQuizData]);
+
 
   
 

@@ -27,31 +27,56 @@ export default function Page() {
     monthly_reward,     //용돈조르기권 획즉 여부
     today_solved,       //오늘 푼 문제 수
     quiz_date,          //교육과정진행일자
+    progress_id,        //퀴즈 진행도 id
   } = useQuizStore()
 
-  // ✅ useEffect로 API 요청 
+  // ✅ useEffect로 API 요청
   useEffect(() => {
     (async () => {
-      try {
-        const res = await api.get(`${requests.fetchProgress}?user_id=${user_id}`)
-        const data = res.data
-        setQuizData(data) // 전역 상태 저장
-      } catch (e) {
-        const err = e as HttpError
+      // 이미 progress_id가 저장돼 있다면 API 호출 안 함
+      if (progress_id !== 0) return;
 
-        if (err.statusCode === 403) {
-          alert(err.message)
-          router.push("/")
-        } else {
-          console.error(err)
+      try {
+        // 1) 기존 progress 불러오기
+        const res = await api.get(`${requests.fetchProgress}?user_id=${user_id}`);
+        console.log(res);
+        const data = res.data        // 2) data가 존재하면 그대로 저장
+        if (res) {
+          setQuizData(data);
+          console.log("데이터저장")
+          return;
         }
-        console.error(e)
+
+        // 3) progress가 없으면 신규 생성
+        const created = await api.post(requests.fetchProgress, { user_id });
+        setQuizData(created.data.data);
+
+      } catch (e) {
+        const err = e as HttpError;
+
+        // 404 → progress 없음 → 생성
+        if (err.statusCode === 404) {
+          const created = await api.post(requests.fetchProgress, { user_id });
+          setQuizData(created.data.data);
+          return;
+        }
+
+        // 권한 문제
+        if (err.statusCode === 403) {
+          alert(err.message);
+          router.push("/");
+          return;
+        }
+
+        // 기타 오류
+        console.error(err);
       }
-    })()
-  }, [setQuizData])
+    })();
+  }, [progress_id, setQuizData]);
 
   //퀴즈 가능 여부 확인
-  const quizActive = !course_completed && !monthly_reward && today_solved < 2
+  const quizActive = (!course_completed || !monthly_reward) && today_solved < 2;
+
 
   // ---------------------------
   // 배지 텍스트
