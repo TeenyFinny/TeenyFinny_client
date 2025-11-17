@@ -88,7 +88,7 @@ export default function Step04Auth({ onNext }: Step04AuthProps) {
    * @function handleSubmit
    * @returns {Promise<void>}
    */
-  const handleSumbit = async () => {
+  const handleSubmit = async () => {
     try {
       setLoading(true); // 로딩 시작
       setMessage(""); // 이전 메시지 초기화
@@ -187,7 +187,7 @@ export default function Step04Auth({ onNext }: Step04AuthProps) {
           </div>
         )}
         {isButtonEnabled ? (
-          <BigButtonActivated label="다음" onClick={handleSumbit} />
+          <BigButtonActivated label="다음" onClick={handleSubmit} />
         ) : (
           <BigButtonDisabled label="다음" onClick={() => {}} />
         )}
