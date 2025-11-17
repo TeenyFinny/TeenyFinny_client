@@ -12,6 +12,7 @@ import { DeleteConfirmDialog } from "@/components/ui/modal/DeleteConfirmDialog";
 import { TitleOnlyDialog } from "@/components/ui/modal/TitleOnlyDialog";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
+import { clampNumberInRange} from "@/lib/utils/validators";
 import { ApiResponse } from "@/types/axios/apiRes.t";
 import { HttpError } from "@/types/axios/httpError.t";
 import { Edit } from "lucide-react";
@@ -34,20 +35,20 @@ type Params = {
  *
  * 백엔드에서 내려주는 자동이체 설정 정보를 표현한다.
  */
-    type AutoTransfer = {
-        /** 최초 설정 여부 */
-        isInit: boolean,
-        /** 사용자 ID */
-        userId: string,
-        /** 자동이체 식별자 */
-        transferId: string,
-        /** 매월 이체 금액 (문자열 포맷) */
-        transferAmount: string,
-        /** 이체 일자 (1~31일 등 문자열) */
-        transferDate: string,
-        /** 투자 비율 (0~100) */
-        ratio: number
-    }
+type AutoTransfer = {
+    /** 최초 설정 여부 */
+    isInit: boolean,
+    /** 사용자 ID */
+    userId: string,
+    /** 자동이체 식별자 */
+    transferId: string,
+    /** 매월 이체 금액 (문자열 포맷) */
+    transferAmount: string,
+    /** 이체 일자 (1~31일 등 문자열) */
+    transferDate: string,
+    /** 투자 비율 (0~100) */
+    ratio: number
+}
 
 /**
  * 자동이체 설정 페이지
@@ -83,15 +84,6 @@ export default function Page() {
     const router = useRouter();
 
     /**
-     * 이체 금액 입력 핸들러
-     *
-     * @param text 인풋 컴포넌트에서 전달되는 문자열 값
-     */
-    const amountHandler = (text: string) => {
-        setAmount(text)
-    }
-
-    /**
      * 자동이체 저장(생성/수정) 핸들러
      *
      * - isInit === true → 자동이체 최초 생성 요청
@@ -100,6 +92,11 @@ export default function Page() {
      */
     const updateSubmitHandler = async () => {
         const totalAmount = Number(amount ?? 0)
+
+        //공백일 경우 placeholder에 해당하는 1일로 변경    
+       const realDate = !date || date === "0" ? "1" : date;
+       //NULL일 경우 0원으로 설정하며, 숫자를 ,로 끊어서 처리해서 보냄. 
+       const realAmount = Number(amount ?? 0).toLocaleString("ko-KR");
 
         // 슬라이더에서 쓰던 것과 동일한 계산식
         const investmentAmount = Math.round((totalAmount * investmentRatio) / 100)
@@ -111,8 +108,8 @@ export default function Page() {
                 await api.post(requests.fetchAutoTransfer, {
                     data: {
                         userId: id,
-                        transferAmount: amount,
-                        transferDate: date,
+                        transferAmount: realAmount,
+                        transferDate: realDate,
                         ratio: investmentRatio
                     }
                 })
@@ -121,8 +118,8 @@ export default function Page() {
                 await api.put(requests.fetchAutoTransfer, {
                     data: {
                         autoTransferId: autoTransferId,
-                        transferAmount: amount,
-                        transferDate: date,
+                        transferAmount: realAmount,
+                        transferDate: realDate,
                         ratio: investmentRatio
                     }
                 })
@@ -294,7 +291,10 @@ export default function Page() {
                     <NormalInput
                         label="이체 금액"
                         value={amount ?? ""}
-                        onChange={amountHandler}
+                        //onChange={amountHandler}
+                        onChange={(val2) => {
+                                setAmount(clampNumberInRange(val2, 0, 500000000));
+                            }}
                         placeholder="0"
                         unit="원"
                         isRight={true}
@@ -328,7 +328,9 @@ export default function Page() {
                         <NormalInput2
                             label="매달"
                             value={date ? date : ""}
-                            onChange={setDate}
+                            onChange={(val) => {
+                                setDate(clampNumberInRange(val, 1, 28));
+                            }}
                             placeholder="1"
                             unit="일"
                             isNumeric={true}
@@ -340,42 +342,42 @@ export default function Page() {
                 {
                     deleteButtonFlag ? (
                         <DeleteConfirmDialog
-                        trigger={
-                            <BigButtonActivated onClick={() => {}} label="삭제하기" />
-                        }
-                        title="정말 해제하시겠어요?"
-                        description="해지 후에도 다시 설정할 수 있어요!"
-                        rtBtnTxt="해제"
-                        ltBtnTxt="취소"
-                        onClickRtBtn={deleteConfirmHandler}
-                        onClickLtBtn={() => {
-                            // 취소 눌렀을 때 하고 싶은 거 있으면 여기
-                        }}
+                            trigger={
+                                <BigButtonActivated onClick={() => { }} label="삭제하기" />
+                            }
+                            title="정말 해제하시겠어요?"
+                            description="해지 후에도 다시 설정할 수 있어요!"
+                            rtBtnTxt="해제"
+                            ltBtnTxt="취소"
+                            onClickRtBtn={deleteConfirmHandler}
+                            onClickLtBtn={() => {
+                                // 취소 눌렀을 때 하고 싶은 거 있으면 여기
+                            }}
                         />
                     ) : (
                         <BigButtonActivated onClick={updateSubmitHandler} label="저장하기" />
                     )
-                    }
+                }
 
             </div>
 
             <div>
                 {
                     isDeletePasswordOpen ?
-                    <BottomSheetPassword 
-                        open={isDeletePasswordOpen}
-                        setOpen={setIsDeletePasswordOpen}
-                        onComplete={deletePasswordHandler}
-                    /> : null
+                        <BottomSheetPassword
+                            open={isDeletePasswordOpen}
+                            setOpen={setIsDeletePasswordOpen}
+                            onComplete={deletePasswordHandler}
+                        /> : null
                 }
                 {
                     isDeleteDoneOpen ?
-                    <TitleOnlyDialog 
-                        open = {isDeleteDoneOpen} 
-                        onOpenChange={setIsDeleteDoneOpen}
-                        title = "자동이체가 해제되었습니다."
-                        onConfirm={deleteDoneHandler}
-                    /> : null
+                        <TitleOnlyDialog
+                            open={isDeleteDoneOpen}
+                            onOpenChange={setIsDeleteDoneOpen}
+                            title="자동이체가 해제되었습니다."
+                            onConfirm={deleteDoneHandler}
+                        /> : null
                 }
             </div>
         </div>
