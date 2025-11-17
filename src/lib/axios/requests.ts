@@ -7,8 +7,8 @@ const requests = {
   fetchHome: `/home/parent`, // TODO: /home/parent => 자녀 0, /home/noChild => 자녀 0, 자녀 대시보드 생성 후 /home 으로 통합 예정
   login: `/auth/login`,
   signup: `/auth/signup`,
-  verifySimplePassword: `/auth/simplePassword/verify`,
-  fetchFamilyOtp: `/auth/otp`,
+  verifySimplePassword: `/auth/simple-password/verify`,
+  verifyFamilyOtp: `/auth/otp`, // OTP 검증
   fetchGoal: `/goal`,
   fetchProgress: "/quiz/progress",
   updateProgress: (user_id: number) => `/quiz/progresses/${user_id}`,
@@ -18,9 +18,22 @@ const requests = {
   dashMyStockList: `/invest/myStockList`,
   fetchGoalConfirm: `/goal/account/create/confirm`,
   stockDetail: `/invest/stockDetail`,
+
+  updateGoal: `/goal/update`,
   sellStock: `/invest/sellStock`,
   tradeOrder: `/invest/tradeOrder`,
   portfolio: `/invest/portfolio`,
+  getChild: `/account/children`,
+  getTotalAccount: `/account/totalAccounts`,
+  fetchNotice: `/notice`,
+
+  // ============ 한국 투자증권 주식 리스트 API =============
+  koreainvestmentStockList: `/uapi/domestic-stock/v1/quotations/intstock-multprice`,
+  koreainvestmentStockDetail: `/uapi/domestic-stock/v1/quotations/inquire-price`,
+
+  fetchAccountHistory: `/account/history`,
+  fetchTransactionDetail: `/account/history/detail`,
+  fetchChildCard: `/account/card`,
 };
 
 export default requests;

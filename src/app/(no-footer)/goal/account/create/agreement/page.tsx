@@ -104,7 +104,7 @@ export default function GoalAccountCreateAgreementPage() {
 
       {/* 버튼 */}
       <div
-        className={`flex flex-col gap-5 items-center mb-[56px] ${isExpanded ? "mt-[221px]" : "mt-[402px]"
+        className={`absolute bottom-14 flex flex-col gap-5 items-center ${isExpanded ? "mt-[221px]" : "mt-[402px]"
           }`}
       >
         {allChecked ? (

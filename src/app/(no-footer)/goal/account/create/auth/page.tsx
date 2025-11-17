@@ -4,9 +4,9 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled"
-import { PhoneNumberInput } from "@/components/custom/allowance/PhoneNumberInput"
-import { ResidentNumberInput } from "@/components/custom/allowance/ResidentNumberInput"
-import NameInput from "@/components/custom/allowance/NameInput"
+import { PhoneNumberInput } from "@/components/custom/allowance/checking/PhoneNumberInput"
+import { ResidentNumberInput } from "@/components/custom/allowance/checking/ResidentNumberInput"
+import NameInput from "@/components/custom/allowance/checking/NameInput"
 
 export default function GoalAccountCreateAuthPage() {
   const router = useRouter()
@@ -52,7 +52,7 @@ export default function GoalAccountCreateAuthPage() {
 
       <NameInput value={name} onChange={setName} />
 
-      <div className="flex flex-col gap-5 items-center mb-[56px] mt-[150px]">
+      <div className="absolute bottom-14 flex flex-col gap-5 items-center mt-[150px]">
         {isButtonEnabled ? (
           <BigButtonActivated label="다음" onClick={handleNext} />
         ) : (

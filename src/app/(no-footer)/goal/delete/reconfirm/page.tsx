@@ -43,7 +43,7 @@ export default function DeleteReconfirmationPage() {
                 </p>
 
                 {/* Buttons */}
-                <div className="mt-18 flex gap-2.5 px-6">
+                <div className="absolute bottom-14 flex gap-2.5">
                     {/* "부모님께 알리기" → 재확인 페이지 */}
                     <SmallButtonDisabled label="부모님께 알리기" onClick={handleConfirm} />
                     {/* "아니요" → 상세 페이지로 복귀 */}

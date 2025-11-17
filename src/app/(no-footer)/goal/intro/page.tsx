@@ -54,7 +54,7 @@ export default function GoalIntroPage() {
         </div>
 
         {/* Button */}
-        <div className="mt-[93px] flex px-6">
+        <div className="absolute bottom-14 flex px-6">
           <BigButtonActivated label={buttonLabel} onClick={handleClick} />
         </div>
       </main>

@@ -217,7 +217,7 @@ export default function StockTerms() {
                 <ConfirmationDialog
                     open={openConfirm}
                     onOpenChange={setOpenConfirm}
-                    title="주식 계좌를 생성해요." // ← 제목 비워둠
+                    title="투자 계좌를 생성해요." // ← 제목 비워둠
                     description="부모님이 투자 계좌 생성을 허락할 때까지 기다려요" // ← 설명 비워둠
                     confirmText="확인" // ← 버튼 텍스트 비워둠
                     onConfirm={handleConfirm}

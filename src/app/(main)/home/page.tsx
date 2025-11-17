@@ -8,6 +8,7 @@ import ParentDashboard from "@/components/custom/home/parent-dashboard/ParentDas
 import requests from "@/lib/axios/requests";
 import api from "@/lib/axios/axios";
 import type { ChildSummary } from "@/types/user";
+import ChildDashboard from "@/components/custom/home/child-dashboard/ChildDashboard";
 
 interface ParentDashboardState {
   balance: number;
@@ -16,9 +17,10 @@ interface ParentDashboardState {
 
 interface HomeApiResponse {
   user: {
-    name?: string;
-    role?: string;
-    email?: string;
+    userId: number;
+    name: string;
+    role: string;
+    email: string;
     balance?: number;
     children?: ChildSummary[];
   };
@@ -55,8 +57,8 @@ export default function Page() {
         // 자녀 목록 추출
         const children: ChildSummary[] = Array.isArray(userPayload.children)
           ? userPayload.children.map((child) => ({
-              id: Number(child.id ?? 0),
-              name: child.name ?? "",
+              userId: Number(child.userId ?? 0),
+              name: child.name,
               balance: Number(child.balance ?? 0),
             }))
           : [];
@@ -64,7 +66,12 @@ export default function Page() {
         // Zustand 상태 갱신
         useUserStore
           .getState()
-          .setUser(userPayload.name ?? "", normalizedRole, children.length > 0);
+          .setUser(
+            userPayload.name ?? "",
+            normalizedRole,
+            (userPayload as any).userId,
+            children.length > 0
+          );
 
         if (normalizedRole === "parent") {
           setParentData({
@@ -132,7 +139,20 @@ export default function Page() {
   if (userType === "child") {
     return (
       <div className="flex h-full w-full items-center justify-center">
-        <p className="text-body-01">자녀 대시보드</p>
+        <ChildDashboard
+          data={{
+            user: {
+              userId: 2,
+              name: "김티니",
+              role: "CHILD",
+              email: "child@teenyfinny.com",
+              totalBalance: 10000,
+              depositBalance: 1000,
+              investmentBalance: 0,
+              savingBalance: 9000,
+            },
+          }}
+        />
       </div>
     );
   }
