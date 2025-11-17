@@ -9,14 +9,14 @@ import { useEffect, useState } from "react";
  * 사용자 데이터 타입
  */
 interface UserData {
-  user_id: number;
+  userId: number;
   name: string;
   role: string;
   email: string;
-  total_balance: number;
-  deposit_balance: number;
-  investment_balance: number;
-  saving_balance: number;
+  totalBalance: number;
+  depositBalance: number;
+  investmentBalance: number;
+  savingBalance: number;
 }
 
 /**
@@ -56,7 +56,7 @@ interface ChildDashboardProps {
  */
 export default function ChildDashboard({ data }: ChildDashboardProps) {
   const { user } = data;
-  const userId = user.user_id;
+  const userId = user.userId;
 
   /**
    * 상세 내역 보기 클릭 이벤트
@@ -98,13 +98,13 @@ export default function ChildDashboard({ data }: ChildDashboardProps) {
 
         {/* 총 잔액 */}
         <div className="text-head-00 font-bold text-neutral-1 mb-5">
-          {user.total_balance} 원
+          {user.totalBalance} 원
         </div>
 
         {/* 계좌 카드: 용돈 계좌 */}
         <AccountCard
           accountName="용돈 계좌"
-          balance={user.deposit_balance}
+          balance={user.depositBalance}
           showCard={true}
           onViewDetails={() => handleViewDetails("용돈 계좌")}
           onCardClick={() => handleViewCard()}
@@ -113,7 +113,7 @@ export default function ChildDashboard({ data }: ChildDashboardProps) {
         {/* 계좌 카드: 투자 계좌 */}
         <AccountCard
           accountName="투자 계좌"
-          balance={user.investment_balance}
+          balance={user.investmentBalance}
           onViewDetails={() => handleViewDetails("투자 계좌")}
           onCardClick={() => null}
         />
@@ -121,7 +121,7 @@ export default function ChildDashboard({ data }: ChildDashboardProps) {
         {/* 계좌 카드: 목표 적금 */}
         <AccountCard
           accountName="목표 적금"
-          balance={user.saving_balance}
+          balance={user.savingBalance}
           onViewDetails={() => handleViewDetails("목표 적금")}
           onCardClick={() => null}
         />

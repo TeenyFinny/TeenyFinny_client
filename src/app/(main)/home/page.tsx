@@ -17,7 +17,7 @@ interface ParentDashboardState {
 
 interface HomeApiResponse {
   user: {
-    user_id: number;
+    userId: number;
     name: string;
     role: string;
     email: string;
@@ -57,8 +57,8 @@ export default function Page() {
         // 자녀 목록 추출
         const children: ChildSummary[] = Array.isArray(userPayload.children)
           ? userPayload.children.map((child) => ({
-              user_id: Number(child.user_id ?? 0),
-              name: child.name ?? "",
+              userId: Number(child.userId ?? 0),
+              name: child.name,
               balance: Number(child.balance ?? 0),
             }))
           : [];
@@ -142,14 +142,14 @@ export default function Page() {
         <ChildDashboard
           data={{
             user: {
-              user_id: 2,
+              userId: 2,
               name: "김티니",
               role: "CHILD",
               email: "child@teenyfinny.com",
-              total_balance: 10000,
-              deposit_balance: 1000,
-              investment_balance: 0,
-              saving_balance: 9000,
+              totalBalance: 10000,
+              depositBalance: 1000,
+              investmentBalance: 0,
+              savingBalance: 9000,
             },
           }}
         />
