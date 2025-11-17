@@ -27,7 +27,7 @@ export function ConfirmationDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-[270px] gap-0 p-0 rounded-[14px] border-0"
+        className="w-[270px] gap-0 p-0 rounded-[14px] border-0"
         showCloseButton={false}
         onInteractOutside={(e) => e.preventDefault()}
       >

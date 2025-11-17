@@ -3,6 +3,7 @@ import { AccountCard } from "@/components/custom/account/AccountCard"
 import { AccountCardDisabled } from "@/components/custom/account/AccountCardDisabled";
 import { CardDetail } from "@/components/custom/allowance/card/CardDetail";
 import { ChildrenBadge } from "@/components/ui/badge/ChildrenBadge";
+import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 import { useUserStore } from "@/store/userStore";
@@ -42,6 +43,9 @@ export default function Page() {
     const [allowance, setAllowance] = useState<number | null>(null);
     const [invest, setInvest] = useState<number | null>(null);
     const [saving, setSaving] = useState<number | null>(null);
+
+    const [isInvestOpen, setIsInvestOpen] = useState<boolean>(false);
+    const [isSavingOpen, setIsSavingOpen ] = useState<boolean>(false);
 
 
     // 카드 정보 상태
@@ -206,7 +210,7 @@ export default function Page() {
                     showCard={true}
                     onViewDetails={() => handleViewDetails("용돈 계좌")}
                     onCardClick={() => handleViewCard()}
-                /> : <AccountCardDisabled accountName="용돈 계좌" onCardClick={() => {console.log("용돈 계좌 개설 페이지로")}}/>
+                /> : <AccountCardDisabled accountName="용돈 계좌" onCardClick={() => {router.push("/allowance/account/create")}}/>
                 }
 
                  {/* 카드 상세 바텀시트 */}
@@ -227,7 +231,7 @@ export default function Page() {
                     onViewDetails={() => handleViewDetails("투자 계좌")}
                     onCardClick={() => null} 
                 /> : 
-                    <AccountCardDisabled accountName="투자 계좌" onCardClick={() => {console.log("투자 계좌 개설 페이지로")}}/>
+                    <AccountCardDisabled accountName="투자 계좌" onCardClick={() => {setIsInvestOpen(true)}}/>
                 }
 
                 {/* 목표 적금 */}{saving != null && saving != undefined ? 
@@ -237,7 +241,7 @@ export default function Page() {
                     onViewDetails={() => handleViewDetails("목표 적금")}
                     onCardClick={() => null}
                 /> : 
-                    <AccountCardDisabled accountName="목표 계좌" onCardClick={() => {console.log("목표 계좌 개설 페이지로")}}/>
+                    <AccountCardDisabled accountName="목표 계좌" onCardClick={() => {setIsSavingOpen(true)}}/>
                 }
 
                 <button
@@ -253,6 +257,23 @@ export default function Page() {
                     소비 리포트 보러가기
                 </button>
             </div>
+
+            <ConfirmationDialog 
+                open = {isInvestOpen}
+                onOpenChange={() => setIsInvestOpen(false)}
+                title="아직 투자 계좌가 없어요!" 
+                description={`아이가 계좌 개설을 요청할 때까지 기다려주세요!`}
+                confirmText="확인"
+            />
+
+            <ConfirmationDialog 
+                open = {isSavingOpen}
+                onOpenChange={() => setIsSavingOpen(false)}
+                title="아직 목표 적금 계좌가 없어요!" 
+                description={`아이가 계좌 개설을 요청할 때까지 기다려주세요!`}
+                confirmText="확인"
+            />
+
         </div>
     )
 
