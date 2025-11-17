@@ -12,7 +12,7 @@ import { DeleteConfirmDialog } from "@/components/ui/modal/DeleteConfirmDialog";
 import { TitleOnlyDialog } from "@/components/ui/modal/TitleOnlyDialog";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
-import { clampNumberInRange, isInRange } from "@/lib/utils/validators";
+import { clampNumberInRange} from "@/lib/utils/validators";
 import { ApiResponse } from "@/types/axios/apiRes.t";
 import { HttpError } from "@/types/axios/httpError.t";
 import { Edit } from "lucide-react";
@@ -84,15 +84,6 @@ export default function Page() {
     const router = useRouter();
 
     /**
-     * 이체 금액 입력 핸들러
-     *
-     * @param text 인풋 컴포넌트에서 전달되는 문자열 값
-     */
-    const amountHandler = (text: string) => {
-        setAmount(text)
-    }
-
-    /**
      * 자동이체 저장(생성/수정) 핸들러
      *
      * - isInit === true → 자동이체 최초 생성 요청
@@ -103,7 +94,9 @@ export default function Page() {
         const totalAmount = Number(amount ?? 0)
 
         //공백일 경우 placeholder에 해당하는 1일로 변경    
-        const realDate = date === "" ? "1" : date;
+       const realDate = !date || date === "0" ? "1" : date;
+       //NULL일 경우 0원으로 설정하며, 숫자를 ,로 끊어서 처리해서 보냄. 
+       const realAmount = Number(amount ?? 0).toLocaleString("ko-KR");
 
         // 슬라이더에서 쓰던 것과 동일한 계산식
         const investmentAmount = Math.round((totalAmount * investmentRatio) / 100)
@@ -115,7 +108,7 @@ export default function Page() {
                 await api.post(requests.fetchAutoTransfer, {
                     data: {
                         userId: id,
-                        transferAmount: amount,
+                        transferAmount: realAmount,
                         transferDate: realDate,
                         ratio: investmentRatio
                     }
@@ -125,7 +118,7 @@ export default function Page() {
                 await api.put(requests.fetchAutoTransfer, {
                     data: {
                         autoTransferId: autoTransferId,
-                        transferAmount: amount,
+                        transferAmount: realAmount,
                         transferDate: realDate,
                         ratio: investmentRatio
                     }
