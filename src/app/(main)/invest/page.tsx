@@ -18,7 +18,7 @@ export default function Page(){
       try {
         const [stockRes, investRes] = await Promise.all([
           api.get(requests.dashMyStockList),
-          api.get(requests.investSummary),
+          api.get(requests.investmentsSummary),
         ]);
         setStocks(stockRes.data ?? []);
         setInvestSummary(investRes.data ?? []);
@@ -76,7 +76,7 @@ export default function Page(){
       {/* Account Link */}
       <div className="mb-2 flex justify-end">
         <a
-          href="/invest/myStockAccountView"
+          href="/invest/my-stock-account"
           className="flex items-center gap-1 text-body-06 text-neutral-2 hover:text-neutral-1 transition-colors"
         >
           내 계좌 보기
@@ -107,8 +107,8 @@ export default function Page(){
 
       {/* Trading Buttons */}
       <div className="flex items-center justify-center gap-4 mb-5 mt-6">
-        {/* Buy Button */}
-        <a href="/invest/allStockList?mode=BUY" className="flex flex-col items-center hover:opacity-80 transition-opacity bg-neutral-7 w-[162px] h-[120px] rounded-[16px] shadow-lg">
+        {/* buy Button */}
+        <a href="/invest/all-stocks?mode=buy" className="flex flex-col items-center hover:opacity-80 transition-opacity bg-neutral-7 w-[162px] h-[120px] rounded-[16px] shadow-lg">
           <img
             src="/images/invest/illust_invest_characoin.png"
             alt="주식 사기"
@@ -119,8 +119,8 @@ export default function Page(){
           </span>
         </a>
 
-        {/* Sell Button */}
-        <a href="/invest/allStockList?mode=SELL" className="flex flex-col items-center hover:opacity-80 transition-opacity bg-neutral-7 w-[162px] h-[120px] rounded-[16px] shadow-lg">
+        {/* sell Button */}
+        <a href="/invest/all-stocks?mode=sell" className="flex flex-col items-center hover:opacity-80 transition-opacity bg-neutral-7 w-[162px] h-[120px] rounded-[16px] shadow-lg">
           <img
             src="/images/invest/illust_invest_characoin.png"
             alt="주식 사기"
@@ -134,7 +134,7 @@ export default function Page(){
 
       {/* Investment Report Link */}
       <a
-        href="/invest/myStockAccountView"
+        href="/invest/my-stock-account"
         className="w-full py-3 px-5 mb-6 bg-neutral-7 border border-monochrome-gray rounded-[20px] flex items-center gap-3 hover:bg-monochrome-lightgray"
       >
         <img src="/images/invest/icon_invest_graph.png" alt="chart icon" className="w-6 h-6" />
