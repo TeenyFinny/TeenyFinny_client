@@ -27,7 +27,7 @@ const requests = {
   fetchChild: `/account/children`,
   fetchTotalAccount: `/account/totalAccounts`,
   fetchAutoTransfer: `/account/auto-transfers`,
-  portfolio: `/investmenets/my-stocks/portfolio`,
+  portfolio: `/investments/my-stocks/portfolio`,
 
   fetchNotice: `/notice`,
 
