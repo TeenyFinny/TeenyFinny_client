@@ -22,6 +22,7 @@ const requests = {
   tradeOrder: `/invest/tradeOrder`,
   getChild: `/account/children`,
   getTotalAccount: `/account/totalAccounts`,
+  getAutoTransfer: `/account/auto-transfers`,
 };
 
 export default requests;

@@ -51,7 +51,7 @@ export default function Page() {
     }
 
     const autoTransHandler = () => {
-        console.log("(id=" + currentChild + ")인 아이의 자동이체 페이지와 리다이렉트")
+        router.push(`/account/auto-transfer/${currentChild}`)
     }
 
     const reportHandler = () => {

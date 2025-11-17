@@ -9,29 +9,34 @@ interface RatioSliderProps {
   investmentRatio: number
   /** 비율이 변경될 때 호출: 0~100 숫자 하나만 전달 */
   onChange: (ratio: number) => void
+  /** 비활성화 여부 */
+  disabled: boolean
 }
 
 /**
  * RatioSlider
  *
- * - 부모와는 **비율(0~100)** 만 주고받음
+ * - 부모와는 비율(0~100)만 주고받음
  * - 슬라이더 내부에서만 `totalAmount`를 이용해 금액을 계산해서 표시
  */
 export function RatioSlider({
   totalAmount,
   investmentRatio,
   onChange,
+  disabled,
 }: RatioSliderProps) {
   // 비율은 부모가 관리하는 값 (controlled component)
   const clampedInvestmentRatio = Math.min(100, Math.max(0, investmentRatio))
   const allowanceRatio = 100 - clampedInvestmentRatio
 
-  const safeTotal = Number.isFinite(totalAmount) && totalAmount > 0 ? totalAmount : 0
+  const safeTotal =
+    Number.isFinite(totalAmount) && totalAmount > 0 ? totalAmount : 0
 
   const investmentAmount = Math.round((safeTotal * clampedInvestmentRatio) / 100)
   const allowanceAmount = safeTotal - investmentAmount
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return // 🔒 비활성화 시 값 변경 방어
     const nextRatio = Number(e.target.value)
     onChange(nextRatio)
   }
@@ -39,14 +44,41 @@ export function RatioSlider({
   const formatAmount = (amount: number): string =>
     `${amount.toLocaleString("ko-KR")}원`
 
+  // 🔧 disabled 여부에 따라 슬라이더 스타일 분기
+  const sliderClassName = disabled
+    ? `w-full h-2 bg-[#e0e0e0] rounded-full appearance-none cursor-not-allowed
+       [&::-webkit-slider-thumb]:appearance-none
+       [&::-webkit-slider-thumb]:w-6
+       [&::-webkit-slider-thumb]:h-6
+       [&::-webkit-slider-thumb]:rounded-full
+       [&::-webkit-slider-thumb]:bg-[#bdbdbd]
+       [&::-webkit-slider-thumb]:cursor-not-allowed
+       [&::-moz-range-thumb]:w-6
+       [&::-moz-range-thumb]:h-6
+       [&::-moz-range-thumb]:rounded-full
+       [&::-moz-range-thumb]:bg-[#bdbdbd]
+       [&::-moz-range-thumb]:border-0
+       [&::-moz-range-thumb]:cursor-not-allowed`
+    : `w-full h-2 bg-[#cacaca] rounded-full appearance-none cursor-pointer
+       [&::-webkit-slider-thumb]:appearance-none
+       [&::-webkit-slider-thumb]:w-6
+       [&::-webkit-slider-thumb]:h-6
+       [&::-webkit-slider-thumb]:rounded-full
+       [&::-webkit-slider-thumb]:bg-[#1761c5]
+       [&::-webkit-slider-thumb]:cursor-pointer
+       [&::-moz-range-thumb]:w-6
+       [&::-moz-range-thumb]:h-6
+       [&::-moz-range-thumb]:rounded-full
+       [&::-moz-range-thumb]:bg-[#1761c5]
+       [&::-moz-range-thumb]:border-0
+       [&::-moz-range-thumb]:cursor-pointer`
+
   return (
     <div className="w-[329px] h-[72px] space-y-4">
       {/* 상단 레이블 영역 */}
       <div className="flex items-center justify-between">
         <span>
-          <span className="text-body-06 text-error">
-            투자 비율
-          </span>
+          <span className="text-body-06 text-error">투자 비율</span>
           <span className="text-body-08 text-neutral-4 ml-[5px]">
             {formatAmount(investmentAmount)}
           </span>
@@ -55,9 +87,7 @@ export function RatioSlider({
           <span className="text-body-08 text-neutral-4">
             {formatAmount(allowanceAmount)}
           </span>
-          <span className="text-body-06 text-info ml-[5px]">
-            용돈 비율
-          </span>
+          <span className="text-body-06 text-info ml-[5px]">용돈 비율</span>
         </span>
       </div>
 
@@ -69,19 +99,8 @@ export function RatioSlider({
           max="100"
           value={clampedInvestmentRatio}
           onChange={handleSliderChange}
-          className="w-full h-2 bg-[#cacaca] rounded-full appearance-none cursor-pointer
-            [&::-webkit-slider-thumb]:appearance-none
-            [&::-webkit-slider-thumb]:w-6
-            [&::-webkit-slider-thumb]:h-6
-            [&::-webkit-slider-thumb]:rounded-full
-            [&::-webkit-slider-thumb]:bg-[#1761c5]
-            [&::-webkit-slider-thumb]:cursor-pointer
-            [&::-moz-range-thumb]:w-6
-            [&::-moz-range-thumb]:h-6
-            [&::-moz-range-thumb]:rounded-full
-            [&::-moz-range-thumb]:bg-[#1761c5]
-            [&::-moz-range-thumb]:border-0
-            [&::-moz-range-thumb]:cursor-pointer"
+          disabled={disabled} // 🔒 브라우저 단에서도 비활성화
+          className={sliderClassName}
         />
       </div>
 
