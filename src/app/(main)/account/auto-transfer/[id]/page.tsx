@@ -14,12 +14,6 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-/**
- * TODO
- *   - 인풋 컴포넌트 neumaric을 제대로 만들기
- *   - api 연결하기
- */
-
 type Params = {
     id: string
 }
@@ -28,7 +22,7 @@ type AutoTransfer = {
     isInit: boolean,
     userId: string,
     transferId: string,
-    transferAmount: string,
+    transferAmmount: string,
     transferDate: string,
     ratio: number
 }
@@ -51,27 +45,26 @@ export default function Page() {
     }
 
     const updateSubmitHandler = async () => {
-        const totalAmount = Number(ammount ?? 0)
+        const totalAmmount = Number(ammount ?? 0)
 
-        // 슬라이더에서 쓰던 것과 동일한 계산식
-        const investmentAmount = Math.round((totalAmount * investmentRatio) / 100)
-        const allowanceAmount = totalAmount - investmentAmount
+        const investmentAmmount = Math.round((totalAmmount * investmentRatio) / 100)
+        const allowanceAmmount = totalAmmount - investmentAmmount
 
         try{
             if (isInit) {
-                const res = api.post(requests.getAutoTransfer, {
+                await api.post(requests.getAutoTransfer, {
                     params: { 
                         userId: id ,
-                        transferAmount : ammount,
+                        transferAmmount : ammount,
                         transferDate : date,
                         ratio : investmentRatio
                     }
                 })
             } else {
-                const res = api.put(requests.getAutoTransfer, {
+                await api.put(requests.getAutoTransfer, {
                     params: { 
                         autoTransferId: autoTransferId ,
-                        transferAmount : ammount,
+                        transferAmmount : ammount,
                         transferDate : date,
                         ratio : investmentRatio
                     }
@@ -79,9 +72,9 @@ export default function Page() {
             }
 
             console.log(
-                `이체 금액: ${totalAmount}원, ` +
-                `투자 금액: ${investmentAmount}원, ` +
-                `용돈 금액: ${allowanceAmount}원, ` +
+                `이체 금액: ${totalAmmount}원, ` +
+                `투자 금액: ${investmentAmmount}원, ` +
+                `용돈 금액: ${allowanceAmmount}원, ` +
                 `이체 일자: ${date ?? ""}일, ` +
                 `투자 계좌 입금 비율: ${investmentRatio}% 제출됨`
             )
@@ -102,20 +95,21 @@ export default function Page() {
     }
 
     const deleteSubmitHandler = async () => {
-        const totalAmount = Number(ammount ?? 0)
+        const totalAmmount = Number(ammount ?? 0)
 
-        // 슬라이더에서 쓰던 것과 동일한 계산식
-        const investmentAmount = Math.round((totalAmount * investmentRatio) / 100)
-        const allowanceAmount = totalAmount - investmentAmount
+        const investmentAmmount = Math.round((totalAmmount * investmentRatio) / 100)
+        const allowanceAmmount = totalAmmount - investmentAmmount
 
         try {
-            const res = api.delete(requests.getAutoTransfer, {
+            await api.delete(requests.getAutoTransfer, {
                 params: { autoTransferId: autoTransferId }
             })
 
             console.log(
                 `${autoTransferId} 삭제 요청 완료`
             )
+
+            router.push(`/account`)
         } catch (e) {
             if (e instanceof HttpError) {
                 // 권한이 없다면 온보딩 화면으로 라우팅
@@ -155,16 +149,13 @@ export default function Page() {
 
                 const data = res.data;
 
-                // 서버에서 "true"/"false" 문자열로 온다고 가정
                 const init = data.isInit === "true";
 
-                // isInit 상태는 그대로 서버 값에 맞춤
                 setIsInit(init);
 
-                // init === false 면: 저장된 자동이체 설정이 있다는 의미 → 폼에 값 채우기
                 if (!init) {
                     setDate(data.transferDate ?? null);
-                    setAmmount(data.transferAmount ?? null);
+                    setAmmount(data.transferAmmount ?? null);
                     setInvestmentRatio(Number(data.ratio ?? -1));
                     setAutoTransferId(Number(data.autoTransferId ?? -1))
                 }
@@ -186,7 +177,7 @@ export default function Page() {
         return () => {
             controller.abort();
         };
-    }, []);
+    }, [id]);
 
     useEffect(() => {
         if (isInit)
@@ -235,7 +226,7 @@ export default function Page() {
             </div>
 
             <div className="h-[57px]" />
-            <RatioSlider totalAmount={Number(ammount)} investmentRatio={investmentRatio} onChange={setInvestmentRatio} disabled={deleteButtonFlag} />
+            <RatioSlider totalAmmount={Number(ammount)} investmentRatio={investmentRatio} onChange={setInvestmentRatio} disabled={deleteButtonFlag} />
 
             <div className="h-[57px] w-[88px]" />
             <div className="w-[320px]">
