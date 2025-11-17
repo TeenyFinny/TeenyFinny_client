@@ -14,59 +14,107 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+/**
+ * URL 파라미터로 전달되는 동적 세그먼트 타입
+ *
+ * 예: /account/auto-transfer/1 → { id: "1" }
+ */
 type Params = {
+    /** 자동이체를 설정할 자녀(또는 사용자)의 ID */
     id: string
 }
 
+/**
+ * 자동이체 정보 응답 타입
+ *
+ * 백엔드에서 내려주는 자동이체 설정 정보를 표현한다.
+ */
 type AutoTransfer = {
+    /** 최초 설정 여부 */
     isInit: boolean,
+    /** 사용자 ID */
     userId: string,
+    /** 자동이체 식별자 */
     transferId: string,
+    /** 매월 이체 금액 (문자열 포맷) */
     transferAmmount: string,
+    /** 이체 일자 (1~31일 등 문자열) */
     transferDate: string,
+    /** 투자 비율 (0~100) */
     ratio: number
 }
 
-// app/saving/page.tsx
+/**
+ * 자동이체 설정 페이지
+ *
+ * - URL: /account/auto-transfer/[id]
+ * - 기능:
+ *   - 최초 자동이체 설정 생성
+ *   - 기존 자동이체 수정
+ *   - 자동이체 삭제
+ */
 export default function Page() {
+    /** 이체 금액 입력값 (콤마 포함 문자열) */
     const [ammount, setAmmount] = useState<string | null>(null);
+    /** 이체 일자 입력값 (1~31일 등) */
     const [date, setDate] = useState<string | null>(null);
+    /** 투자 비율 (슬라이더 값, 0~100) */
     const [investmentRatio, setInvestmentRatio] = useState<number>(50);
+    /** 수정 모드 여부 (true: 수정 중, false: 조회/삭제 모드) */
     const [isEdit, setIsEdit] = useState<boolean>(false);
+    /** 최초 설정 모드 여부 (true: 최초 설정, false: 기존 설정 존재) */
     const [isInit, setIsInit] = useState<boolean>(true);
+    /** 삭제 버튼 노출 여부 */
     const [deleteButtonFlag, setDeleteButtonFlag] = useState<boolean>(false);
+    /** 자동이체 식별자 (수정/삭제 시 사용) */
     const [autoTransferId, setAutoTransferId] = useState<number>(-1);
 
+    /** URL 동적 세그먼트에서 가져온 자녀/사용자 ID */
     const { id } = useParams<Params>();
     const router = useRouter();
 
+    /**
+     * 이체 금액 입력 핸들러
+     *
+     * @param text 인풋 컴포넌트에서 전달되는 문자열 값
+     */
     const ammountHandler = (text: string) => {
         setAmmount(text)
     }
 
+    /**
+     * 자동이체 저장(생성/수정) 핸들러
+     *
+     * - isInit === true → 자동이체 최초 생성 요청
+     * - isInit === false → 기존 자동이체 수정 요청
+     * - 요청 성공 후 /account 페이지로 이동
+     */
     const updateSubmitHandler = async () => {
         const totalAmmount = Number(ammount ?? 0)
 
+        // 슬라이더에서 쓰던 것과 동일한 계산식
         const investmentAmmount = Math.round((totalAmmount * investmentRatio) / 100)
         const allowanceAmmount = totalAmmount - investmentAmmount
 
-        try{
+        try {
             if (isInit) {
+                // 최초 자동이체 설정 생성
                 await api.post(requests.getAutoTransfer, {
-                    params: { 
-                        userId: id ,
-                        transferAmmount : ammount,
-                        transferDate : date,
-                        ratio : investmentRatio
+                    params: {
+                        userId: id,
+                        transferAmmount: ammount,
+                        transferDate: date,
+                        ratio: investmentRatio
                     }
                 })
             } else {
+                // 기존 자동이체 설정 수정
                 await api.put(requests.getAutoTransfer, {
-                    params: { 
-                        autoTransferId: autoTransferId ,
-                        transferAmmount : ammount,
-                        transferDate : date,
-                        ratio : investmentRatio
+                    params: {
+                        autoTransferId: autoTransferId,
+                        transferAmmount: ammount,
+                        transferDate: date,
+                        ratio: investmentRatio
                     }
                 })
             }
@@ -94,9 +142,16 @@ export default function Page() {
         }
     }
 
+    /**
+     * 자동이체 삭제 핸들러
+     *
+     * - 현재 autoTransferId를 기반으로 삭제 요청
+     * - 삭제 성공 시 /account 페이지로 이동
+     */
     const deleteSubmitHandler = async () => {
         const totalAmmount = Number(ammount ?? 0)
 
+        // 슬라이더에서 쓰던 것과 동일한 계산식 (로그용)
         const investmentAmmount = Math.round((totalAmmount * investmentRatio) / 100)
         const allowanceAmmount = totalAmmount - investmentAmmount
 
@@ -112,11 +167,9 @@ export default function Page() {
             router.push(`/account`)
         } catch (e) {
             if (e instanceof HttpError) {
-                // 권한이 없다면 온보딩 화면으로 라우팅
                 if (e.statusCode === 403) {
                     router.push("/");
                 } else {
-                    // 필요 시 다른 에러 처리
                     console.error(e);
                 }
             } else {
@@ -125,6 +178,12 @@ export default function Page() {
         }
     }
 
+    /**
+     * 수정 버튼 클릭 핸들러
+     *
+     * - isEdit 상태를 토글한다.
+     * - 수정 모드일 때는 인풋이 활성화되고, 삭제 버튼은 숨김 처리된다.
+     */
     const editButtonHandler = () => {
         if (isEdit)
             setIsEdit(false);
@@ -132,14 +191,20 @@ export default function Page() {
             setIsEdit(true);
     }
 
-    /* getChild api 호출부분 */
+    /**
+     * 페이지 진입 시 자동이체 설정 조회
+     *
+     * - 현재 URL의 id(userId)를 기반으로 자동이체 정보를 조회한다.
+     * - 응답이 isInit === true이면 최초 설정 모드 유지
+     * - isInit === false이면 화면에 기존 설정값(금액/일자/비율/autoTransferId)을 채운다.
+     * - 컴포넌트 언마운트 시 AbortController로 요청을 중단한다.
+     */
     useEffect(() => {
         const controller = new AbortController();
 
         (async () => {
             try {
                 // 인터셉터가 res.data를 반환하므로 res가 응답 바디
-                // <ApiResponse<Notice>>는 없어도 작동함 (타입 지정)
                 const res = await api.get<ApiResponse<AutoTransfer>>(requests.getAutoTransfer, {
                     signal: controller.signal,
                     params: { userId: id }
@@ -153,6 +218,7 @@ export default function Page() {
 
                 setIsInit(init);
 
+                // 기존 자동이체 설정이 존재하는 경우, 화면에 값 세팅
                 if (!init) {
                     setDate(data.transferDate ?? null);
                     setAmmount(data.transferAmmount ?? null);
@@ -161,11 +227,9 @@ export default function Page() {
                 }
             } catch (e) {
                 if (e instanceof HttpError) {
-                    // 권한이 없다면 온보딩 화면으로 라우팅
                     if (e.statusCode === 403) {
                         router.push("/");
                     } else {
-                        // 필요 시 다른 에러 처리
                         console.error(e);
                     }
                 } else {
@@ -179,6 +243,13 @@ export default function Page() {
         };
     }, [id]);
 
+    /**
+     * 버튼 노출 상태 관리 이펙트
+     *
+     * - isInit === true → 최초 설정 모드 → 삭제 버튼 숨김
+     * - isInit === false && isEdit === true → 수정 모드 → 삭제 버튼 숨김
+     * - isInit === false && isEdit === false → 조회 모드 → 삭제 버튼 노출
+     */
     useEffect(() => {
         if (isInit)
             setDeleteButtonFlag(false);
@@ -226,7 +297,12 @@ export default function Page() {
             </div>
 
             <div className="h-[57px]" />
-            <RatioSlider totalAmmount={Number(ammount)} investmentRatio={investmentRatio} onChange={setInvestmentRatio} disabled={deleteButtonFlag} />
+            <RatioSlider
+                totalAmmount={Number(ammount)}
+                investmentRatio={investmentRatio}
+                onChange={setInvestmentRatio}
+                disabled={deleteButtonFlag}
+            />
 
             <div className="h-[57px] w-[88px]" />
             <div className="w-[320px]">
@@ -242,7 +318,14 @@ export default function Page() {
                         <div className="text-body-03 text-neutral-2 mt-[6px] mb-[3.5px]">
                             이체 일시
                         </div>
-                        <NormalInput2 label="매달" value={date ? date : ""} onChange={setDate} placeholder="1" unit="일" isNumeric={true} />
+                        <NormalInput2
+                            label="매달"
+                            value={date ? date : ""}
+                            onChange={setDate}
+                            placeholder="1"
+                            unit="일"
+                            isNumeric={true}
+                        />
                     </div>
                 }
 
