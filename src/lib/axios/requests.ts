@@ -23,6 +23,14 @@ const requests = {
   fetchChild: `/account/children`,
   fetchTotalAccount: `/account/totalAccounts`,
   fetchAutoTransfer: `/account/auto-transfers`,
+  fetchNotice: `/notice`,
+
+  koreainvestmentStockList: `/uapi/domestic-stock/v1/quotations/intstock-multprice`,
+  koreainvestmentStockDetail: `/uapi/domestic-stock/v1/quotations/inquire-price`,
+
+  fetchAccountHistory: `/account/history`,
+  fetchTransactionDetail: `/account/history/detail`,
+  fetchChildCard: `/account/card`,
 };
 
 export default requests;

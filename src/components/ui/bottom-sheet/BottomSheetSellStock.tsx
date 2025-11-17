@@ -9,7 +9,7 @@ import { ArrowLeft } from "lucide-react"
  * @typedef {Object} BottomSheetSellStock
  * @property {boolean} open - 바텀시트의 열림 여부를 제어합니다. `true`일 때 바텀시트가 표시됩니다.
  * @property {(open: boolean) => void} setOpen - 바텀시트의 열림 상태를 변경하는 setter 함수입니다.
- * @property {number} price - 주식의 1주당 판매 가격입니다.
+ * @property {number} stck_prpr - 주식의 1주당 판매 가격입니다.
  * @property {number} maxQuantity - 판매 가능한 최대 주식 수량입니다.
  * @property {(quantity: number, totalPrice: number) => void} onConfirm - 팔기 버튼 클릭 시 선택한 수량, 총 판매 가격을 전달하는 콜백 함수입니다.
  * @property {() => void} [onCancel] - 취소 버튼 클릭 시 실행될 콜백 함수입니다. (선택사항)
@@ -17,7 +17,7 @@ import { ArrowLeft } from "lucide-react"
 interface BottomSheetSellStockProps {
   open: boolean
   setOpen: (open: boolean) => void
-  price: number
+  stck_prpr: number
   maxQuantity: number
   onConfirm: (quantity: number, totalPrice: number) => void | Promise<void>
   onCancel?: () => void
@@ -73,7 +73,7 @@ interface BottomSheetSellStockProps {
 export function BottomSheetSellStock({
   open,
   setOpen,
-  price,
+  stck_prpr,
   maxQuantity,
   onConfirm,
   onCancel,
@@ -203,13 +203,13 @@ export function BottomSheetSellStock({
   const handleConfirm = () => {
     const qty = Number(quantity)
     if (qty <= 0) return
-    const total = qty * price
+    const total = qty * stck_prpr
     onConfirm(qty, total)
     setOpen(false)
   }
 
   // 예상 체결가 계산 (입력 수량 × 주당 가격)
-  const expectedPrice = (Number.parseInt(quantity) || 0) * price
+  const expectedPrice = (Number.parseInt(quantity) || 0) * stck_prpr
 
   /**
    * 숫자를 한국 로케일 형식으로 포맷팅하는 함수입니다.
@@ -251,7 +251,7 @@ export function BottomSheetSellStock({
         {/* 현재 가격 */}
         <div className="text-center mb-5">
           <p className="text-body-06 text-neutral-3 mb-1">현재 가격</p>
-          <p className="text-head-05 text-neutral-1">{formatNumber(price)} 원</p>
+          <p className="text-head-05 text-neutral-1">{formatNumber(stck_prpr)} 원</p>
         </div>
 
 
