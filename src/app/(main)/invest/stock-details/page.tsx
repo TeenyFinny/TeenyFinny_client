@@ -72,11 +72,11 @@ export default function Page(){
     );
   }
 
-  /** 주문 공통 처리 (BUY / SELL) */
+  /** 주문 공통 처리 (buy / sell) */
     const handleTradeOrder = async (quantity: number, totalPrice?: number) => {
       if (!stock) return
   
-      const type = mode === "BUY" ? "BUY" : "SELL";
+      const type = mode === "buy" ? "BUY" : "SELL";
       const price = stock.stck_prpr;
   
       try {
@@ -88,7 +88,7 @@ export default function Page(){
           type
         )
   
-        alert(`${stock.hts_kor_isnm} ${quantity}주 ${mode === "BUY" ? "매수" : "매도"} 완료!`)
+        alert(`${stock.hts_kor_isnm} ${quantity}주 ${mode === "buy" ? "매수" : "매도"} 완료!`)
         console.log(`${type} 주문 결과:`, res)
       } catch (e) {
         console.error(`${mode} 주문 실패:`, e)
@@ -142,12 +142,12 @@ export default function Page(){
 
         {/* Buy Button */}
         <div className="mt-1">
-          <BigButtonActivated label={mode === "BUY" ? "주식 사기" : "주식 팔기"} onClick={() => setOpen(true)} />
+          <BigButtonActivated label={mode === "buy" ? "주식 사기" : "주식 팔기"} onClick={() => setOpen(true)} />
         </div>
       </main>
 
       {/* 팔기 바텀시트 컴포넌트 */}
-      {stock && mode === "SELL" && (
+      {stock && mode === "sell" && (
         <BottomSheetSellStock
           open={open}
           setOpen={setOpen}
@@ -159,7 +159,7 @@ export default function Page(){
       )}
 
       {/* 바텀시트 컴포넌트 */}
-      {stock && mode === "BUY" && (
+      {stock && mode === "buy" && (
         <BottomSheetBuyStock
           open={open}
           setOpen={setOpen}

@@ -1,14 +1,15 @@
 "use client"
+import { InvestStatus } from "@/components/ui/invest/InvestStatus";
 import { StockList } from "@/components/ui/invest/StockList";
 import { HttpError } from "@/types/axios/httpError.t";
 import api from "@/lib/axios/axios";
 
 import requests from "@/lib/axios/requests"
 import { useEffect, useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation";
-import { BottomSheetBuyStock } from "@/components/ui/bottom-sheet/BottomSheetBuyStock";
+import { useRouter } from "next/navigation";
 import { BottomSheetSellStock } from "@/components/ui/bottom-sheet/BottomSheetSellStock";
 import { createTradeOrder } from "@/lib/api/tradeOrder";
+
 
 interface Stock {
   stck_shrn_iscd: string // 종목코드
@@ -25,6 +26,7 @@ interface Stock {
   // stck_lwpr: string, // 저가
 }
 
+
 interface StockDetail {
   stck_shrn_iscd: string
   hts_kor_isnm: string
@@ -33,29 +35,28 @@ interface StockDetail {
   maxQuantity: number
 }
 
+
+
 export default function Page() {
   const router = useRouter();
-
-  const searchParams = useSearchParams();
-
-  // "mode" 값 받아오기 ("buy" or "sell")
-  const mode = searchParams.get("mode") ?? "BUY";
-
-
   const [stocks, setStocks] = useState<Stock[]>([]);
+  const [investSummary, setInvestSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [selectedStock, setSelectedStock] = useState<StockDetail | null>(null);
+  const [selectedStock, setSelectedStock] = useState<StockDetail | null>(null)
+
 
   useEffect(() => {
 
     (async () => {
       try {
-        const [stockRes] = await Promise.all([
+        const [stockRes, investRes] = await Promise.all([
           api.get(requests.koreainvestmentStockList),
+          api.get(requests.investmentsSummary),
         ]);
         // const res = await api.get(requests.stockList);
         setStocks(stockRes.output ?? []);
+        setInvestSummary(investRes.data ?? []);
       } catch (e) {
 	      // 커스텀 에러관리
         const err = e as HttpError;
@@ -74,6 +75,31 @@ export default function Page() {
     })();
   }, [router]);
 
+  /** 주문 공통 처리 (sell) */
+    const handleTradeOrder = async (quantity: number, totalPrice?: number) => {
+      if (!selectedStock) return
+  
+      const type = "SELL";
+      const price = selectedStock.stck_prpr;
+  
+      try {
+        const res = await createTradeOrder(
+          selectedStock.stck_shrn_iscd,
+          selectedStock.hts_kor_isnm,
+          price,
+          quantity,
+          type
+        )
+  
+        alert(`${selectedStock.hts_kor_isnm} ${quantity}주 매도 완료!`)
+        console.log(`${type} 주문 결과:`, res)
+      } catch (e) {
+        console.error(`SELL 주문 실패:`, e)
+        alert("주문 실패")
+      } finally {
+        setOpen(false)
+      }
+    }
 
   if (loading) {
     return (
@@ -103,49 +129,34 @@ export default function Page() {
     }
   }
 
-  /** 주문 공통 처리 (BUY / SELL) */
-  const handleTradeOrder = async (quantity: number, totalPrice?: number) => {
-    if (!selectedStock) return
 
-    const type = mode === "BUY" ? "BUY" : "SELL";
-    const price = selectedStock.stck_prpr;
 
-    try {
-      const res = await createTradeOrder(
-        selectedStock.stck_shrn_iscd,
-        selectedStock.hts_kor_isnm,
-        price,
-        quantity,
-        type
-      )
-
-      alert(`${selectedStock.hts_kor_isnm} ${quantity}주 ${mode === "BUY" ? "매수" : "매도"} 완료!`)
-      console.log(`${type} 주문 결과:`, res)
-    } catch (e) {
-      console.error(`${mode} 주문 실패:`, e)
-      alert("주문 실패")
-    } finally {
-      setOpen(false)
-    }
-  }
-  
   return (
-    <div className="w-full bg-primary-4 pb-20">
-      <div className="flex justify-center items-center gap-2 pt-4 pb-7">
-        <h2 className="text-head-06 text-neutral-1">전체 주식 목록</h2>
-        <img src="/icons/refresh.png" alt="새로고침" className="w-5 h-5" />
-      </div>
-      <StockList stocks={stocks} 
-                  onClickBtn={handleStockDetail} 
-                  btnLab={mode === "BUY" ? "사기" : "팔기"}
-                  onClickRow={(stck_shrn_iscd) => {
-                    router.push(`/invest/stockDetail?stck_shrn_iscd=${stck_shrn_iscd}&mode=${mode}`);
+    <main className="min-h-screen flex bg-primary-4">
+      <div className="flex flex-col items-center pt-6">
+        {investSummary && <InvestStatus
+            userName={investSummary.userName}
+            currentAmount={investSummary.currentAmount}
+            profitAmount={investSummary.profitAmount}
+            profitRate={investSummary.profitRate}
+            availableAmount={investSummary.availableAmount}
+            isPositive={investSummary.isPositive}
+            />
+        }
+        <h2 className="text-head-06 text-neutral-2 px-4 pt-12 self-start">
+          내가 산 주식
+        </h2>
+        <StockList stocks={stocks} 
+        onClickBtn={handleStockDetail} 
+        btnLab="팔기"
+        onClickRow={(stck_shrn_iscd) => {
+                    router.push(`/invest/stock-details?stck_shrn_iscd=${stck_shrn_iscd}&mode=sell`);
                   }}
                   />
-
+      </div>
 
       {/* 팔기 바텀시트 컴포넌트 */}
-      {selectedStock && mode === "SELL" && (
+      {selectedStock && (
         <BottomSheetSellStock
           open={open}
           setOpen={setOpen}
@@ -155,19 +166,6 @@ export default function Page() {
           onCancel={() => setOpen(false)}
         />
       )}
-
-      {/* 사기 바텀시트 컴포넌트 */}
-      {selectedStock && mode === "BUY" && (
-        <BottomSheetBuyStock
-          open={open}
-          setOpen={setOpen}
-          stck_prpr={Number(String(selectedStock.stck_prpr).replace(/,/g, ""))}
-          availableStocks={Number(String(selectedStock.availableStocks).replace(/,/g, ""))}
-          maxQuantity={selectedStock.maxQuantity}
-          onConfirm={handleTradeOrder}
-          onCancel={() => setOpen(false)}
-        />
-      )}
-    </div>
+    </main>
   )
 }
