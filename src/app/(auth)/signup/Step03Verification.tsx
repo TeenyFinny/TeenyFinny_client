@@ -67,10 +67,8 @@ export default function Step03Verification({
     if (!yearPrefix) return; // 세기 미판별 시 방어
     const finalBirth = `${yearPrefix}${birthFront}`; // YYYYMMDD
 
-    //생년월일을 검증하는 함수, 생년월일이 부적합할시에 return;으로 방어, console.log("생년월일을 확인하세요") 출력
     // 생년월일 유효성 검증
     if (!isValidBirthDate(finalBirth)) {
-      console.log("생년월일을 확인하세요");
       setOpenBirthErrorModal(true);
       return;
     }
