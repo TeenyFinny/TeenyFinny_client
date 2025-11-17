@@ -1,4 +1,13 @@
-export default function MoveToInvest() {
+import { useEffect } from "react";
+
+export default function Move({ onNext }: { onNext: () => void }) {
+
+  useEffect(() => {
+    const t = setTimeout(onNext, 2500);
+    return () => clearTimeout(t);
+  }, []);
+
+
   return (
     <div className="flex flex-col items-center px-6 pt-13">
       {/* Title Section */}
