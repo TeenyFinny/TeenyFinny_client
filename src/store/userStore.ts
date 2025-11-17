@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { ChildSummary } from "@/types/user";
 
 /**
  * 사용자 전역 상태 타입 정의
@@ -24,6 +25,7 @@ interface UserState {
   userId: number | null;
   userType: "parent" | "child" | null;
   hasChildren: boolean;
+  children: ChildSummary[];
   setUser: (
     userName: string,
     userType: "parent" | "child" | null,
@@ -52,6 +54,7 @@ export const useUserStore = create<UserState>()(
       userType: null,
       /** 부모 계정의 자녀 연결 여부 */
       hasChildren: false,
+      children: [],
 
       /**
        * 사용자 정보를 통합 설정합니다.
@@ -60,8 +63,20 @@ export const useUserStore = create<UserState>()(
        * @param {number} [userId] - 사용자 ID (optional)
        * @param {boolean} [hasChildren=false] - 부모의 자녀 연결 여부 (optional)
        */
-      setUser: (userName, userType, userId, hasChildren = false) =>
-        set({ userName, userType, userId: userId ?? null, hasChildren }),
+      setUser: (
+        userName,
+        userType,
+        userId,
+        hasChildren = false,
+        children = []
+      ) =>
+        set({
+          userName,
+          userType,
+          userId: userId ?? null,
+          hasChildren,
+          children,
+        }),
 
       /**
        * 부모 계정의 자녀 연결 여부를 개별적으로 변경합니다.
@@ -75,7 +90,13 @@ export const useUserStore = create<UserState>()(
        * (로그아웃 시 호출)
        */
       clearUser: () =>
-        set({ userName: "", userId: null, userType: null, hasChildren: false }),
+        set({
+          userName: "",
+          userId: null,
+          userType: null,
+          hasChildren: false,
+          children: [],
+        }),
     }),
     {
       name: "teenfinny-user", // ✅ 로컬스토리지 key
