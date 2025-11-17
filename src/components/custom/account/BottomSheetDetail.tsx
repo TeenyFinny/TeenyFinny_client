@@ -17,12 +17,12 @@ import { X } from "lucide-react";
  */
 interface DetailData {
   merchant: string;
-  amount: number;
+  amount: string;
   date: string;
   type: string;
   category: string;
-  approveAmount: number;
-  balanceAfter: number;
+  approveAmount: string;
+  balanceAfter: string;
 }
 
 interface BottomSheetDetailProps {
@@ -49,7 +49,7 @@ interface BottomSheetDetailProps {
   /**
    * 상세 데이터 객체 (API 또는 상위 컴포넌트에서 전달)
    */
-  detail: DetailData;
+  detail: DetailData | null;
 }
 
 /**
@@ -174,23 +174,42 @@ export function BottomSheetDetail({
           <X className="w-6 h-6" strokeWidth={2} />
         </button>
 
-        {/* 사용처 + 금액 */}
-        <div className="mt-[26px] px-6 flex flex-col">
-          <span className="text-head-01 font-bold text-neutral-2">{detail.merchant}</span>
-          <span className="text-landing-01 font-bold text-neutral-1">
-            {detail.amount.toLocaleString()}원
-          </span>
-        </div>
+        {!detail ? (
+          <div className="p-6 text-center text-neutral-3">
+            불러오는 중...
+          </div>
+        ) : (
+          <>
+            {/* 사용처 + 금액 */}
+            <div className="mt-[26px] px-6 flex flex-col">
+              <span className="text-head-01 font-bold text-neutral-2">
+                {detail.merchant}
+              </span>
+              <span className="text-landing-01 font-bold text-neutral-1">
+                {detail.amount}원
+              </span>
+            </div>
 
-        {/* 상세 정보 리스트 */}
-        <div className="mt-[26px] px-[26px] flex flex-col gap-[23px]">
-          <InfoRow label="거래일" value={detail.date} />
-          <InfoRow label="거래구분" value={detail.type} />
-          <InfoRow label="카테고리" value={detail.category} />
-          <InfoRow label="거래금액" value={`${detail.amount.toLocaleString()}원`} />
-          <InfoRow label="결제금액" value={`${detail.approveAmount.toLocaleString()}원`} />
-          <InfoRow label="결제 후 잔액" value={`${detail.balanceAfter.toLocaleString()}원`} />
-        </div>
+            {/* 상세 정보 리스트 */}
+            <div className="mt-[26px] px-[26px] flex flex-col gap-[23px]">
+              <InfoRow label="거래일" value={detail.date} />
+              <InfoRow label="거래구분" value={detail.type} />
+              <InfoRow label="카테고리" value={detail.category} />
+              <InfoRow
+                label="거래금액"
+                value={`${detail.amount}원`}
+              />
+              <InfoRow
+                label="결제금액"
+                value={`${detail.approveAmount}원`}
+              />
+              <InfoRow
+                label="결제 후 잔액"
+                value={`${detail.balanceAfter}원`}
+              />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
