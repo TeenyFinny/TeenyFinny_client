@@ -1,10 +1,15 @@
 'use client'
 
 import { RatioSlider } from "@/components/custom/account/RatioSlider";
+import { BottomSheetPassword } from "@/components/ui/bottom-sheet/BottomSheetPassword";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { DisabledInputField } from "@/components/ui/input/DisabledInputField";
 import { NormalInput } from "@/components/ui/input/NormalInput";
 import { NormalInput2 } from "@/components/ui/input/NormalInput2";
+import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog";
+import { ConfirmContentDialog } from "@/components/ui/modal/ConfirmContentDialog";
+import { DeleteConfirmDialog } from "@/components/ui/modal/DeleteConfirmDialog";
+import { TitleOnlyDialog } from "@/components/ui/modal/TitleOnlyDialog";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 import { ApiResponse } from "@/types/axios/apiRes.t";
@@ -29,20 +34,20 @@ type Params = {
  *
  * 백엔드에서 내려주는 자동이체 설정 정보를 표현한다.
  */
-type AutoTransfer = {
-    /** 최초 설정 여부 */
-    isInit: boolean,
-    /** 사용자 ID */
-    userId: string,
-    /** 자동이체 식별자 */
-    transferId: string,
-    /** 매월 이체 금액 (문자열 포맷) */
-    transferAmount: string,
-    /** 이체 일자 (1~31일 등 문자열) */
-    transferDate: string,
-    /** 투자 비율 (0~100) */
-    ratio: number
-}
+    type AutoTransfer = {
+        /** 최초 설정 여부 */
+        isInit: boolean,
+        /** 사용자 ID */
+        userId: string,
+        /** 자동이체 식별자 */
+        transferId: string,
+        /** 매월 이체 금액 (문자열 포맷) */
+        transferAmount: string,
+        /** 이체 일자 (1~31일 등 문자열) */
+        transferDate: string,
+        /** 투자 비율 (0~100) */
+        ratio: number
+    }
 
 /**
  * 자동이체 설정 페이지
@@ -68,6 +73,10 @@ export default function Page() {
     const [deleteButtonFlag, setDeleteButtonFlag] = useState<boolean>(false);
     /** 자동이체 식별자 (수정/삭제 시 사용) */
     const [autoTransferId, setAutoTransferId] = useState<number>(-1);
+    /** 삭제 비밀번호 바텀시트 여부 */
+    const [isDeletePasswordOpen, setIsDeletePasswordOpen] = useState<boolean>(false);
+    /** 삭제 완료 모달 여부 */
+    const [isDeleteDoneOpen, setIsDeleteDoneOpen] = useState<boolean>(false);
 
     /** URL 동적 세그먼트에서 가져온 자녀/사용자 ID */
     const { id } = useParams<Params>();
@@ -143,18 +152,28 @@ export default function Page() {
     }
 
     /**
-     * 자동이체 삭제 핸들러
+     * 수정 버튼 클릭 핸들러
      *
-     * - 현재 autoTransferId를 기반으로 삭제 요청
-     * - 삭제 성공 시 /account 페이지로 이동
+     * - isEdit 상태를 토글한다.
+     * - 수정 모드일 때는 인풋이 활성화되고, 삭제 버튼은 숨김 처리된다.
      */
-    const deleteSubmitHandler = async () => {
-        const totalAmount = Number(amount ?? 0)
+    const editButtonHandler = () => {
+        if (isEdit)
+            setIsEdit(false);
+        else
+            setIsEdit(true);
+    }
 
-        // 슬라이더에서 쓰던 것과 동일한 계산식 (로그용)
-        const investmentAmount = Math.round((totalAmount * investmentRatio) / 100)
-        const allowanceAmount = totalAmount - investmentAmount
+    const deleteConfirmHandler = () => {
+        setIsDeletePasswordOpen(true);
+    }
 
+    const deletePasswordHandler = () => {
+        setIsDeletePasswordOpen(false);
+        setIsDeleteDoneOpen(true);
+    }
+
+    const deleteDoneHandler = async () => {
         try {
             await api.delete(requests.fetchAutoTransfer, {
                 data: { autoTransferId: autoTransferId }
@@ -176,19 +195,6 @@ export default function Page() {
                 console.error("An unexpected error occurred", e);
             }
         }
-    }
-
-    /**
-     * 수정 버튼 클릭 핸들러
-     *
-     * - isEdit 상태를 토글한다.
-     * - 수정 모드일 때는 인풋이 활성화되고, 삭제 버튼은 숨김 처리된다.
-     */
-    const editButtonHandler = () => {
-        if (isEdit)
-            setIsEdit(false);
-        else
-            setIsEdit(true);
     }
 
     /**
@@ -332,9 +338,44 @@ export default function Page() {
 
                 <div className="h-[57px]" />
                 {
-                    deleteButtonFlag ?
-                        <BigButtonActivated onClick={deleteSubmitHandler} label="삭제하기" />
-                        : <BigButtonActivated onClick={updateSubmitHandler} label="저장하기" />
+                    deleteButtonFlag ? (
+                        <DeleteConfirmDialog
+                        trigger={
+                            <BigButtonActivated onClick={() => {}} label="삭제하기" />
+                        }
+                        title="정말 해제하시겠어요?"
+                        description="해지 후에도 다시 설정할 수 있어요!"
+                        rtBtnTxt="해제"
+                        ltBtnTxt="취소"
+                        onClickRtBtn={deleteConfirmHandler}
+                        onClickLtBtn={() => {
+                            // 취소 눌렀을 때 하고 싶은 거 있으면 여기
+                        }}
+                        />
+                    ) : (
+                        <BigButtonActivated onClick={updateSubmitHandler} label="저장하기" />
+                    )
+                    }
+
+            </div>
+
+            <div>
+                {
+                    isDeletePasswordOpen ?
+                    <BottomSheetPassword 
+                        open={isDeletePasswordOpen}
+                        setOpen={setIsDeletePasswordOpen}
+                        onComplete={deletePasswordHandler}
+                    /> : null
+                }
+                {
+                    isDeleteDoneOpen ?
+                    <TitleOnlyDialog 
+                        open = {isDeleteDoneOpen} 
+                        onOpenChange={setIsDeleteDoneOpen}
+                        title = "자동이체가 해제되었습니다."
+                        onConfirm={deleteDoneHandler}
+                    /> : null
                 }
             </div>
         </div>
