@@ -26,7 +26,8 @@ const requests = {
 
 
   fetchAccountHistory: `/account/history`,
-  fetchTransactionDetail: `/account/history/detail`
+  fetchTransactionDetail: `/account/history/detail`,
+  fetchChildCard: `/account/card`,
 };
 
 export default requests;
