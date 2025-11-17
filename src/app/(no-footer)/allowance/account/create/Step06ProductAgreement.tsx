@@ -89,7 +89,7 @@ export default function Step06ProductAgreement({ onNext }: Step06ProductAgreemen
       {/** 스크롤 가능한 약관 영역 */}
       <div className="flex-1 overflow-y-auto px-[24px] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {/** 타이틀 */}
-        <div className="mt-[15px] mb-[26px] text-left">
+        <div className="mt-[15px] mb-[20px] text-left">
           <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
             {"상품 가입을 위해\n약관을 확인해 주세요."}
           </h1>
