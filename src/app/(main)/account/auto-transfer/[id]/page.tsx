@@ -298,7 +298,10 @@ export default function Page() {
                     <NormalInput
                         label="이체 금액"
                         value={amount ?? ""}
-                        onChange={amountHandler}
+                        //onChange={amountHandler}
+                        onChange={(val2) => {
+                                setAmount(clampNumberInRange(val2, 0, 500000000));
+                            }}
                         placeholder="0"
                         unit="원"
                         isRight={true}
