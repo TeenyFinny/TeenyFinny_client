@@ -2,6 +2,7 @@ export interface ChildSummary {
   userId: number;
   name: string;
   balance: number;
+  gender: number;
 }
 
 export interface User {
