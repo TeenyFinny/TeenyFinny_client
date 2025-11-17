@@ -110,7 +110,7 @@ export default function Step04Auth({ onNext }: Step04AuthProps) {
         setMessage(res.data?.message);
         // 1초 뒤 다음 단계 이동
         setTimeout(() => {
-          onNext();
+          // onNext();
         }, 1000);
       } else {
         setSuccess(false);
@@ -156,6 +156,7 @@ export default function Step04Auth({ onNext }: Step04AuthProps) {
         {/* 로딩 중 표시 */}
         {loading && (
           <div className="mb-[19px] flex items-center justify-center gap-[8px] text-body-01 text-neutral-3">
+            <div className="animate-spin rounded-full h-4 w-4 border-2 border-neutral-3 border-t-transparent" />
             <span>인증 중...</span>
           </div>
         )}
