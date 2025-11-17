@@ -72,6 +72,7 @@ export default function Step06ProductAgreement({ onNext }: Step06ProductAgreemen
     const newValue = !allCheckedTop
     const updated = Object.fromEntries(consentItemsTop.map((item) => [item.id, newValue]))
     setConsentsTop(updated)
+    setIsExpanded(false)
   }
 
   /** 개별 항목 클릭 시 해당 항목의 체크 상태 토글 */
@@ -122,7 +123,7 @@ export default function Step06ProductAgreement({ onNext }: Step06ProductAgreemen
                 alt="토글"
                 width={24}
                 height={24}
-                className={`${isExpanded ? "rotate-0" : "rotate-180"}`}
+                className={`${isExpanded ? "rotate-180" : "rotate-0"}`}
                 style={{
                   filter:
                     "brightness(0) saturate(100%) invert(53%) sepia(54%) saturate(0%) hue-rotate(221deg) brightness(92%) contrast(99%)",
