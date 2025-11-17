@@ -1,5 +1,6 @@
 'use client'
 import { AccountCard } from "@/components/custom/account/AccountCard"
+import { AccountCardDisabled } from "@/components/custom/account/AccountCardDisabled";
 import { CardDetail } from "@/components/custom/allowance/card/CardDetail";
 import { ChildrenBadge } from "@/components/ui/badge/ChildrenBadge";
 import api from "@/lib/axios/axios";
@@ -17,10 +18,10 @@ type Child = {
 };
 
 type Accounts = {
-    total: number,
-    allowance: number,
-    invest: number,
-    saving: number
+    total: number | null,
+    allowance: number | null,
+    invest: number | null,
+    saving: number | null
 }
 
 type CardInfo = {
@@ -37,10 +38,11 @@ export default function Page() {
     const [accountData, setAccountData] = useState<Accounts | null>(null);
     const [currentChild, setCurrentChild] = useState<number>(0);
 
-    const [total, setTotal] = useState<number>(-1);
-    const [allowance, setAllowance] = useState<number>(-1);
-    const [invest, setInvest] = useState<number>(-1);
-    const [saving, setSaving] = useState<number>(-1);
+    const [total, setTotal] = useState<number | null>(null);
+    const [allowance, setAllowance] = useState<number | null>(null);
+    const [invest, setInvest] = useState<number | null>(null);
+    const [saving, setSaving] = useState<number | null>(null);
+
 
     // 카드 정보 상태
     const [cardOpen, setCardOpen] = useState(false)
@@ -197,13 +199,15 @@ export default function Page() {
                 <div className="text-head-00 text-neutral-1 mb-4">{total} 원</div>
 
                 {/* 카드가 있는 용돈 계좌 */}
+                { allowance !== null && allowance !== undefined ?
                 <AccountCard
                     accountName="용돈 계좌"
                     balance={allowance}
                     showCard={true}
                     onViewDetails={() => handleViewDetails("용돈 계좌")}
                     onCardClick={() => handleViewCard()}
-                />
+                /> : <AccountCardDisabled accountName="용돈 계좌" onCardClick={() => {console.log("용돈 계좌 개설 페이지로")}}/>
+                }
 
                  {/* 카드 상세 바텀시트 */}
                 <CardDetail
@@ -216,20 +220,25 @@ export default function Page() {
                 />
 
                 {/* 투자 계좌 */}
-                <AccountCard
+                {invest != null && invest != undefined ?
+                    <AccountCard
                     accountName="투자 계좌"
                     balance={invest}
                     onViewDetails={() => handleViewDetails("투자 계좌")}
-                    onCardClick={() => null}
-                />
+                    onCardClick={() => null} 
+                /> : 
+                    <AccountCardDisabled accountName="투자 계좌" onCardClick={() => {console.log("투자 계좌 개설 페이지로")}}/>
+                }
 
-                {/* 목표 적금 */}
-                <AccountCard
+                {/* 목표 적금 */}{saving != null && saving != undefined ? 
+                    <AccountCard
                     accountName="목표 적금"
                     balance={saving}
                     onViewDetails={() => handleViewDetails("목표 적금")}
                     onCardClick={() => null}
-                />
+                /> : 
+                    <AccountCardDisabled accountName="목표 계좌" onCardClick={() => {console.log("목표 계좌 개설 페이지로")}}/>
+                }
 
                 <button
                     className="flex justify-start w-[335px] h-[48px] border-1 border-monochrome-gray

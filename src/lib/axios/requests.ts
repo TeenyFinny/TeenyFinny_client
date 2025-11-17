@@ -25,7 +25,7 @@ const requests = {
   sellStock: `/invest/sellStock`,
   tradeOrder: `/invest/tradeOrder`,
   fetchChild: `/account/children`,
-  fetchTotalAccount: `/account/totalAccounts`,
+  fetchTotalAccount: `/account/total-accounts`,
   fetchAutoTransfer: `/account/auto-transfers`,
   portfolio: `/invest/portfolio`,
   fetchNotice: `/notice`,
