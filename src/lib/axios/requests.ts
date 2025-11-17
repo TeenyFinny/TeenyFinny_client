@@ -15,10 +15,10 @@ const requests = {
   fetchProgress: "/quiz/progresses",
   updateProgress: (user_id: number) => `/quiz/progresses/${user_id}`,
   fetchQuiz: "/quiz/info",
-  stockList: `/investments/stockList`,
   investmentsSummary: `/investmentsments/summary`,
-  dashMyStockList: `/investments/my-stock`,
   fetchGoalConfirm: `/goal/account/create/confirm`,
+  stockList: `/investments/my-stocks`,
+  myStocksTop3: `/investments/my-stocks/top3`,
   stockDetail: `/investments/stockDetail`,
 
   updateGoal: `/goal/update`,
@@ -27,7 +27,8 @@ const requests = {
   fetchChild: `/account/children`,
   fetchTotalAccount: `/account/total-accounts`,
   fetchAutoTransfer: `/account/auto-transfers`,
-  portfolio: `/invest/portfolio`,
+  portfolio: `/investments/my-stocks/portfolio`,
+
   fetchNotice: `/notice`,
 
   koreainvestmentStockList: `/uapi/domestic-stock/v1/quotations/intstock-multprice`,
