@@ -24,14 +24,22 @@ interface UserState {
   userId: number | null;
   userType: "parent" | "child" | null;
   hasChildren: boolean;
+  children: ChildrenSummary[];
   setUser: (
     userName: string,
     userType: "parent" | "child" | null,
     userId?: number,
-    hasChildren?: boolean
+    hasChildren?: boolean,
+    children?: ChildrenSummary[]
   ) => void;
   setHasChildren: (value: boolean) => void;
   clearUser: () => void;
+}
+
+interface ChildrenSummary {
+  user_id: number;
+  name: string;
+  balance: number;
 }
 
 /**
@@ -52,7 +60,7 @@ export const useUserStore = create<UserState>()(
       userType: null,
       /** 부모 계정의 자녀 연결 여부 */
       hasChildren: false,
-
+      children: [],
       /**
        * 사용자 정보를 통합 설정합니다.
        * @param {string} userName - 사용자 이름
@@ -60,8 +68,20 @@ export const useUserStore = create<UserState>()(
        * @param {number} [userId] - 사용자 ID (optional)
        * @param {boolean} [hasChildren=false] - 부모의 자녀 연결 여부 (optional)
        */
-      setUser: (userName, userType, userId, hasChildren = false) =>
-        set({ userName, userType, userId: userId ?? null, hasChildren }),
+      setUser: (
+        userName,
+        userType,
+        userId,
+        hasChildren = false,
+        children = []
+      ) =>
+        set({
+          userName,
+          userType,
+          userId: userId ?? null,
+          hasChildren,
+          children: children ?? [],
+        }),
 
       /**
        * 부모 계정의 자녀 연결 여부를 개별적으로 변경합니다.

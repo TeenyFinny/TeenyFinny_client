@@ -14,6 +14,13 @@ interface ParentDashboardState {
   children: ChildSummary[];
 }
 
+// TODO: 타입 전역 수정 후 삭제
+interface Children {
+  userId: number;
+  name: string;
+  balance: number;
+}
+
 interface HomeApiResponse {
   user: {
     user_id: number;
@@ -21,7 +28,7 @@ interface HomeApiResponse {
     role: string;
     email: string;
     balance?: number;
-    children?: ChildSummary[];
+    children?: Children[];
   };
 }
 
@@ -56,7 +63,7 @@ export default function Page() {
         // 자녀 목록 추출
         const children: ChildSummary[] = Array.isArray(userPayload.children)
           ? userPayload.children.map((child) => ({
-              user_id: Number(child.user_id ?? 0),
+              user_id: Number(child.userId),
               name: child.name ?? "",
               balance: Number(child.balance ?? 0),
             }))
@@ -69,7 +76,8 @@ export default function Page() {
             userPayload.name ?? "",
             normalizedRole,
             (userPayload as any).userId,
-            children.length > 0
+            children.length > 0,
+            children
           );
 
         if (normalizedRole === "parent") {
