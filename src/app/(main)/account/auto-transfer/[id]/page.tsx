@@ -21,16 +21,16 @@ import { useEffect, useState } from "react";
  */
 
 type Params = {
-  id: string
+    id: string
 }
 
 type AutoTransfer = {
-    isInit:boolean,
-    userId : string,
+    isInit: boolean,
+    userId: string,
     transferId: string,
     transferAmount: string,
     transferDate: string,
-    ratio:number
+    ratio: number
 }
 
 // app/saving/page.tsx
@@ -41,6 +41,7 @@ export default function Page() {
     const [isEdit, setIsEdit] = useState<boolean>(false);
     const [isInit, setIsInit] = useState<boolean>(true);
     const [deleteButtonFlag, setDeleteButtonFlag] = useState<boolean>(false);
+    const [autoTransferId, setAutoTransferId] = useState<number>(-1);
 
     const { id } = useParams<Params>();
     const router = useRouter();
@@ -49,32 +50,85 @@ export default function Page() {
         setAmmount(text)
     }
 
-    const updateSubmitHandler = () => {
+    const updateSubmitHandler = async () => {
         const totalAmount = Number(ammount ?? 0)
 
         // 슬라이더에서 쓰던 것과 동일한 계산식
         const investmentAmount = Math.round((totalAmount * investmentRatio) / 100)
         const allowanceAmount = totalAmount - investmentAmount
 
-        console.log(
-            `이체 금액: ${totalAmount}원, ` +
-            `투자 금액: ${investmentAmount}원, ` +
-            `용돈 금액: ${allowanceAmount}원, ` +
-            `이체 일자: ${date ?? ""}일, ` +
-            `투자 계좌 입금 비율: ${investmentRatio}% 제출됨`
-        )
+        try{
+            if (isInit) {
+                const res = api.post(requests.getAutoTransfer, {
+                    params: { 
+                        userId: id ,
+                        transferAmount : ammount,
+                        transferDate : date,
+                        ratio : investmentRatio
+                    }
+                })
+            } else {
+                const res = api.put(requests.getAutoTransfer, {
+                    params: { 
+                        autoTransferId: autoTransferId ,
+                        transferAmount : ammount,
+                        transferDate : date,
+                        ratio : investmentRatio
+                    }
+                })
+            }
+
+            console.log(
+                `이체 금액: ${totalAmount}원, ` +
+                `투자 금액: ${investmentAmount}원, ` +
+                `용돈 금액: ${allowanceAmount}원, ` +
+                `이체 일자: ${date ?? ""}일, ` +
+                `투자 계좌 입금 비율: ${investmentRatio}% 제출됨`
+            )
+            router.push(`/account`)
+        } catch (e) {
+            if (e instanceof HttpError) {
+                // 권한이 없다면 온보딩 화면으로 라우팅
+                if (e.statusCode === 403) {
+                    router.push("/");
+                } else {
+                    // 필요 시 다른 에러 처리
+                    console.error(e);
+                }
+            } else {
+                console.error("An unexpected error occurred", e);
+            }
+        }
     }
 
-    const deleteSubmitHandler = () => {
+    const deleteSubmitHandler = async () => {
         const totalAmount = Number(ammount ?? 0)
 
         // 슬라이더에서 쓰던 것과 동일한 계산식
         const investmentAmount = Math.round((totalAmount * investmentRatio) / 100)
         const allowanceAmount = totalAmount - investmentAmount
 
-        console.log(
-            `삭제 요청 완료`
-        )
+        try {
+            const res = api.delete(requests.getAutoTransfer, {
+                params: { autoTransferId: autoTransferId }
+            })
+
+            console.log(
+                `${autoTransferId} 삭제 요청 완료`
+            )
+        } catch (e) {
+            if (e instanceof HttpError) {
+                // 권한이 없다면 온보딩 화면으로 라우팅
+                if (e.statusCode === 403) {
+                    router.push("/");
+                } else {
+                    // 필요 시 다른 에러 처리
+                    console.error(e);
+                }
+            } else {
+                console.error("An unexpected error occurred", e);
+            }
+        }
     }
 
     const editButtonHandler = () => {
@@ -109,9 +163,10 @@ export default function Page() {
 
                 // init === false 면: 저장된 자동이체 설정이 있다는 의미 → 폼에 값 채우기
                 if (!init) {
-                setDate(data.transferDate ?? null);
-                setAmmount(data.transferAmount ?? null);
-                setInvestmentRatio(Number(data.ratio ?? -1));
+                    setDate(data.transferDate ?? null);
+                    setAmmount(data.transferAmount ?? null);
+                    setInvestmentRatio(Number(data.ratio ?? -1));
+                    setAutoTransferId(Number(data.autoTransferId ?? -1))
                 }
             } catch (e) {
                 if (e instanceof HttpError) {
@@ -206,7 +261,7 @@ export default function Page() {
                         <BigButtonActivated onClick={deleteSubmitHandler} label="삭제하기" />
                         : <BigButtonActivated onClick={updateSubmitHandler} label="저장하기" />
                 }
-                </div>
             </div>
-            )
+        </div>
+    )
 }
