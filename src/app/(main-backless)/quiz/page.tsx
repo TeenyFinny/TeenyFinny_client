@@ -39,16 +39,17 @@ export default function Page() {
       try {
         // 1) 기존 progress 불러오기
         const res = await api.get(`${requests.fetchProgress}?user_id=${user_id}`);
-
-        // 2) data가 존재하면 그대로 저장
-        if (res.data) {
-          setQuizData(res.data);
+        console.log(res);
+        const data = res.data        // 2) data가 존재하면 그대로 저장
+        if (res) {
+          setQuizData(data);
+          console.log("데이터저장")
           return;
         }
 
         // 3) progress가 없으면 신규 생성
         const created = await api.post(requests.fetchProgress, { user_id });
-        setQuizData(created.data);
+        setQuizData(created.data.data);
 
       } catch (e) {
         const err = e as HttpError;
@@ -56,7 +57,7 @@ export default function Page() {
         // 404 → progress 없음 → 생성
         if (err.statusCode === 404) {
           const created = await api.post(requests.fetchProgress, { user_id });
-          setQuizData(created.data);
+          setQuizData(created.data.data);
           return;
         }
 
@@ -74,7 +75,8 @@ export default function Page() {
   }, [progress_id, setQuizData]);
 
   //퀴즈 가능 여부 확인
-  const quizActive = !course_completed && !monthly_reward && today_solved < 2
+  const quizActive = (!course_completed || !monthly_reward) && today_solved < 2;
+
 
   // ---------------------------
   // 배지 텍스트

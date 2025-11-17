@@ -8,7 +8,7 @@ const requests = {
   verifySimplePassword: `/auth/simplePassword/verify`,
   verifyFamilyOtp: `/auth/otp`, // OTP 검증
   fetchGoal: `/goal`,
-  fetchProgress: "/quiz/progress",
+  fetchProgress: "/quiz/progresses",
   updateProgress: (user_id: number) => `/quiz/progresses/${user_id}`,
   fetchQuiz: "/quiz/info",
   stockList: `/invest/stockList`,

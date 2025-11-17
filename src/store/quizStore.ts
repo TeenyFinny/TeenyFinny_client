@@ -36,7 +36,7 @@ export const useQuizStore = create(
             answer: "",
             explanation: "",
             request_completed: false,
-            
+            first_quiz_id_today: 0,
             setQuizData: (data) => set((state) => ({ ...state, ...data })),
         }),
         {

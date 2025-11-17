@@ -41,9 +41,10 @@ useEffect(() => {
         quizId = quiz_date * 2 + today_solved;
       } else {
         // 랜덤 문제: 총 40문제 가정
-        const TOTAL_QUIZ = 40;
+        const TOTAL_QUIZ = 3;
         do {
           quizId = Math.floor(Math.random() * TOTAL_QUIZ) + 1; // 1~40
+          console.log(quizId+"번 문제"+first_quiz_id_today);
         } while (today_solved === 1 && quizId === first_quiz_id_today); 
         // 오늘 두 번째 문제일 때 첫 번째 문제와 겹치지 않게
       }
