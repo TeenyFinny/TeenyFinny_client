@@ -5,6 +5,7 @@ import { ChildrenBadge } from "@/components/ui/badge/ChildrenBadge";
 import { useUserStore } from "@/store/userStore";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { redirect, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 /**
  * AddFamilyPage
@@ -19,11 +20,18 @@ import { redirect, useRouter } from "next/navigation";
  */
 export default function AddFamilyPage() {
   const router = useRouter();
-  const { children } = useUserStore();
+  const children = useUserStore((state) => state.children);
   const userType = useUserStore((state) => state.userType);
 
+  useEffect(() => {
+    if (userType !== "parent") {
+      router.replace("/home");
+    }
+  }, [userType, router]);
+
+  // 리다이렉트 전 중간 렌더링을 막기 위함
   if (userType !== "parent") {
-    return redirect("/home");
+    return null;
   }
 
   return (

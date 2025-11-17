@@ -26,7 +26,7 @@ interface ChildSelectorProps {
   /** 현재 선택된 자녀 ID */
   currentChild: number;
   /** 비활성화 상태 --> 읽기 전용 */
-  disabled: boolean;
+  disabled?: boolean;
   /** 현재 선택된 자녀를 설정하는 함수 */
   setCurrentChild: (childId: number) => void;
 }
