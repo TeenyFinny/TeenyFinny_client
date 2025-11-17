@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled";
 import { PhoneNumberInput } from "@/components/custom/allowance/checking/PhoneNumberInput";
@@ -22,7 +22,7 @@ interface Step04AuthProps {
  * Step04Auth
  *
  * 사용자의 휴대폰 본인인증을 수행하는 컴포넌트입니다.
- * 
+ *
  * ### 특징
  * - 통신사, 휴대폰 번호, 주민등록번호, 이름을 입력받아 본인인증을 수행합니다.
  * - 모든 필수 입력값이 채워졌을 때 "다음" 버튼이 활성화됩니다.
@@ -60,7 +60,17 @@ export default function Step04Auth({ onNext }: Step04AuthProps) {
   const [success, setSuccess] = useState<boolean | null>(null); // 인증 성공 여부 (true: 성공, false: 실패, null: 초기 상태)
   const [loading, setLoading] = useState(false); // API 인증 요청 진행 중 여부 (true일 때 로딩 표시)
 
-    /**
+  /**
+   * 인증 성공 시 자동으로 다음 단계로 이동시키는 effect
+   */
+  useEffect(() => {
+    if (success) {
+      const timerId = setTimeout(onNext, 1000);
+      return () => clearTimeout(timerId);
+    }
+  }, [success, onNext]);
+
+  /**
    * "다음" 버튼 활성화 조건
    * - 휴대폰 번호 11자리 입력 완료
    * - 주민등록번호 앞자리 6자리 입력 완료
@@ -74,7 +84,7 @@ export default function Step04Auth({ onNext }: Step04AuthProps) {
     name.length > 0;
   /**
    * 본인인증 API 요청을 처리하는 함수입니다.
-   * 
+   *
    * ### 동작 흐름
    * 1. 로딩 상태를 `true`로 설정하여 "인증 중..." 메시지 표시
    * 2. 이전 인증 결과 메시지와 상태를 초기화
@@ -83,16 +93,16 @@ export default function Step04Auth({ onNext }: Step04AuthProps) {
    *    - `true`: 성공 상태로 변경하고 1초 후 `onNext()` 호출
    *    - `false`: 실패 상태로 변경하고 오류 메시지 표시
    * 5. 에러 발생 시 콘솔에 로그 출력
-   * 
+   *
    * @async
    * @function handleSubmit
    * @returns {Promise<void>}
    */
   const handleSubmit = async () => {
+    setLoading(true);
+    setMessage("");
+    setSuccess(null);
     try {
-      setLoading(true); // 로딩 시작
-      setMessage(""); // 이전 메시지 초기화
-      setSuccess(null);
       const req = {
         carrier,
         phoneNumber,
@@ -100,24 +110,21 @@ export default function Step04Auth({ onNext }: Step04AuthProps) {
         birthBack,
         name,
       };
-      console.log(req);
 
       const res = await api.post(requests.verifyPhoneNumber, req);
-      setLoading(false); // 로딩 종료
 
       if (res.data?.verified) {
         setSuccess(true);
-        setMessage(res.data?.message);
-        // 1초 뒤 다음 단계 이동
-        setTimeout(() => {
-          // onNext();
-        }, 1000);
       } else {
         setSuccess(false);
-        setMessage(res.data?.message);
       }
+      setMessage(res.data?.message);
     } catch (err) {
-      console.log(err);
+      console.error(err);
+      setSuccess(false);
+      setMessage("인증 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -179,8 +186,8 @@ export default function Step04Auth({ onNext }: Step04AuthProps) {
                 height={27}
                 style={{
                   filter:
-                  "brightness(0) saturate(100%) invert(51%) sepia(65%) saturate(4181%) hue-rotate(332deg) brightness(94%) contrast(99%)",
-              }}
+                    "brightness(0) saturate(100%) invert(51%) sepia(65%) saturate(4181%) hue-rotate(332deg) brightness(94%) contrast(99%)",
+                }}
               />
             )}
             <span>{message}</span>
