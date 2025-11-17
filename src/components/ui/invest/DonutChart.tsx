@@ -1,5 +1,3 @@
-// "use client"
-
 import { useEffect, useState } from "react"
 import { PieChart, Pie, Cell } from "recharts"
 import requests from "@/lib/axios/requests"
@@ -8,7 +6,7 @@ import api from "@/lib/axios/axios";
 interface PortfolioData {
   name: string
   percentage: number
-  [key: string]: string | number  // ✅ Recharts 타입 호환
+  [key: string]: string | number  // Recharts 타입 호환
 }
 
 interface PortfolioDonutChartProps {
