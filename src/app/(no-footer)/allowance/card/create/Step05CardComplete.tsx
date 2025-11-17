@@ -46,7 +46,7 @@ export default function Step05CardComplete() {
       </div>
 
       <div className="fixed bottom-[56px] left-1/2 -translate-x-1/2 w-[327px]">
-        <BigButtonActivated label="발급하기" onClick={handleClick} />
+        <BigButtonActivated label="홈으로 돌아가기" onClick={handleClick} />
       </div>
     </div>
   );
