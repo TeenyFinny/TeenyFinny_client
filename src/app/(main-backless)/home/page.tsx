@@ -1,4 +1,4 @@
-// app/(main)/home/page.tsx
+// app/(main-backless)/home/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -125,7 +125,7 @@ export default function Page() {
   if (userType === "parent" && parentData) {
     return (
       <div className="w-full bg-primary-4">
-        <div className="mx-auto w-full max-w-[375px] px-4.5 pt-4 pb-7.5">
+        <div className="mx-auto w-full max-w-[375px] px-4.5 pt-4">
           <ParentDashboard
             hasChildren={hasChildren}
             balance={parentData.balance}
