@@ -1,9 +1,5 @@
 "use client"
 
-import { ChevronRight } from "lucide-react"
-import { TinyButton } from "../../ui/button/TinyButton"
-import { TinyStateBadge } from "../../ui/badge/TinyStateBadge"
-
 /**
  * AccountCard 컴포넌트
  *
@@ -29,9 +25,6 @@ interface AccountCardProps {
 }
 
 export function AccountCardDisabled({ accountName, onCardClick }: AccountCardProps) {
-  const formatCurrency = (amount: number) => {
-    return amount.toLocaleString("ko-KR")
-  }
 
   return (
     <div className="relative w-[340px] rounded-[16px] px-[24px] py-[11px] bg-primary-1/[0.12] h-[111px]"

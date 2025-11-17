@@ -262,7 +262,8 @@ export default function Page() {
                 open = {isInvestOpen}
                 onOpenChange={() => setIsInvestOpen(false)}
                 title="아직 투자 계좌가 없어요!" 
-                description={`아이가 계좌 개설을 요청할 때까지 기다려주세요!`}
+                description={`아이가 계좌 개설을 
+                    요청할 때까지 기다려주세요!`}
                 confirmText="확인"
             />
 
@@ -270,7 +271,8 @@ export default function Page() {
                 open = {isSavingOpen}
                 onOpenChange={() => setIsSavingOpen(false)}
                 title="아직 목표 적금 계좌가 없어요!" 
-                description={`아이가 계좌 개설을 요청할 때까지 기다려주세요!`}
+                description={`아이가 계좌 개설을 
+                    요청할 때까지 기다려주세요!`}
                 confirmText="확인"
             />
 
