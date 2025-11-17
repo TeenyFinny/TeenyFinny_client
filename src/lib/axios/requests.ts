@@ -24,12 +24,12 @@ const requests = {
   updateGoal: `/goal/update`,
   sellStock: `/invest/sellStock`,
   tradeOrder: `/invest/tradeOrder`,
+  fetchChild: `/account/children`,
+  fetchTotalAccount: `/account/totalAccounts`,
+  fetchAutoTransfer: `/account/auto-transfers`,
   portfolio: `/invest/portfolio`,
-  getChild: `/account/children`,
-  getTotalAccount: `/account/totalAccounts`,
   fetchNotice: `/notice`,
 
-  // ============ 한국 투자증권 주식 리스트 API =============
   koreainvestmentStockList: `/uapi/domestic-stock/v1/quotations/intstock-multprice`,
   koreainvestmentStockDetail: `/uapi/domestic-stock/v1/quotations/inquire-price`,
 
