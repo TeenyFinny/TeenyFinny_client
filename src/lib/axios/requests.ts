@@ -20,9 +20,9 @@ const requests = {
   updateGoal: `/goal/update`,
   sellStock: `/invest/sellStock`,
   tradeOrder: `/invest/tradeOrder`,
-  getChild: `/account/children`,
-  getTotalAccount: `/account/totalAccounts`,
-  getAutoTransfer: `/account/auto-transfers`,
+  fetchChild: `/account/children`,
+  fetchTotalAccount: `/account/totalAccounts`,
+  fetchAutoTransfer: `/account/auto-transfers`,
 };
 
 export default requests;

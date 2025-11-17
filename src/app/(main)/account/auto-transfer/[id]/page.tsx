@@ -37,7 +37,7 @@ type AutoTransfer = {
     /** 자동이체 식별자 */
     transferId: string,
     /** 매월 이체 금액 (문자열 포맷) */
-    transferAmmount: string,
+    transferAmount: string,
     /** 이체 일자 (1~31일 등 문자열) */
     transferDate: string,
     /** 투자 비율 (0~100) */
@@ -55,7 +55,7 @@ type AutoTransfer = {
  */
 export default function Page() {
     /** 이체 금액 입력값 (콤마 포함 문자열) */
-    const [ammount, setAmmount] = useState<string | null>(null);
+    const [amount, setAmount] = useState<string | null>(null);
     /** 이체 일자 입력값 (1~31일 등) */
     const [date, setDate] = useState<string | null>(null);
     /** 투자 비율 (슬라이더 값, 0~100) */
@@ -78,8 +78,8 @@ export default function Page() {
      *
      * @param text 인풋 컴포넌트에서 전달되는 문자열 값
      */
-    const ammountHandler = (text: string) => {
-        setAmmount(text)
+    const amountHandler = (text: string) => {
+        setAmount(text)
     }
 
     /**
@@ -90,29 +90,29 @@ export default function Page() {
      * - 요청 성공 후 /account 페이지로 이동
      */
     const updateSubmitHandler = async () => {
-        const totalAmmount = Number(ammount ?? 0)
+        const totalAmount = Number(amount ?? 0)
 
         // 슬라이더에서 쓰던 것과 동일한 계산식
-        const investmentAmmount = Math.round((totalAmmount * investmentRatio) / 100)
-        const allowanceAmmount = totalAmmount - investmentAmmount
+        const investmentAmount = Math.round((totalAmount * investmentRatio) / 100)
+        const allowanceAmount = totalAmount - investmentAmount
 
         try {
             if (isInit) {
                 // 최초 자동이체 설정 생성
-                await api.post(requests.getAutoTransfer, {
-                    params: {
+                await api.post(requests.fetchAutoTransfer, {
+                    data: {
                         userId: id,
-                        transferAmmount: ammount,
+                        transferAmount: amount,
                         transferDate: date,
                         ratio: investmentRatio
                     }
                 })
             } else {
                 // 기존 자동이체 설정 수정
-                await api.put(requests.getAutoTransfer, {
-                    params: {
+                await api.put(requests.fetchAutoTransfer, {
+                    data: {
                         autoTransferId: autoTransferId,
-                        transferAmmount: ammount,
+                        transferAmount: amount,
                         transferDate: date,
                         ratio: investmentRatio
                     }
@@ -120,9 +120,9 @@ export default function Page() {
             }
 
             console.log(
-                `이체 금액: ${totalAmmount}원, ` +
-                `투자 금액: ${investmentAmmount}원, ` +
-                `용돈 금액: ${allowanceAmmount}원, ` +
+                `이체 금액: ${totalAmount}원, ` +
+                `투자 금액: ${investmentAmount}원, ` +
+                `용돈 금액: ${allowanceAmount}원, ` +
                 `이체 일자: ${date ?? ""}일, ` +
                 `투자 계좌 입금 비율: ${investmentRatio}% 제출됨`
             )
@@ -149,15 +149,15 @@ export default function Page() {
      * - 삭제 성공 시 /account 페이지로 이동
      */
     const deleteSubmitHandler = async () => {
-        const totalAmmount = Number(ammount ?? 0)
+        const totalAmount = Number(amount ?? 0)
 
         // 슬라이더에서 쓰던 것과 동일한 계산식 (로그용)
-        const investmentAmmount = Math.round((totalAmmount * investmentRatio) / 100)
-        const allowanceAmmount = totalAmmount - investmentAmmount
+        const investmentAmount = Math.round((totalAmount * investmentRatio) / 100)
+        const allowanceAmount = totalAmount - investmentAmount
 
         try {
-            await api.delete(requests.getAutoTransfer, {
-                params: { autoTransferId: autoTransferId }
+            await api.delete(requests.fetchAutoTransfer, {
+                data: { autoTransferId: autoTransferId }
             })
 
             console.log(
@@ -205,7 +205,7 @@ export default function Page() {
         (async () => {
             try {
                 // 인터셉터가 res.data를 반환하므로 res가 응답 바디
-                const res = await api.get<ApiResponse<AutoTransfer>>(requests.getAutoTransfer, {
+                const res = await api.get<ApiResponse<AutoTransfer>>(requests.fetchAutoTransfer, {
                     signal: controller.signal,
                     params: { userId: id }
                 });
@@ -221,7 +221,7 @@ export default function Page() {
                 // 기존 자동이체 설정이 존재하는 경우, 화면에 값 세팅
                 if (!init) {
                     setDate(data.transferDate ?? null);
-                    setAmmount(data.transferAmmount ?? null);
+                    setAmount(data.transferAmount ?? null);
                     setInvestmentRatio(Number(data.ratio ?? -1));
                     setAutoTransferId(Number(data.autoTransferId ?? -1))
                 }
@@ -280,25 +280,26 @@ export default function Page() {
                 {deleteButtonFlag ?
                     <DisabledInputField
                         label="이체 금액"
-                        content={ammount ? ammount : "0"}
+                        content={amount ? amount : "0"}
                         isRight={true}
                         unit="원"
                     />
                     :
                     <NormalInput
                         label="이체 금액"
-                        value={ammount ?? ""}
-                        onChange={ammountHandler}
+                        value={amount ?? ""}
+                        onChange={amountHandler}
                         placeholder="0"
                         unit="원"
                         isRight={true}
+                        isNumeric={true}
                     />
                 }
             </div>
 
             <div className="h-[57px]" />
             <RatioSlider
-                totalAmmount={Number(ammount)}
+                totalAmount={Number(amount)}
                 investmentRatio={investmentRatio}
                 onChange={setInvestmentRatio}
                 disabled={deleteButtonFlag}

@@ -66,7 +66,7 @@ export default function Page() {
             try {
                 // 인터셉터가 res.data를 반환하므로 res가 응답 바디
                 // <ApiResponse<Notice>>는 없어도 작동함 (타입 지정)
-                const res = await api.get<ApiResponse<Child[]>>(requests.getChild, {
+                const res = await api.get<ApiResponse<Child[]>>(requests.fetchChild, {
                     signal: controller.signal,
                     params: { id: userId }
                 });
@@ -100,7 +100,7 @@ export default function Page() {
             try {
                 // 인터셉터가 res.data를 반환하므로 res가 응답 바디
                 // <ApiResponse<Notice>>는 없어도 작동함 (타입 지정)
-                const res = await api.get<ApiResponse<Accounts>>(requests.getTotalAccount, {
+                const res = await api.get<ApiResponse<Accounts>>(requests.fetchTotalAccount, {
                     params: { id: currentChild }
                 });
 
