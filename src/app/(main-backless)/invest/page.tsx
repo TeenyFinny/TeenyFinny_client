@@ -6,16 +6,25 @@ import { useRouter } from "next/navigation";
 import api from "@/lib/axios/axios";
 import { TradeHistory } from "@/components/ui/tx-history-ui/TradeHistory";
 
-export default function Page(){
+export default function Page() {
   const router = useRouter();
   const [stocks, setStocks] = useState<any[]>([]);
   const [investSummary, setInvestSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const userId = 1 //TODO: 추후 유저ID 연동
 
   useEffect(() => {
 
     (async () => {
       try {
+        const res = await api.get(`${requests.investAccount}?user_id=${userId}`);
+      
+        if (!res.data.hasAccount) {
+            console.log(res.data.hasAccount);
+          router.push("/invest/no-account");//계좌가 없다면 안내페이지로
+          return;
+        }
+
         const [stockRes, investRes] = await Promise.all([
           api.get(requests.myStocksTop3),
           api.get(requests.investmentsSummary),
@@ -23,9 +32,9 @@ export default function Page(){
         setStocks(stockRes.data ?? []);
         setInvestSummary(investRes.data ?? []);
       } catch (e) {
-	      // 커스텀 에러관리
+        // 커스텀 에러관리
         const err = e as HttpError;
-        
+
         // 403일 경우 에러메시지를 반환하고 홈으로 라우팅
         if (err.statusCode === 403) {
           alert(err.message);
