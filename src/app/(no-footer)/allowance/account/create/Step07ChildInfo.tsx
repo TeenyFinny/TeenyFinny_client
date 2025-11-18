@@ -118,7 +118,7 @@ export default function Step07ChildInfoInput({
 
       const res = await api.post(requests.submitChildInfo, req);
 
-      if (res.data.isSuccess) {
+      if (res.data?.isSuccess) {
         setIsPasswordSheetOpen(false);
         console.log("개설완료")
         onNext();
