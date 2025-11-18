@@ -1,10 +1,12 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
-import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled"
-import { NormalInput2 } from "@/components/ui/input/NormalInput2"
-import { BottomSheetPassword } from "@/components/ui/bottom-sheet/BottomSheetPassword"
+import { useState, useEffect } from "react";
+import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
+import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled";
+import { NormalInput2 } from "@/components/ui/input/NormalInput2";
+import { BottomSheetPassword } from "@/components/ui/bottom-sheet/BottomSheetPassword";
+import api from "@/lib/axios/axios";
+import requests from "@/lib/axios/requests";
 
 /**
  * Step08ChildInfoInput
@@ -23,60 +25,70 @@ import { BottomSheetPassword } from "@/components/ui/bottom-sheet/BottomSheetPas
  * @param {{ onNext: () => void }} props
  * @returns {React.ReactElement}
  */
-export default function Step07ChildInfoInput({ onNext }: { onNext: () => void }) {
-  const [childName, setChildName] = useState("")
-  const [childPhone, setChildPhone] = useState("")
-  const [birth, setBirth] = useState("")
-  const [address, setAddress] = useState("")
-  const [detailAddress, setDetailAddress] = useState("")
+export default function Step07ChildInfoInput({
+  onNext,
+}: {
+  onNext: () => void;
+}) {
+  const [childName, setChildName] = useState("");
+  const [childPhone, setChildPhone] = useState("");
+  const [birth, setBirth] = useState("");
+  const [address, setAddress] = useState("");
+  const [detailAddress, setDetailAddress] = useState("");
 
-  const [nameError, setNameError] = useState("")
-  const [phoneError, setPhoneError] = useState("")
-  const [birthError, setBirthError] = useState("")
+  const [nameError, setNameError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [birthError, setBirthError] = useState("");
 
   // 비밀번호 설정 바텀시트 상태
-  const [isPasswordSheetOpen, setIsPasswordSheetOpen] = useState(false)
+  const [isPasswordSheetOpen, setIsPasswordSheetOpen] = useState(false);
+
+  const [success, setSuccess] = useState<boolean | null>(null); // 인증 성공 여부 (true: 성공, false: 실패, null: 초기 상태)
+
+  /**
+   * 인증 성공 시 자동으로 다음 단계로 이동시키는 effect
+   */
 
   /** 이름 입력 시 한글만 허용 */
   const handleNameChange = (value: string) => {
-    const koreanRegex = /^[ㄱ-ㅎㅏ-ㅣ가-힣\s]*$/
+    const koreanRegex = /^[ㄱ-ㅎㅏ-ㅣ가-힣\s]*$/;
     if (koreanRegex.test(value)) {
-      setChildName(value)
-      setNameError("")
+      setChildName(value);
+      setNameError("");
     } else {
-      setNameError("이름은 한글만 입력할 수 있습니다.")
+      setNameError("이름은 한글만 입력할 수 있습니다.");
     }
-  }
+  };
 
   /** 생년월일 입력: 숫자만 허용, 6자리(YYMMDD) */
   const handleBirthChange = (value: string) => {
-    const numericOnly = value.replace(/[^0-9]/g, "")
-    const limitedValue = numericOnly.slice(0, 6)
-    setBirth(limitedValue)
+    const numericOnly = value.replace(/[^0-9]/g, "");
+    const limitedValue = numericOnly.slice(0, 6);
+    setBirth(limitedValue);
 
     if (value !== numericOnly) {
-      setBirthError("생년월일은 숫자만 입력할 수 있습니다.")
+      setBirthError("생년월일은 숫자만 입력할 수 있습니다.");
     } else if (limitedValue.length > 0 && limitedValue.length !== 6) {
-      setBirthError("생년월일은 6자리여야 합니다.")
+      setBirthError("생년월일은 6자리여야 합니다.");
     } else {
-      setBirthError("")
+      setBirthError("");
     }
-  }
+  };
 
   /** 휴대폰 번호 입력: 숫자만 허용, 11자리 */
   const handlePhoneChange = (value: string) => {
-    const numericOnly = value.replace(/[^0-9]/g, "")
-    const limitedValue = numericOnly.slice(0, 11)
-    setChildPhone(limitedValue)
+    const numericOnly = value.replace(/[^0-9]/g, "");
+    const limitedValue = numericOnly.slice(0, 11);
+    setChildPhone(limitedValue);
 
     if (value !== numericOnly) {
-      setPhoneError("휴대폰 번호는 숫자만 입력할 수 있습니다.")
+      setPhoneError("휴대폰 번호는 숫자만 입력할 수 있습니다.");
     } else if (limitedValue.length > 0 && limitedValue.length !== 11) {
-      setPhoneError("휴대폰 번호는 11자리여야 합니다.")
+      setPhoneError("휴대폰 번호는 11자리여야 합니다.");
     } else {
-      setPhoneError("")
+      setPhoneError("");
     }
-  }
+  };
 
   /** 모든 입력 필드 검증 */
   const allChecked =
@@ -87,18 +99,39 @@ export default function Step07ChildInfoInput({ onNext }: { onNext: () => void })
     detailAddress !== "" &&
     nameError === "" &&
     phoneError === "" &&
-    birthError === ""
+    birthError === "";
 
   /** "모두 입력했어요" 버튼 클릭 시 바텀시트 열기 */
   const handleButtonClick = () => {
-    setIsPasswordSheetOpen(true)
-  }
+    setIsPasswordSheetOpen(true);
+  };
 
   /** 비밀번호 입력 완료 시 다음 단계 이동 */
-  const handlePasswordComplete = (password: string) => {
-    setIsPasswordSheetOpen(false)
-    onNext()
-  }
+  const handlePasswordComplete = async (password: string) => {
+    setIsPasswordSheetOpen(false);
+
+    try {
+      const req = {
+        childName,
+        childPhone,
+        birth,
+        address,
+        detailAddress,
+        password,
+      };
+
+      const res = await api.post(requests.submitChildInfo, req);
+      if (res.data?.verified) {
+        setSuccess(true);
+        onNext()
+      } else {
+        setSuccess(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setSuccess(false);
+    } 
+  };
 
   return (
     <div className="flex flex-col px-[27px] h-full mb-[0px]">
@@ -120,7 +153,9 @@ export default function Step07ChildInfoInput({ onNext }: { onNext: () => void })
             onChange={handleNameChange}
           />
           <div className="h-[20px] mt-[4px]">
-            {nameError && <p className="text-error text-body-08">{nameError}</p>}
+            {nameError && (
+              <p className="text-error text-body-08">{nameError}</p>
+            )}
           </div>
         </div>
 
@@ -133,7 +168,9 @@ export default function Step07ChildInfoInput({ onNext }: { onNext: () => void })
             onChange={handlePhoneChange}
           />
           <div className="h-[20px] mt-[4px]">
-            {phoneError && <p className="text-error text-body-08">{phoneError}</p>}
+            {phoneError && (
+              <p className="text-error text-body-08">{phoneError}</p>
+            )}
           </div>
         </div>
 
@@ -146,7 +183,9 @@ export default function Step07ChildInfoInput({ onNext }: { onNext: () => void })
             onChange={handleBirthChange}
           />
           <div className="h-[20px] mt-[4px]">
-            {birthError && <p className="text-error text-body-08">{birthError}</p>}
+            {birthError && (
+              <p className="text-error text-body-08">{birthError}</p>
+            )}
           </div>
         </div>
 
@@ -174,9 +213,12 @@ export default function Step07ChildInfoInput({ onNext }: { onNext: () => void })
       </div>
 
       {/* 하단 버튼 */}
-      <div className="fixed bottom-[56px] left-1/2 -translate-x-1/2 w-[327px]">
+      <div className="fixed bottom-[56px] left-1/2 -translate-x-1/2 w-[327px] flex flex-col items-center">
         {allChecked ? (
-          <BigButtonActivated label="모두 입력했어요" onClick={handleButtonClick} />
+          <BigButtonActivated
+            label="모두 입력했어요"
+            onClick={handleButtonClick}
+          />
         ) : (
           <BigButtonDisabled label="모두 입력했어요" onClick={() => {}} />
         )}
@@ -192,5 +234,5 @@ export default function Step07ChildInfoInput({ onNext }: { onNext: () => void })
         shouldOverlayBottomBar={true}
       />
     </div>
-  )
+  );
 }

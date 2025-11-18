@@ -38,7 +38,8 @@ const requests = {
   fetchTransactionDetail: `/account/history/detail`,
   fetchChildCard: `/account/card`,
 
-  verifyPhoneNumber: `/allowance/verify-identity`
+  verifyPhoneNumber: `/auth/identity`,
+  submitChildInfo: `/allowance/accounts`,
 
 };
 
