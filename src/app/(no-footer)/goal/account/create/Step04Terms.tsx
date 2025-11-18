@@ -18,7 +18,7 @@ interface ConsentItem {
 }
 
 /**
- * Step06ProductAgreement
+ * Step04Terms
  *
  * 상품 가입 전 사용자가 필수 약관에 동의하도록 구성된 페이지 컴포넌트입니다.
  *
