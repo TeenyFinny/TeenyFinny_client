@@ -42,6 +42,7 @@ const requests = {
 
   verifyPhoneNumber: `/auth/identity`,
   submitChildInfo: `/allowance/accounts`,
+  submitCardInfo: `/allowance/cards`,
 
   fetchProfile: `/profile`
 

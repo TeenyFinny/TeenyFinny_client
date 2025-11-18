@@ -6,6 +6,10 @@ import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled";
 import { NormalInput2 } from "@/components/ui/input/NormalInput2";
 import { BottomSheetPassword } from "@/components/ui/bottom-sheet/BottomSheetPassword";
+import api from "@/lib/axios/axios";
+import requests from "@/lib/axios/requests";
+import { HttpError } from "@/types/axios/httpError.t";
+
 /**
  * Step04CardOptions
  *
@@ -29,29 +33,42 @@ import { BottomSheetPassword } from "@/components/ui/bottom-sheet/BottomSheetPas
  * - 하단: 다음 버튼 (활성/비활성 상태)
  *
  * @component
- * @param {{ onNext?: () => void }} props - `onNext` 콜백을 전달받아 다음 단계로 이동합니다.
+ * @param {{ onNext: () => void, childId: number }} props
+ *   - `onNext`: 다음 단계로 이동하는 콜백
+ *   - `childId`: 발급할 카드의 자녀 ID
+ *
  * @returns {React.ReactElement} 카드 옵션 선택 페이지 UI
  *
  * @example
  * ```tsx
- * <Step04CardOptions onNext={() => setStep(5)} />
+ * <Step04CardOptions childId={3} onNext={() => setStep(5)} />
  * ```
  */
-export default function Step04CardOptions({ onNext }: { onNext: () => void }) {
+
+export default function Step04CardOptions({
+  onNext,
+  childId,
+}: {
+  onNext: () => void;
+  childId: number;
+}) {
   const [selectedCard, setSelectedCard] = useState<"bear" | "rabbit">("bear");
   const [englishName, setEnglishName] = useState("");
   const [nameError, setNameError] = useState("");
   const [useTransitCard, setUseTransitCard] = useState<"yes" | "no">("yes");
-// 비밀번호 설정 바텀시트 상태
+
+  // 비밀번호 바텀시트
   const [isPasswordSheetOpen, setIsPasswordSheetOpen] = useState(false);
 
-  /** 영문 이름 검증 */
+  /** 영문 이름 입력 검증 로직 */
   const handleNameChange = (value: string) => {
     const englishRegex = /^[a-zA-Z\s]*$/;
+
     if (!englishRegex.test(value)) {
       setNameError("영문과 공백만 입력 가능합니다.");
       return;
     }
+
     setEnglishName(value.toUpperCase());
     setNameError("");
   };
@@ -62,19 +79,40 @@ export default function Step04CardOptions({ onNext }: { onNext: () => void }) {
     englishName.includes(" ") &&
     !nameError;
 
-  /** 다음 단계 */
+  /** 비밀번호 입력 완료 시 API 호출 */
+  const handlePasswordComplete = async (password: string) => {
+    setIsPasswordSheetOpen(false);
+
+    try {
+      const res = await api.post(requests.submitCardInfo, {
+        childId: childId,
+        cardType: selectedCard,
+        englishName: englishName,
+        transit: useTransitCard === "yes",
+        password: password,
+      });
+
+      if (res.data.isSuccess) {
+        setIsPasswordSheetOpen(false);
+        console.log("발급 완료")
+        onNext();
+      } else {
+        throw new Error("카드 발급 요청 실패");
+      }
+    } catch (err) {
+      console.error("카드 신청 실패:", err);
+      throw err; // BottomSheetPassword의 에러 UI 트리거
+    }
+  };
+
+  /** 다음 버튼 → 비밀번호 바텀시트 오픈 */
   const handleNext = () => {
     setIsPasswordSheetOpen(true);
   };
 
-  const handlePasswordComplete = (password: string) => {
-    setIsPasswordSheetOpen(false);
-    onNext();
-  };
-
   return (
     <div className="relative flex flex-col h-full">
-      {/* 스크롤 영역 */}
+      {/* 스크롤 가능한 영역 */}
       <div className="flex-1 overflow-y-auto px-[24px] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
 
         {/* 타이틀 */}
@@ -90,7 +128,7 @@ export default function Step04CardOptions({ onNext }: { onNext: () => void }) {
 
           <div className="flex justify-center gap-[60px]">
 
-            {/* 곰 */}
+            {/* 곰 카드 */}
             <div className="flex flex-col items-center">
               <div
                 className={`relative w-[101px] h-[144px] transition-transform ${
@@ -105,10 +143,11 @@ export default function Step04CardOptions({ onNext }: { onNext: () => void }) {
                   className="object-contain"
                 />
               </div>
+
               <div className="mt-[8px]" onClick={() => setSelectedCard("bear")}>
                 <Image
                   src="/icons/check-circle.png"
-                  alt="체크"
+                  alt="선택 체크"
                   width={27}
                   height={27}
                   style={{
@@ -121,10 +160,10 @@ export default function Step04CardOptions({ onNext }: { onNext: () => void }) {
               </div>
             </div>
 
-            {/* 토끼 */}
+            {/* 토끼 카드 */}
             <div className="flex flex-col items-center">
               <div
-                className={`relative w-[101px] h-[144px] ransition-transform ${
+                className={`relative w-[101px] h-[144px] transition-transform ${
                   selectedCard === "rabbit" ? "scale-105" : "scale-100"
                 }`}
                 onClick={() => setSelectedCard("rabbit")}
@@ -136,10 +175,11 @@ export default function Step04CardOptions({ onNext }: { onNext: () => void }) {
                   className="object-contain"
                 />
               </div>
+
               <div className="mt-[8px]" onClick={() => setSelectedCard("rabbit")}>
                 <Image
                   src="/icons/check-circle.png"
-                  alt="체크"
+                  alt="선택 체크"
                   width={27}
                   height={27}
                   style={{
@@ -170,9 +210,10 @@ export default function Step04CardOptions({ onNext }: { onNext: () => void }) {
             onChange={handleNameChange}
           />
 
-          {/* 에러 메시지 */}
           <div className="h-[10px] mt-[4px]">
-            {nameError && <p className="text-error text-body-08">{nameError}</p>}
+            {nameError && (
+              <p className="text-error text-body-08">{nameError}</p>
+            )}
           </div>
         </section>
 
@@ -229,7 +270,7 @@ export default function Step04CardOptions({ onNext }: { onNext: () => void }) {
         </section>
       </div>
 
-      {/* 하단 버튼 고정 */}
+      {/* 하단 버튼 */}
       <div className="flex-shrink-0 px-[24px] pb-[56px] pt-[20px]">
         {isButtonEnabled ? (
           <BigButtonActivated label="다음" onClick={handleNext} />
