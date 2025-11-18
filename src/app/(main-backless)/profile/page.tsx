@@ -7,6 +7,8 @@ import { useUserStore } from "@/store/userStore";
 import { useEffect, useState } from "react";
 import { PushNotification } from "@/components/ui/notice/PushNotification";
 import { useNotificationStore } from "@/store/notificationStore";
+import { useRouter } from "next/navigation";
+import { TitleOnlyDialog } from "@/components/ui/modal/TitleOnlyDialog";
 
 /**
  * MyProfilePage
@@ -19,6 +21,7 @@ import { useNotificationStore } from "@/store/notificationStore";
  * @returns {JSX.Element | null} 프로필 화면 또는 초기 null 렌더링
  */
 export default function MyProfilePage() {
+  const router = useRouter();
   /** 사용자 타입 (parent | child | null) */
   const userType = useUserStore((state) => state.userType);
   /** 클라이언트 마운트 여부 */
@@ -27,6 +30,8 @@ export default function MyProfilePage() {
   const { message, setMessage } = useNotificationStore();
   /** PushNotification 표시 여부 */
   const [open, setOpen] = useState(false);
+  /** 로그인 모달 상태 */
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
 
   /**
    * 클라이언트에서만 렌더링하도록 보장합니다.
@@ -50,14 +55,27 @@ export default function MyProfilePage() {
     }
   }, [message, setMessage]);
 
-  // 초기 렌더링 방지
-  if (!isMounted) return null;
+  // 로그인 필요 시 모달 띄우기
+  useEffect(() => {
+    if (isMounted && !userType) {
+      setLoginModalOpen(true);
+    }
+  }, [isMounted, userType]);
 
-  // userType이 없으면 로그인 필요 화면 표시
-  if (!userType) return <div>로그인이 필요합니다.</div>;
+  if (!isMounted) return null;
 
   return (
     <main className="relative">
+
+      {/* 로그인 필요 모달 */}
+      <TitleOnlyDialog
+        open={loginModalOpen}
+        onOpenChange={setLoginModalOpen}
+        title={"로그인이 필요합니다.\n로그인 화면으로 이동합니다."}
+        
+        confirmText="확인"
+        onConfirm={() => router.push("/login")}
+      />
 
       {/* Push Notification (페이지 상단 고정) */}
       <PushNotification
