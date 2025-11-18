@@ -2,24 +2,40 @@
 
 import { useEffect, useState } from "react";
 import { Switch } from "@/components/ui/switch";
-import api from "@/lib/axios/axios"
+import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 
+/**
+ * PushSettingPage
+ * 
+ * 사용자 푸시 알림 설정 페이지 컴포넌트.
+ * 서비스 알림 및 야간 알림 ON/OFF 토글을 제공하며,
+ * 상태 변경 시 서버에 PATCH 요청으로 저장.
+ * 최초 진입 시 GET 요청으로 현재 설정을 불러옴.
+ *
+ * @component
+ * @example
+ * return <PushSettingPage />
+ */
 export default function PushSettingPage() {
     const [push_enabled, setPushEnabled] = useState(false);
     const [night_push_enabled, setNightPushEnabled] = useState(false);
     const [loading, setLoading] = useState(true);
-    const userId = 1
+    const userId = 1;
 
     // -------------------------------
-    // 페이지 진입 시 GET
+    // 페이지 진입 시 GET 요청
     // -------------------------------
     useEffect(() => {
         (async () => {
             try {
+                /** 
+                 * GET /profile/pushes?user_id=:userId
+                 * @type {{ push_enabled: boolean, night_push_enabled: boolean }}
+                 */
                 const res = await api.get(`${requests.fetchProfile}/pushes?user_id=${userId}`);
                 const data = res.data;
-                console.log(data)
+                console.log(data);
                 setPushEnabled(data.push_enabled);
                 setNightPushEnabled(data.night_push_enabled);
             } catch (err) {
@@ -30,9 +46,17 @@ export default function PushSettingPage() {
         })();
     }, []);
 
-    // -------------------------------
-    // 토글 핸들러
-    // -------------------------------
+    /**
+     * handleToggle
+     * 
+     * 토글 스위치 ON/OFF 이벤트 처리.
+     * UI를 즉시 업데이트(optimistic update)하고 PATCH 요청으로 서버에 저장.
+     * 실패 시 상태를 이전 값으로 롤백.
+     *
+     * @param {"push_enabled" | "night_push_enabled"} key - 업데이트할 설정 키
+     * @param {boolean} value - 변경할 값
+     * @param {(v: boolean) => void} setter - useState setter 함수
+     */
     const handleToggle = async (
         key: "push_enabled" | "night_push_enabled",
         value: boolean,
@@ -42,10 +66,7 @@ export default function PushSettingPage() {
         setter(value); // UI 즉시 반영
 
         try {
-            await api.patch(
-                `${requests.fetchProfile}/pushes/${userId}`,
-                { [key]: value }
-            );
+            await api.patch(`${requests.fetchProfile}/pushes/${userId}`, { [key]: value });
         } catch (err) {
             console.error("PATCH 실패:", err);
             setter(prev); // 실패 시 롤백
