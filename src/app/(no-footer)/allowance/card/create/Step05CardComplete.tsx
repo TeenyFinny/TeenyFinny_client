@@ -4,10 +4,10 @@ import { useRouter } from "next/navigation";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import Image from "next/image";
 
-export default function Steop08Complete() {
+export default function Step05CardComplete() {
   const router = useRouter();
 
-  // 버튼 클릭 시 홈으로 이동
+  // ✅ 버튼 클릭 시 홈으로 이동
   const handleClick = () => {
     router.push("/home");
   };
@@ -28,7 +28,7 @@ export default function Steop08Complete() {
       {/* 부제 */}
       <div className="mt-[16px] space-y-[24px] text-center">
         <p className="text-head-01 text-neutral-1 whitespace-pre-line">
-          {"TeenyFinny 계좌 개설에\n성공했어요!"}
+          {"TeenyFinny 카드 발급에\n성공했어요!"}
         </p>
       </div>
 
@@ -37,7 +37,7 @@ export default function Steop08Complete() {
         <div className="relative">
           <Image
             src="/images/common/illust_common_1.png"
-            alt="개설 성공"
+            alt="발급 성공"
             width={350}
             height={233}
             className="object-contain"

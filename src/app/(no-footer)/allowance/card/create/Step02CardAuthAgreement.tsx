@@ -27,7 +27,7 @@ interface ConsentItem {
  * - 전체 동의 섹션은 토글 가능하며, 열림/닫힘 상태를 제어할 수 있습니다.
  * - 개별 동의 항목은 각각 체크/해제할 수 있습니다.
  * - 모든 항목에 동의해야 "동의하고 진행하기" 버튼이 활성화됩니다.
- * 
+ *
  * ### 시각적 구성
  * - 체크되지 않은 항목: `text-monochrome-gray` (회색)
  * - 체크된 항목: `text-success` (녹색)
@@ -87,7 +87,7 @@ export default function Step02CardAuthAgreement({
   return (
     <div className="flex flex-col px-[24px]">
       {/* 타이틀 */}
-      <div className="mt-[43px] mb-[26px] text-left">
+      <div className="mt-[15px] mb-[20px] text-left">
         <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
           {"카드 신청을 위해\n약관을 확인해 주세요"}
         </h1>
@@ -132,7 +132,7 @@ export default function Step02CardAuthAgreement({
                 filter:
                   "brightness(0) saturate(100%) invert(53%) sepia(54%) saturate(0%) hue-rotate(221deg) brightness(92%) contrast(99%)",
               }}
-              className={`${isExpanded ? "rotate-0" : "rotate-180"}`}
+              className={`${isExpanded ? "rotate-180" : "rotate-0"}`}
             />
           </button>
         </div>
@@ -180,9 +180,7 @@ export default function Step02CardAuthAgreement({
       )}
 
       {/* 하단 버튼 */}
-      <div className={`flex flex-col gap-5 items-center mb-[56px] ${
-          isExpanded ? "mt-[260px]" : "mt-[402px]"
-        }`}>
+      <div className="fixed bottom-[56px] left-1/2 -translate-x-1/2 w-[327px]">
         {allChecked ? (
           <BigButtonActivated label="동의하고 진행하기" onClick={onNext} />
         ) : (

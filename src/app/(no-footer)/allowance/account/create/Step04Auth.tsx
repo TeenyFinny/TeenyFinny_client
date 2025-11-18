@@ -131,7 +131,7 @@ export default function Step04Auth({ onNext }: Step04AuthProps) {
   return (
     <div className="flex flex-col h-full px-[27px]">
       {/* 타이틀 */}
-      <div className="mt-[43px] mb-[24px] text-left">
+      <div className="mt-[15px] mb-[20px] text-left">
         <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
           {"이용중인 통신사 정보와\n휴대폰번호를 입력해 주세요"}
         </h1>

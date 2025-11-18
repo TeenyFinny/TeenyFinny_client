@@ -32,7 +32,7 @@ export default function InvestStatusWithChart({
 //   holdings,
 } : PortfolioDashboardData) {
   return (
-    <div className="bg-monochrome-lightgray">
+    <div>
       {/* Top Summary Card */}
       <div className="bg-white rounded-3xl mt-6 p-6 shadow-lg">
         <div className="flex items-start">
