@@ -21,7 +21,7 @@ export default function PushSettingPage() {
     const [push_enabled, setPushEnabled] = useState(false);
     const [night_push_enabled, setNightPushEnabled] = useState(false);
     const [loading, setLoading] = useState(true);
-    const userId = 1;
+    const userId = 1;//TODO: 추후 유저id 연동
 
     // -------------------------------
     // 페이지 진입 시 GET 요청
@@ -35,7 +35,6 @@ export default function PushSettingPage() {
                  */
                 const res = await api.get(`${requests.fetchProfile}/pushes?user_id=${userId}`);
                 const data = res.data;
-                console.log(data);
                 setPushEnabled(data.push_enabled);
                 setNightPushEnabled(data.night_push_enabled);
             } catch (err) {
