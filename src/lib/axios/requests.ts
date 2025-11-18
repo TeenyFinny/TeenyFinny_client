@@ -9,6 +9,8 @@ const requests = {
   devChildHome: `/home/child`,
   login: `/auth/login`,
   signup: `/auth/signup`,
+  fetchProfileInfo: (id: number) => `/profile/info/${id}`, // JWT 도입 이후 ID 제거 예정
+  updateProfileInfo: (id: number) => `/profile/info/${id}`,
   verifySimplePassword: `/auth/simple-password/verify`,
   verifyFamilyOtp: `/auth/otp`, // OTP 검증
   fetchGoal: `/goal`,
@@ -38,7 +40,7 @@ const requests = {
   fetchTransactionDetail: `/account/history/detail`,
   fetchChildCard: `/account/card`,
 
-  verifyPhoneNumber: `/allowance/verify-identity`,
+  verifyPhoneNumber: `/auth/identity`,
 
   fetchProfile: `/profile`
 
