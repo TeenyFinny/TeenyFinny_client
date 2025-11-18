@@ -2,11 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { SmallButtonActivated } from "@/components/ui/button/SmallButtonActivated"
-import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog"
-import { SmallButtonDisabled } from "@/components/ui/button/SmallButtonDisabled"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
-import { ConfirmContentDialog } from "@/components/ui/modal/ConfirmContentDialog"
 import { DeleteConfirmDialog } from "@/components/ui/modal/DeleteConfirmDialog"
 
 export default function DeleteReconfirmationPage() {
@@ -16,7 +12,6 @@ export default function DeleteReconfirmationPage() {
     // ✅ 버튼 클릭 핸들러
     const handleConfirmClick = () => setIsDialogOpen(true)
     const handleConfirm = () => router.push("/quiz")
-    const handleCancel = () => router.push("/goal")
 
     return (
         <div className="flex h-[600px] flex-col overflow-hidden bg-primary-4">

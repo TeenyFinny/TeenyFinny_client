@@ -20,7 +20,6 @@ export default function Page() {
         const res = await api.get(`${requests.investAccount}?user_id=${userId}`);
       
         if (!res.data.hasAccount) {
-            console.log(res.data.hasAccount);
           router.push("/invest/no-account");//계좌가 없다면 안내페이지로
           return;
         }
