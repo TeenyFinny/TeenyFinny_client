@@ -93,14 +93,11 @@ export default function Step04CardOptions({
       });
 
       if (res.data.isSuccess) {
-        setIsPasswordSheetOpen(false);
-        console.log("발급 완료")
         onNext();
       } else {
-        throw new Error("카드 발급 요청 실패");
+        throw new Error(res.data.message || "카드 발급 요청 실패");
       }
     } catch (err) {
-      console.error("카드 신청 실패:", err);
       throw err; // BottomSheetPassword의 에러 UI 트리거
     }
   };
