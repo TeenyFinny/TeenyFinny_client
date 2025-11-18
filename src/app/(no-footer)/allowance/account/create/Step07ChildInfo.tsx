@@ -43,8 +43,6 @@ export default function Step07ChildInfoInput({
   // 비밀번호 설정 바텀시트 상태
   const [isPasswordSheetOpen, setIsPasswordSheetOpen] = useState(false);
 
-  const [success, setSuccess] = useState<boolean | null>(null); // 인증 성공 여부 (true: 성공, false: 실패, null: 초기 상태)
-
   /**
    * 인증 성공 시 자동으로 다음 단계로 이동시키는 effect
    */
@@ -108,8 +106,6 @@ export default function Step07ChildInfoInput({
 
   /** 비밀번호 입력 완료 시 다음 단계 이동 */
   const handlePasswordComplete = async (password: string) => {
-    setIsPasswordSheetOpen(false);
-
     try {
       const req = {
         childName,
@@ -121,16 +117,19 @@ export default function Step07ChildInfoInput({
       };
 
       const res = await api.post(requests.submitChildInfo, req);
+
       if (res.data?.verified) {
-        setSuccess(true);
-        onNext()
+        setIsPasswordSheetOpen(false);
+        onNext();
       } else {
-        setSuccess(false);
+        // 서버에서 인증 실패 응답을 받은 경우 에러를 발생시켜 비밀번호 재입력을 유도합니다.
+        throw new Error(res.data?.message);
       }
     } catch (err) {
-      console.error(err);
-      setSuccess(false);
-    } 
+      console.error("자녀 정보 제출 실패:", err);
+      // API 호출 실패 또는 인증 실패 시 BottomSheetPassword 컴포넌트의 에러 처리를 트리거하기 위해 에러를 다시 던집니다.
+      throw err;
+    }
   };
 
   return (
