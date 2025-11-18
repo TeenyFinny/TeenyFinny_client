@@ -1,7 +1,4 @@
-import { useEffect, useState } from "react"
 import { PieChart, Pie, Cell } from "recharts"
-import requests from "@/lib/axios/requests"
-import api from "@/lib/axios/axios";
 
 interface PortfolioData {
   name: string
@@ -34,7 +31,7 @@ export function DonutChart({
     );
     
   // 조각 중앙에 정확히 라벨 그리기
-  const renderCenterLabel = (props: any) => {
+  const renderCenterLabel = (props: { cx: number; cy: number; midAngle: number; innerRadius: number; outerRadius: number; percent: number; name: string }) => {
     const { cx, cy, midAngle, innerRadius, outerRadius, percent, name } = props
     const r = innerRadius + (outerRadius - innerRadius) * 0.5 // 도넛 링 가운데
     // Recharts는 시계방향 각도, SVG 좌표계 보정 위해 -midAngle 사용
@@ -74,11 +71,6 @@ export function DonutChart({
           label={renderCenterLabel} // 여기서 라벨 중앙 배치
           isAnimationActive={false} // 필요시 true
           activeShape={false}
-          // activeIndex={undefined}
-          // onMouseEnter={undefined}
-          // onMouseMove={undefined}
-          // onMouseLeave={undefined}
-          onClick={undefined}
         >
         {Array.isArray(data) &&
           data.map((_, i) => (
