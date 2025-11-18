@@ -37,7 +37,10 @@ const requests = {
   fetchTransactionDetail: `/account/history/detail`,
   fetchChildCard: `/account/card`,
 
-  verifyPhoneNumber: `/allowance/verify-identity`
+  verifyPhoneNumber: `/allowance/verify-identity`,
+
+  fetchProfile: `/profile`
+
 
 };
 

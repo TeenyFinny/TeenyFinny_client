@@ -1,12 +1,58 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Switch } from "@/components/ui/switch";
-import { SwitchThumb } from "@radix-ui/react-switch";
+import api from "@/lib/axios/axios"
+import requests from "@/lib/axios/requests";
 
 export default function PushSettingPage() {
-    const [serviceAlert, setServiceAlert] = useState(false);
-    const [nightAlert, setNightAlert] = useState(false);
+    const [push_enabled, setPushEnabled] = useState(false);
+    const [night_push_enabled, setNightPushEnabled] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const userId = 1
+
+    // -------------------------------
+    // 페이지 진입 시 GET
+    // -------------------------------
+    useEffect(() => {
+        (async () => {
+            try {
+                const res = await api.get(`${requests.fetchProfile}/pushes?user_id=${userId}`);
+                const data = res.data;
+                console.log(data)
+                setPushEnabled(data.push_enabled);
+                setNightPushEnabled(data.night_push_enabled);
+            } catch (err) {
+                console.error("알림 설정 불러오기 실패:", err);
+            } finally {
+                setLoading(false);
+            }
+        })();
+    }, []);
+
+    // -------------------------------
+    // 토글 핸들러
+    // -------------------------------
+    const handleToggle = async (
+        key: "push_enabled" | "night_push_enabled",
+        value: boolean,
+        setter: (v: boolean) => void
+    ) => {
+        const prev = !value;
+        setter(value); // UI 즉시 반영
+
+        try {
+            await api.patch(
+                `${requests.fetchProfile}/pushes/${userId}`,
+                { [key]: value }
+            );
+        } catch (err) {
+            console.error("PATCH 실패:", err);
+            setter(prev); // 실패 시 롤백
+        }
+    };
+
+    if (loading) return <p className="text-center mt-10">로딩 중...</p>;
 
     return (
         <main className="w-full h-full max-h-[500px]">
@@ -29,10 +75,11 @@ export default function PushSettingPage() {
                         서비스 알림 받기
                     </span>
                     <Switch
-                        checked={serviceAlert}
-                        onCheckedChange={setServiceAlert}
+                        checked={push_enabled}
+                        onCheckedChange={(v) =>
+                            handleToggle("push_enabled", v, setPushEnabled)
+                        }
                     />
-
                 </div>
             </div>
 
@@ -43,8 +90,10 @@ export default function PushSettingPage() {
                         야간 시간대 알림 받기
                     </span>
                     <Switch
-                        checked={nightAlert}
-                        onCheckedChange={setNightAlert}
+                        checked={night_push_enabled}
+                        onCheckedChange={(v) =>
+                            handleToggle("night_push_enabled", v, setNightPushEnabled)
+                        }
                     />
                 </div>
             </div>
