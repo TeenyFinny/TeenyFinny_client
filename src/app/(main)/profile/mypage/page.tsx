@@ -38,7 +38,7 @@ interface ProfileInfo {
 
 export default function MyPage() {
   const [profileInfo, setProfileInfo] = useState<ProfileInfo | null>(null);
-  const userId = useUserStore.getState().userId;
+  const userId = useUserStore((state) => state.userId);
   const router = useRouter();
 
   useEffect(() => {

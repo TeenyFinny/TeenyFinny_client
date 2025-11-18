@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 import { useRouter } from "next/navigation";
@@ -22,16 +22,16 @@ export default function VerifyPage() {
   const [name, setName] = useState("");
   const [success, setSuccess] = useState<boolean | null>(null);
   const [message, setMessage] = useState("");
-  const userId = useUserStore.getState().userId;
+  const userId = useUserStore((state) => state.userId);
 
   if (!userId) throw new Error("사용자 ID가 없습니다.");
 
   /**
-   * 인증 성공 시 자동으로 다음 단계로 이동시키는 effect
+   * 인증 성공 시 자동으로 마이페이지로 이동시키는 effect
    */
-  const onNext = () => {
-    router.push("/profile");
-  };
+  const onNext = useCallback(() => {
+    router.push("/profile/mypage");
+  }, [router]);
 
   useEffect(() => {
     if (success) {
