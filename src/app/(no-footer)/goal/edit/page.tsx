@@ -12,17 +12,17 @@ interface GoalData {
     goalName: string
     totalAmount: string
     monthlyAmount: string
-    savingDay: string
+    payDay: string
 }
 
 export default function GoalSettingPage() {
     const router = useRouter()
 
     const [goalData, setGoalData] = useState<GoalData | null>(null)
-    const [savingDay, setSavingDay] = useState("")
+    const [payDay, setPayDay] = useState("")
     const [calculatedMonths, setCalculatedMonths] = useState(0)
 
-    // ✅ mock 데이터 불러오기
+    // 🔹 GET: 기존 목표 정보 로드
     useEffect(() => {
         const fetchGoalData = async () => {
             try {
@@ -35,21 +35,21 @@ export default function GoalSettingPage() {
                     goalName: raw.goalName,
                     totalAmount: Number(raw.totalAmount).toLocaleString(),
                     monthlyAmount: Number(raw.monthlyAmount).toLocaleString(),
-                    savingDay: raw.savingDay,
+                    payDay: raw.payDay,  // 🔥 여기 수정됨
                 }
 
                 console.log("✅ 변환된 GoalData:", mappedData)
                 setGoalData(mappedData)
-                setSavingDay(mappedData.savingDay)
+                setPayDay(mappedData.payDay)
             } catch (error) {
-                console.error("❌ mock 데이터 불러오기 실패:", error)
+                console.error("❌ 목표 정보 불러오기 실패:", error)
             }
         }
 
         fetchGoalData()
     }, [])
 
-    // ✅ 기간 계산
+    // 🔹 기간 계산
     useEffect(() => {
         if (!goalData) return
         const total = Number(goalData.totalAmount.replace(/,/g, "")) || 0
@@ -57,23 +57,25 @@ export default function GoalSettingPage() {
         setCalculatedMonths(monthly > 0 ? Math.ceil(total / monthly) : 0)
     }, [goalData])
 
-    // ✅ 수정 버튼 클릭 (mock)
+    // 🔹 PATCH 요청 (수정)
     const handleSave = async () => {
-        if (!goalData) return
+        if (!payDay) return
+
         try {
-            const payload = { ...goalData, savingDay }
-            console.log("📨 전송할 mock 데이터:", payload)
+            const payload = { payDay }
 
-            const res = await api.post(requests.updateGoal, payload)
-            console.log("✅ mock 응답:", res.data)
+            console.log("📨 PATCH 요청 데이터:", payload)
 
-            alert(`목표 납입일이 ${savingDay}일로 수정되었습니다!`)
+            const res = await api.patch(requests.updateGoal, payload)
+
+            console.log("✅ 수정 완료:", res.data)
+
+            alert(`납입일이 ${payDay}일로 수정되었습니다!`)
             router.push("/goal")
         } catch (error) {
             console.error("❌ 수정 실패:", error)
         }
     }
-
 
     if (!goalData) {
         return (
@@ -99,35 +101,38 @@ export default function GoalSettingPage() {
                     <NormalInput2
                         label="적금 이름을 지어주세요"
                         value={goalData.goalName}
-                        onChange={() => { }}
+                        onChange={() => {}}
                         disabled
                     />
+
                     <NormalInput2
                         label="총 얼마를 모을까요?"
                         value={goalData.totalAmount}
-                        onChange={() => { }}
+                        onChange={() => {}}
                         disabled
                         isNumeric
                         unit="원"
                     />
+
                     <NormalInput2
                         label="한 달에 얼마를 모을까요?"
                         value={goalData.monthlyAmount}
-                        onChange={() => { }}
+                        onChange={() => {}}
                         disabled
                         isNumeric
                         unit="원"
                     />
+
                     <NormalInput2
                         label="언제 저금할까요?"
-                        value={savingDay}
-                        onChange={setSavingDay}
+                        value={payDay}
+                        onChange={payDay}
                         isNumeric
                         unit="일"
                     />
                 </div>
 
-                <div className="mt-6 pt-[0.2px] text-right h-[24px] transition-opacity duration-300">
+                <div className="mt-6 text-right h-[24px] transition-opacity duration-300">
                     {calculatedMonths > 0 && (
                         <p className="text-head-08 text-neutral-2">
                             그럼{" "}

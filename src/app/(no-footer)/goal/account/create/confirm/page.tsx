@@ -12,7 +12,7 @@ interface GoalData {
     goalName: string
     totalAmount: string
     monthlyAmount: string
-    savingDay: string
+    payDay: string
 }
 
 export default function GoalSettingReviewPage() {
@@ -107,7 +107,7 @@ export default function GoalSettingReviewPage() {
                     />
                     <NormalInput2
                         label="언제 저금할까요?"
-                        value={`${goalData.savingDay} 일`}
+                        value={`${goalData.payDay} 일`}
                         onChange={() => { }}
                         isNumeric
                         disabled
