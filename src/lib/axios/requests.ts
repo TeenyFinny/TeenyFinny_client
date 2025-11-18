@@ -41,7 +41,7 @@ const requests = {
   fetchChildCard: `/account/card`,
 
   verifyPhoneNumber: `/auth/identity`,
-  submitChildInfo: `/allowance/accounts`,
+  submitChildInfo: `/allowance/account`,
 
   fetchProfile: `/profile`
 
