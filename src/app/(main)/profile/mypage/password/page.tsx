@@ -6,6 +6,7 @@ import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled";
 import { isValidPassword } from "@/lib/utils/validators";
 import { useRouter } from "next/navigation";
+import { useNotificationStore } from "@/store/notificationStore";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 
@@ -16,7 +17,7 @@ import requests from "@/lib/axios/requests";
  * - 현재 비밀번호 입력
  * - 새 비밀번호 입력(8자리 + 특수문자)
  * - 새 비밀번호 확인
- * - 변경 성공 시 `/profile`로 이동합니다.
+ * - 변경 성공 시 알림(PushNotification) 전달 후 `/profile`로 이동합니다.
  *
  * @returns {JSX.Element} 비밀번호 변경 UI를 렌더링합니다.
  */
@@ -27,6 +28,7 @@ export default function ChangePasswordPage() {
   const [confirmPw, setConfirmPw] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const { setMessage } = useNotificationStore();
 
   // 현재 비밀번호 검증
   const currentPwValid = currentPw.length === 0 || currentPw.length >= 8;
@@ -63,6 +65,7 @@ export default function ChangePasswordPage() {
       const res = await api.patch(requests.updatePassword, payload);
 
       if (res.data?.isSuccess) {
+        setMessage("비밀번호가 변경되었습니다.");
         router.push("/profile");
       }
             
