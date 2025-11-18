@@ -11,6 +11,7 @@ const requests = {
   signup: `/auth/signup`,
   fetchProfileInfo: (id: number) => `/profile/info/${id}`, // JWT 도입 이후 ID 제거 예정
   updateProfileInfo: (id: number) => `/profile/info/${id}`,
+  updatePassword: `/auth/password`,
   verifySimplePassword: `/auth/simple-password/verify`,
   verifyFamilyOtp: `/auth/otp`, // OTP 검증
   fetchGoal: `/goal`,
