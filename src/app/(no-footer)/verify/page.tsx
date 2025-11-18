@@ -82,6 +82,7 @@ export default function VerifyPage() {
 
       if (res.data?.isSuccess) {
         setSuccess(true);
+        useUserStore.getState().updateUser(name);
       } else {
         setSuccess(false);
       }
@@ -93,7 +94,6 @@ export default function VerifyPage() {
       );
     } finally {
       setLoading(false);
-      useUserStore.getState().updateUser(name);
     }
   };
 
