@@ -22,6 +22,7 @@ const requests = {
   stockList: `/investments/my-stocks`,
   myStocksTop3: `/investments/my-stocks/top3`,
   stockDetail: `/investments/stockDetail`,
+  investAccount: `/investments/check-account`,
 
   updateGoal: `/goal/update`,
   sellStock: `/investments/sellStock`,
