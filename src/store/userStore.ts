@@ -34,6 +34,7 @@ interface UserState {
     hasChildren?: boolean,
     children?: ChildSummary[]
   ) => void;
+  updateUser: (userName: string) => void;
   setHasChildren: (value: boolean) => void;
   clearUser: () => void;
 }
@@ -79,6 +80,12 @@ export const useUserStore = create<UserState>()(
           hasChildren,
           children,
         }),
+
+      /**
+       * 사용자 이름을 개별적으로 변경합니다.
+       * @param {string} userName - 사용자 이름
+       */
+      updateUser: (userName) => set({ userName }),
 
       /**
        * 부모 계정의 자녀 연결 여부를 개별적으로 변경합니다.
