@@ -59,6 +59,14 @@ export default function Page() {
   const handleViewDetails = (accountType: string) => {
     const childName =
       data?.find((child) => child.childId === currentChild)?.name ?? "";
+
+    const typeMap: Record<string, string> = {
+      "용돈 계좌": "allowance",
+      "투자 계좌": "invest",
+      "목표 적금": "saving",
+    };
+    const accountNameEng = typeMap[accountType];
+
     const balance =
       accountType === "용돈 계좌"
         ? allowance
@@ -71,9 +79,13 @@ export default function Page() {
       accountName: accountType,
       balance: balance ?? 0,
     });
+    // 현재 날짜에서 year, month 추출
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
 
     router.push(
-      `/account/history?childId=${currentChild}&account=${accountType}`
+      `/account/history?childId=${currentChild}&account=${accountNameEng}&year=${year}&month=${month}`
     );
   };
 

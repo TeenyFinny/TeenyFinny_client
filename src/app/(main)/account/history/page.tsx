@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 import { useUserStore } from "@/store/userStore";
 import { StateBadge } from "@/components/ui/badge/StateBadge";
 import { BottomSheetDetail } from "@/components/custom/account/BottomSheetDetail";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useAccountHistoryStore } from "@/store/accountHistory";
 
 interface Transaction {
@@ -30,33 +30,38 @@ interface DetailData {
 }
 
 export default function Page() {
+  /** 유저 타입 (parent/child) */
   const { userType } = useUserStore();
+
+  /** 라우터 & URL Params */
   const params = useSearchParams();
+  const router = useRouter();
 
   const childId = params.get("childId");
   const accountType = params.get("account");
 
-  // 기본 월
+  /** 헤더 정보(Zustand) */
+  const { childName, accountName, balance } = useAccountHistoryStore();
+
+  /** 현재 월 지정 */
   const now = new Date();
-  const defaultMonth = `${now.getFullYear()}-${String(
-    now.getMonth() + 1
-  ).padStart(2, "0")}`;
+  const defaultMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
   const [currentMonth, setCurrentMonth] = useState(defaultMonth);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
+  /** 거래 상세 바텀시트 */
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<DetailData | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
-  const { childName, accountName, balance } = useAccountHistoryStore();
 
-  const listRef = useRef<HTMLDivElement>(null);
-
-  // month split
+  /** 월 파싱 */
   const [year, month] = currentMonth.split("-").map(Number);
 
-  /* 월 이동 */
+  /* ----------------------------
+   *  월 이동 (이전/다음 버튼)
+   * ---------------------------- */
   const goPrevMonth = () => {
     const prevMonth = month === 1 ? 12 : month - 1;
     const prevYear = month === 1 ? year - 1 : year;
@@ -69,7 +74,9 @@ export default function Page() {
     setCurrentMonth(`${nextYear}-${String(nextMonth).padStart(2, "0")}`);
   };
 
-  /* 거래내역 불러오기 */
+  /* ----------------------------
+   *  거래내역 API 호출 (childId, accountType, currentMonth 변경 시)
+   * ---------------------------- */
   useEffect(() => {
     if (!childId || !accountType) return;
 
@@ -79,7 +86,7 @@ export default function Page() {
       const res = await api.get(requests.fetchAccountHistory, {
         params: {
           childId: Number(childId),
-          accountType: accountType,
+          accountType,
           year: yearStr,
           month: monthStr,
         },
@@ -91,7 +98,22 @@ export default function Page() {
     fetchHistory();
   }, [childId, accountType, currentMonth]);
 
-  /* 거래 클릭 → id 저장 → 상세 가져오기 */
+  /* ----------------------------
+   *  URL 자동 업데이트 (replace)
+   * ---------------------------- */
+  useEffect(() => {
+    if (!childId || !accountType) return;
+
+    const [yearStr, monthStr] = currentMonth.split("-");
+
+    router.replace(
+      `/account/history?childId=${childId}&account=${accountType}&year=${yearStr}&month=${monthStr}`
+    );
+  }, [currentMonth, childId, accountType, router]);
+
+  /* ----------------------------
+   *  거래 상세 클릭 → 상세 API 요청
+   * ---------------------------- */
   const handleTransactionClick = async (t: Transaction) => {
     setSelectedId(t.id);
     setSheetOpen(true);
@@ -99,19 +121,21 @@ export default function Page() {
 
     try {
       const res = await api.get(requests.fetchTransactionDetail, {
-      params: {
-        transactionId: t.id,   // ← 쿼리 파라미터로 id 전달
-      },
-    });
+        params: { transactionId: t.id },
+      });
+
       setDetail(res.data[0]);
     } finally {
       setLoadingDetail(false);
     }
   };
 
+  /* ----------------------------
+   *  JSX
+   * ---------------------------- */
   return (
     <div className="flex flex-col h-full">
-      {/* 상단 카드 영역 */}
+      {/* 헤더 카드 */}
       <div className="mt-[36px]">
         <div className="h-[130px] mx-[18px] p-[24px] rounded-[16px] bg-primary-1/12">
           <div className="flex justify-between mb-[10px]">
@@ -128,13 +152,12 @@ export default function Page() {
             )}
           </div>
 
-          <p className="text-account-title text-neutral-1">
-            {balance} 원
-          </p>
+          <p className="text-account-title text-neutral-1">{balance} 원</p>
         </div>
 
-        {/* 월 선택 */}
+        {/* 월 네비게이터 */}
         <div className="mx-[20px] mt-[36px] flex justify-between items-center">
+          {/* 이전 월 */}
           {month !== 1 ? (
             <Image
               src="/icons/arrow-left.png"
@@ -150,6 +173,7 @@ export default function Page() {
 
           <span className="text-head-06 text-neutral-1">{currentMonth}</span>
 
+          {/* 다음 월 */}
           {month !== 12 ? (
             <Image
               src="/icons/arrow-left.png"
@@ -165,8 +189,8 @@ export default function Page() {
         </div>
       </div>
 
-      {/* 거래 리스트 */}
-      <div ref={listRef} className="flex-1 mt-[3px] overflow-y-auto px-[20px]">
+      {/* 거래 내역 리스트 */}
+      <div className="flex-1 mt-[3px] overflow-y-auto px-[20px]">
         {transactions.length > 0 ? (
           transactions.map((t) => (
             <div
@@ -188,9 +212,7 @@ export default function Page() {
 
               <div className="text-right">
                 <p className="text-head-08 text-neutral-1">{t.amount}원</p>
-                <p className="text-body-07 text-neutral-3">
-                  {t.balanceAfter}원
-                </p>
+                <p className="text-body-07 text-neutral-3">{t.balanceAfter}원</p>
               </div>
             </div>
           ))
