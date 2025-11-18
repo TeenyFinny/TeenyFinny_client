@@ -1,4 +1,15 @@
-export default function MoveToInvest() {
+import { useEffect } from "react";
+
+export default function Move({ onNext }: { onNext: () => void }) {
+
+  const MOVE_PAGE_DELAY = 2500;
+
+  useEffect(() => {
+    const t = setTimeout(onNext, MOVE_PAGE_DELAY);
+    return () => clearTimeout(t);
+  }, []);
+
+
   return (
     <div className="flex flex-col items-center px-6 pt-13">
       {/* Title Section */}
