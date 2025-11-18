@@ -1,6 +1,6 @@
 // 호출 가능한 api를 한 파일에서 관리!
 
-import { p } from "framer-motion/client"
+import { p } from "framer-motion/client";
 
 const requests = {
   fetchTest: `/noticeTest`,
@@ -10,6 +10,7 @@ const requests = {
   login: `/auth/login`,
   signup: `/auth/signup`,
   fetchProfileInfo: (id: number) => `/profile/info/${id}`, // JWT 도입 이후 ID 제거 예정
+  updateProfileInfo: (id: number) => `/profile/info/${id}`,
   verifySimplePassword: `/auth/simple-password/verify`,
   verifyFamilyOtp: `/auth/otp`, // OTP 검증
   fetchGoal: `/goal`,
@@ -39,6 +40,6 @@ const requests = {
   fetchChildCard: `/account/card`,
 
   verifyPhoneNumber: `/allowance/verify-identity`,
-}
+};
 
-export default requests
+export default requests;
