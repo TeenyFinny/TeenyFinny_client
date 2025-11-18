@@ -92,7 +92,7 @@ export default function Page() {
   return (
     <div className="px-[18px]">
       {/* Summary Section */}
-      <InvestStatusWithChart {...investSummary} />
+      <InvestStatusWithChart {...investSummary} holdings={holdingsSummary}/>
 
 
       {/* My Stocks Section */}

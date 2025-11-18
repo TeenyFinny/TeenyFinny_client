@@ -12,7 +12,7 @@ export default function GoalIntroPage() {
     userType === "parent" ? "목표 적금 개설하기" : "목표 생성하기"
 
   const handleClick = () => {
-    if (userType === "parent") router.push("/goal/account/create/checklist")
+    if (userType === "parent") router.push("/goal/account/create")
     else router.push("/goal/create")
   }
 

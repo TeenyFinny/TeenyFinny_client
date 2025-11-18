@@ -6,16 +6,24 @@ import { useRouter } from "next/navigation";
 import api from "@/lib/axios/axios";
 import { TradeHistory } from "@/components/ui/tx-history-ui/TradeHistory";
 
-export default function Page(){
+export default function Page() {
   const router = useRouter();
   const [stocks, setStocks] = useState<any[]>([]);
   const [investSummary, setInvestSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const userId = 1 //TODO: 추후 유저ID 연동
 
   useEffect(() => {
 
     (async () => {
       try {
+        const res = await api.get(`${requests.investAccount}?user_id=${userId}`);
+      
+        if (!res.data.hasAccount) {
+          router.push("/invest/no-account");//계좌가 없다면 안내페이지로
+          return;
+        }
+
         const [stockRes, investRes] = await Promise.all([
           api.get(requests.myStocksTop3),
           api.get(requests.investmentsSummary),
@@ -23,9 +31,9 @@ export default function Page(){
         setStocks(stockRes.data ?? []);
         setInvestSummary(investRes.data ?? []);
       } catch (e) {
-	      // 커스텀 에러관리
+        // 커스텀 에러관리
         const err = e as HttpError;
-        
+
         // 403일 경우 에러메시지를 반환하고 홈으로 라우팅
         if (err.statusCode === 403) {
           alert(err.message);
@@ -51,9 +59,9 @@ export default function Page(){
   return (
     <div className="px-[18px]">
       {/* Investment Status */}
-      <div className="w-[340px] pl-6 pt-0 mt-0">
+      <div className="w-[340px] pl-3">
         <div className="">
-          <h2 className="text-body-06 text-neutral-1">{investSummary.userName}의</h2>
+          <h2 className="text-body-04 text-neutral-1">{investSummary.userName}의</h2>
           <p className="text-body-06 text-neutral-1">총 투자 현황입니다.</p>
         </div>
 
@@ -65,34 +73,38 @@ export default function Page(){
         </div>
 
         {/* Profit Amount */}
-        <div className="mb-6">
-          <p className={`text-body-07 ${investSummary.isPositive ? "text-error" : "text-primary-1"}`}>
+        <div className="mb-8 flex items-center justify-between pr-26">
+          <p className={`text-body-06 ${investSummary.isPositive ? "text-error" : "text-primary-1"}`}>
             {investSummary.isPositive ? "↑" : "↓"} {investSummary.profitAmount}원 (
             {investSummary.profitRate}%)
           </p>
+
+          {/* Account Link */}
+          <a
+            href="/invest/my-stock-account"
+            className="flex items-center text-body-06 text-neutral-2 hover:text-neutral-1 transition-colors"
+            >
+            내 계좌 보기
+            <img src="/icons/arrow-right.png" alt="arrow-right icon" className="w-6 h-6" />
+          </a>
         </div>
       </div>
 
-      {/* Account Link */}
-      <div className="mb-2 flex justify-end">
-        <a
-          href="/invest/my-stock-account"
-          className="flex items-center gap-1 text-body-06 text-neutral-2 hover:text-neutral-1 transition-colors"
-        >
-          내 계좌 보기
-          <img src="/icons/arrow-right.png" alt="arrow-right icon" className="w-6 h-6" />
-        </a>
-      </div>
+
 
       {/* My Stocks Section */}
-      <div className="mb-5 w-[340px] bg-white rounded-[16px] shadow-lg">
-        <h2 className="text-head-06 text-neutral-2 px-5 pt-4 self-start">내가 산 주식</h2>
+      <h2 className="text-head-06 text-neutral-2 px-3 self-start">내가 산 주식</h2>
+      <div className="mb-5 mt-2 w-[340px] bg-white rounded-[16px] shadow-lg">
+        <div className="flex items-center justify-between px-6">
+          <span className="text-body-07 text-neutral-2 mt-3">종목명</span>
+          <span className="text-body-07 text-neutral-2 mt-3">평균단가</span>
+        </div>
         <div className="mx-5 h-[1px] mt-[10px] bg-monochrome-gray" />
         {stocks.map((stock, index) => (
           <div key={stock.id}>
             <TradeHistory
               stockName={stock.name}
-              stockCode={`거래량 ${stock.code}`}
+              stockCode={`보유 수량 ${stock.code}주`}
               currentPrice={`${stock.price.toLocaleString()} 원`}
               changeRate={stock.changePercent}
             />

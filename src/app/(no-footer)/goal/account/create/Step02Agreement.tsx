@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled"
 
@@ -11,8 +10,11 @@ interface ConsentItem {
   label: string
 }
 
-export default function GoalAccountCreateAgreementPage() {
-  const router = useRouter()
+interface Step02AgreementProps {
+  onNext: () => void
+}
+
+export default function Step02Agreement({ onNext }: Step02AgreementProps) {
   const [isExpanded, setIsExpanded] = useState(true)
 
   const consentItems: ConsentItem[] = [
@@ -21,6 +23,7 @@ export default function GoalAccountCreateAgreementPage() {
     { id: "identification", label: "고유식별정보 처리 동의" },
     { id: "telecom", label: "통신사 이용약관 동의" },
   ]
+
   const [consents, setConsents] = useState<Record<string, boolean>>(
     Object.fromEntries(consentItems.map((item) => [item.id, false]))
   )
@@ -34,10 +37,6 @@ export default function GoalAccountCreateAgreementPage() {
 
   const handleItemCheck = (id: string) => {
     setConsents((prev) => ({ ...prev, [id]: !prev[id] }))
-  }
-
-  const handleNext = () => {
-    router.push("/goal/account/create/auth")
   }
 
   return (
@@ -104,13 +103,14 @@ export default function GoalAccountCreateAgreementPage() {
 
       {/* 버튼 */}
       <div
-        className={`absolute bottom-14 flex flex-col gap-5 items-center ${isExpanded ? "mt-[221px]" : "mt-[402px]"
-          }`}
+        className={`absolute bottom-14 flex flex-col gap-5 items-center ${
+          isExpanded ? "mt-[221px]" : "mt-[402px]"
+        }`}
       >
         {allChecked ? (
-          <BigButtonActivated label="동의하고 진행하기" onClick={handleNext} />
+          <BigButtonActivated label="동의하고 진행하기" onClick={onNext} />
         ) : (
-          <BigButtonDisabled label="동의하고 진행하기" onClick={() => { }} />
+          <BigButtonDisabled label="동의하고 진행하기" onClick={() => {}} />
         )}
       </div>
     </div>
