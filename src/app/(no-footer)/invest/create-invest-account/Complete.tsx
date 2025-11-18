@@ -34,7 +34,7 @@ export default function Complete() {
       </div>
 
       {/* Bottom Button */}
-      <div className="w-full mt-28">
+      <div className="fixed bottom-[56px] w-full max-w-[327px]">
         <BigButtonActivated label="투자 홈으로 돌아가기" onClick={() => router.push("/invest")}></BigButtonActivated>
       </div>
     </div>
