@@ -63,7 +63,12 @@ export function CardDetail({
 
   // 카드 이름 수정 상태 관리
   const [isEditing, setIsEditing] = useState(false); // 수정 모드 여부
-  const [cardName, setCardName] = useState(initialCardName); // 수정 가능한 카드 이름 값
+  const [cardName, setCardName] = useState(initialCardName);
+
+  // props 변경 → state 갱신
+  useEffect(() => {
+    setCardName(initialCardName);
+  }, [initialCardName]);
 
   /** 바텀시트 열림 상태에 따라 body 스크롤 방지 */
   useEffect(() => {
@@ -145,7 +150,13 @@ export function CardDetail({
           className="absolute top-[40px] right-[30px] text-neutral-2 hover:text-neutral-1"
           aria-label="닫기"
         >
-          <Image src="/icons/x.png" alt="닫기" width={27} height={27} unoptimized />
+          <Image
+            src="/icons/x.png"
+            alt="닫기"
+            width={27}
+            height={27}
+            unoptimized
+          />
         </button>
 
         {/* 카드 상세 정보 영역 */}
@@ -187,7 +198,9 @@ export function CardDetail({
               </>
             ) : (
               <>
-                <p className="text-head-08 text-neutral-1 mt-[17px]">{cardName}</p>
+                <p className="text-head-08 text-neutral-1 mt-[17px]">
+                  {cardName}
+                </p>
                 <div className="mt-[12px] border-b border-monochrome-gray" />
               </>
             )}
