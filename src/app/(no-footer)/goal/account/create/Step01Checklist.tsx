@@ -4,7 +4,7 @@ import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import Image from "next/image"
 
 /**
- * Step2Page
+ * Step01Checklist
  *
  * 계좌 개설 전 필요 서류 안내 페이지입니다.
  *
