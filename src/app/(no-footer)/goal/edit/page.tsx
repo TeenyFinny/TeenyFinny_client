@@ -126,7 +126,7 @@ export default function GoalSettingPage() {
                     <NormalInput2
                         label="언제 저금할까요?"
                         value={payDay}
-                        onChange={payDay}
+                        onChange={setPayDay}
                         isNumeric
                         unit="일"
                     />
