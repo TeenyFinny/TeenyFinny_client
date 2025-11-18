@@ -6,6 +6,8 @@ import { SmallButtonActivated } from "@/components/ui/button/SmallButtonActivate
 import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog"
 import { SmallButtonDisabled } from "@/components/ui/button/SmallButtonDisabled"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
+import { ConfirmContentDialog } from "@/components/ui/modal/ConfirmContentDialog"
+import { DeleteConfirmDialog } from "@/components/ui/modal/DeleteConfirmDialog"
 
 export default function DeleteReconfirmationPage() {
     const router = useRouter()
@@ -13,7 +15,7 @@ export default function DeleteReconfirmationPage() {
 
     // ✅ 버튼 클릭 핸들러
     const handleConfirmClick = () => setIsDialogOpen(true)
-    const handleConfirm = () => router.push("/goal")
+    const handleConfirm = () => router.push("/quiz")
     const handleCancel = () => router.push("/goal")
 
     return (
@@ -35,20 +37,20 @@ export default function DeleteReconfirmationPage() {
                 </h1>
 
                 {/* 버튼 영역 */}
-                <div className="mt-[57px] flex gap-2.5 px-6">
-                    <BigButtonActivated label="투자 계좌 만들러 가기" onClick={handleConfirmClick} />
+                <div className="mt-[42px] flex gap-2.5 px-6">
+                    {/* ✅ 모달 */}
+                    <DeleteConfirmDialog
+                        trigger={<BigButtonActivated label="투자 계좌 만들러 가기" onClick={handleConfirmClick} />}
+                        title={`금융 퀴즈를 풀면 계좌를 만들 수 있어요!`}
+                        description="퀴즈를 풀러 가볼까요?"
+                        ltBtnTxt="네"
+                        rtBtnTxt="아니요"
+                        onClickLtBtn={handleConfirm}
+                    />
                 </div>
             </main>
 
-            {/* ✅ 모달 */}
-            <ConfirmationDialog
-                open={isDialogOpen}
-                onOpenChange={setIsDialogOpen}
-                title={`부모님께 목표 삭제 요청을 보냈어요!`}
-                description="가까운 영업점에 방문하여 해지하세요"
-                confirmText="확인"
-                onConfirm={handleConfirm}
-            />
+
         </div>
     )
 }
