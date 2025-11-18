@@ -1,13 +1,14 @@
 // src/app/(main)/profile/mypage/page.tsx
-"use client"
+"use client";
 
-import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
-import { useEffect, useState } from "react"
-import api from "@/lib/axios/axios"
-import requests from "@/lib/axios/requests"
-import { HttpError } from "@/types/axios/httpError.t"
-import { useUserStore } from "@/store/userStore"
-import { NormalInput2 } from "@/components/ui/input/NormalInput2"
+import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
+import { useEffect, useState } from "react";
+import api from "@/lib/axios/axios";
+import requests from "@/lib/axios/requests";
+import { HttpError } from "@/types/axios/httpError.t";
+import { useUserStore } from "@/store/userStore";
+import { NormalInput2 } from "@/components/ui/input/NormalInput2";
+import { useRouter } from "next/navigation";
 
 /**
  * MyPage
@@ -29,57 +30,92 @@ import { NormalInput2 } from "@/components/ui/input/NormalInput2"
  */
 interface ProfileInfo {
   user: {
-    name: string
-    email: string
-    phoneNumber: string
-  }
+    name: string;
+    email: string;
+    phoneNumber: string;
+  };
 }
 
 export default function MyPage() {
-  const [profileInfo, setProfileInfo] = useState<ProfileInfo | null>(null)
-  const userId = useUserStore((state) => state.userId)
+  const [profileInfo, setProfileInfo] = useState<ProfileInfo | null>(null);
+  const userId = useUserStore.getState().userId;
+  const router = useRouter();
 
   useEffect(() => {
-    const controller = new AbortController()
+    const controller = new AbortController();
 
     const loadUser = async () => {
       try {
-        if (!userId) throw new Error("사용자 ID가 없습니다.")
+        if (!userId) throw new Error("사용자 ID가 없습니다.");
         // 명시적 타입 지정 (ProfileInfo)
-        const res = await api.get<ProfileInfo>(requests.fetchProfileInfo(userId), {
-          signal: controller.signal,
-        })
-        const profileInfo = res.data ?? {}
-        setProfileInfo(profileInfo)
+        const res = await api.get<ProfileInfo>(
+          requests.fetchProfileInfo(userId),
+          {
+            signal: controller.signal,
+          }
+        );
+        const profileInfo = res.data ?? {};
+        setProfileInfo(profileInfo);
       } catch (err) {
-        if (controller.signal.aborted) return
+        if (controller.signal.aborted) return;
 
         if (process.env.NODE_ENV === "development") {
           if (err instanceof HttpError) {
-            console.error(`[PROFILE/INFO] 요청 실패 - ${err.statusCode} ${err.message}`, err)
+            console.error(
+              `[PROFILE/INFO] 요청 실패 - ${err.statusCode} ${err.message}`,
+              err
+            );
           } else {
-            console.error("사용자 정보를 불러오지 못했습니다.", err)
+            console.error("사용자 정보를 불러오지 못했습니다.", err);
           }
         }
       }
-    }
+    };
 
-    loadUser()
-    return () => controller.abort()
-  }, [userId])
+    loadUser();
+    return () => controller.abort();
+  }, [userId]);
+
+  const handleChangeInfo = () => {
+    router.push("/verify");
+  };
 
   return (
     <main className="px-6 overflow-y-auto">
       {/* 타이틀 */}
       <div className="pt-[36px] pb-[30px] text-left flex items-center">
-        <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">내 정보 관리</h1>
+        <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
+          내 정보 관리
+        </h1>
       </div>
 
       {/* information */}
       <div className="flex flex-col justify-start items-center gap-6">
-        <NormalInput2 label="이름" placeholder="" value={profileInfo?.user?.name ?? ""} onChange={() => {}} />
-        <NormalInput2 label="전화번호" placeholder="" value={profileInfo?.user?.phoneNumber ?? ""} onChange={() => {}} />
-        <NormalInput2 label="이메일" placeholder="" value={profileInfo?.user?.email ?? ""} disabled={true} onChange={() => {}} />
+        <div onClick={handleChangeInfo}>
+          <NormalInput2
+            label="이름"
+            placeholder=""
+            value={profileInfo?.user?.name ?? ""}
+            onChange={() => {}}
+          />
+        </div>
+
+        <div onClick={handleChangeInfo}>
+          <NormalInput2
+            label="전화번호"
+            placeholder=""
+            value={profileInfo?.user?.phoneNumber ?? ""}
+            onChange={() => {}}
+          />
+        </div>
+
+        <NormalInput2
+          label="이메일"
+          placeholder=""
+          value={profileInfo?.user?.email ?? ""}
+          disabled={true}
+          onChange={() => {}}
+        />
       </div>
 
       {/* 비밀번호 변경 */}
@@ -88,7 +124,9 @@ export default function MyPage() {
       </div>
 
       {/* 탈퇴 */}
-      <button className="fixed bottom-[134px] w-full max-w-[327px] text-center text-body-08 text-neutral-3">탈퇴하기</button>
+      <button className="fixed bottom-[134px] w-full max-w-[327px] text-center text-body-08 text-neutral-3">
+        탈퇴하기
+      </button>
     </main>
-  )
+  );
 }
