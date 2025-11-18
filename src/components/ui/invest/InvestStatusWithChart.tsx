@@ -3,12 +3,8 @@
 import { DonutChart } from "./DonutChart"
 
 interface StockHolding {
-  id: string
-  name: string
-  transactionId: string
-  price: number
-  percentage: number
-  trend: "up" | "down"
+  name: string;
+  percentage: number;
 }
 
 
@@ -19,7 +15,7 @@ interface PortfolioDashboardData {
   profitRate: string
   availableAmount: string
   isPositive: boolean
-//   holdings: StockHolding[]
+  holdings: StockHolding[]
 }
 
 export default function InvestStatusWithChart({
@@ -29,8 +25,9 @@ export default function InvestStatusWithChart({
   profitRate,
   availableAmount,
   isPositive,
-//   holdings,
+  holdings,
 } : PortfolioDashboardData) {
+  console.log("Holdings data in InvestStatusWithChart:", holdings);
   return (
     <div>
       {/* Top Summary Card */}
@@ -64,7 +61,7 @@ export default function InvestStatusWithChart({
 
           {/* Right: Donut Chart */}
           <div className="flex-shrink-0 w-[55%] translate-y-[10%]">
-            <DonutChart size={176} innerRadius={20} outerRadius={75} />
+            <DonutChart data={holdings} size={176} innerRadius={20} outerRadius={75} />
           </div>
         </div>
       </div>
