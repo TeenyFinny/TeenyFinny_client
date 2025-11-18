@@ -24,7 +24,7 @@ import Image from "next/image"
  * ```
  */
 interface Step01ChecklistProps {
-  onNext: () => void; // 이게 핵심
+  onNext: () => void;
 }
 export default function Step01Checklist({ onNext }: Step01ChecklistProps) {
   return (
