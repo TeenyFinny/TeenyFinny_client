@@ -49,7 +49,6 @@ export default function Page() {
       try {
         const res = await api.post(requests.portfolio);
         const data = res.data;
-        console.log("Portfolio data:", data);
         if (!data) throw new Error("No portfolio data found");
 
         setPortfolio(data);
