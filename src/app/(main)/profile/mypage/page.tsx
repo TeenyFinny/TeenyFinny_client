@@ -1,0 +1,132 @@
+// src/app/(main)/profile/mypage/page.tsx
+"use client";
+
+import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
+import { useEffect, useState } from "react";
+import api from "@/lib/axios/axios";
+import requests from "@/lib/axios/requests";
+import { HttpError } from "@/types/axios/httpError.t";
+import { useUserStore } from "@/store/userStore";
+import { NormalInput2 } from "@/components/ui/input/NormalInput2";
+import { useRouter } from "next/navigation";
+
+/**
+ * MyPage
+ *
+ * 부모 사용자의 기본 정보를 조회하고 표시하는 마이페이지 화면입니다.
+ * - 로그인한 사용자의 ID를 기반으로 프로필 정보를 불러옵니다.
+ * - 이름/전화번호/이메일을 조회용 Input UI로 표시합니다.
+ * - 비밀번호 변경 버튼과 탈퇴 버튼을 제공합니다.
+ *
+ * 주요 기능:
+ * - 사용자 정보 API 요청 및 로딩/에러 상태 관리
+ * - 프로필 정보 렌더링
+ * - 비밀번호 변경 및 탈퇴 액션을 위한 버튼 UI 제공
+ *
+ * 구성 요소:
+ * - NormalInput2: 조회용 사용자 정보 표시
+ * - BigButtonActivated: 비밀번호 변경 버튼
+ * - 탈퇴하기 버튼: 하단 고정
+ */
+interface ProfileInfo {
+  user: {
+    name: string;
+    email: string;
+    phoneNumber: string;
+  };
+}
+
+export default function MyPage() {
+  const [profileInfo, setProfileInfo] = useState<ProfileInfo | null>(null);
+  const userId = useUserStore((state) => state.userId);
+  const router = useRouter();
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadUser = async () => {
+      try {
+        if (!userId) throw new Error("사용자 ID가 없습니다.");
+        // 명시적 타입 지정 (ProfileInfo)
+        const res = await api.get<ProfileInfo>(
+          requests.fetchProfileInfo(userId),
+          {
+            signal: controller.signal,
+          }
+        );
+        const profileInfo = res.data ?? {};
+        setProfileInfo(profileInfo);
+      } catch (err) {
+        if (controller.signal.aborted) return;
+
+        if (process.env.NODE_ENV === "development") {
+          if (err instanceof HttpError) {
+            console.error(
+              `[PROFILE/INFO] 요청 실패 - ${err.statusCode} ${err.message}`,
+              err
+            );
+          } else {
+            console.error("사용자 정보를 불러오지 못했습니다.", err);
+          }
+        }
+      }
+    };
+
+    loadUser();
+    return () => controller.abort();
+  }, [userId]);
+
+  const handleChangeInfo = () => {
+    router.push("/verify");
+  };
+
+  return (
+    <main className="px-6 overflow-y-auto">
+      {/* 타이틀 */}
+      <div className="pt-[36px] pb-[30px] text-left flex items-center">
+        <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
+          내 정보 관리
+        </h1>
+      </div>
+
+      {/* information */}
+      <div className="flex flex-col justify-start items-center gap-6">
+        <div onClick={handleChangeInfo}>
+          <NormalInput2
+            label="이름"
+            placeholder=""
+            value={profileInfo?.user?.name ?? ""}
+            onChange={() => {}}
+          />
+        </div>
+
+        <div onClick={handleChangeInfo}>
+          <NormalInput2
+            label="전화번호"
+            placeholder=""
+            value={profileInfo?.user?.phoneNumber ?? ""}
+            onChange={() => {}}
+          />
+        </div>
+
+        <NormalInput2
+          label="이메일"
+          placeholder=""
+          value={profileInfo?.user?.email ?? ""}
+          disabled={true}
+          onChange={() => {}}
+        />
+      </div>
+
+      {/* 비밀번호 변경 */}
+      <div className="mt-6">
+        <BigButtonActivated label="비밀번호 변경하기" onClick={() => {}} />
+      </div>
+
+      {/* 탈퇴 */}
+      <button className="fixed bottom-[134px] w-full max-w-[327px] text-center text-body-08 text-neutral-3">
+        탈퇴하기
+      </button>
+    </main>
+  );
+}
