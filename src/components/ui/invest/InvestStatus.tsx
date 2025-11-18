@@ -19,7 +19,7 @@ export function InvestStatus({
 }: InvestStatusProps) {
 
   return (
-    <div className="w-[340px] p-6 bg-white rounded-[16px]">
+    <div className="w-[340px] p-6 bg-white rounded-[16px] shadow-lg">
       {/* Title Section */}
       <div className="">
         <h2 className="text-head-06 text-neutral-1 mb-1">{userName}의</h2>

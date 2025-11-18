@@ -132,7 +132,7 @@ export default function Page() {
 
 
   return (
-    <main className="min-h-screen flex bg-primary-4">
+    <main className="flex">
       <div className="flex flex-col items-center pt-6">
         {investSummary && <InvestStatus
             userName={investSummary.userName}
