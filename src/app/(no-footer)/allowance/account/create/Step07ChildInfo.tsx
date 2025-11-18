@@ -118,8 +118,9 @@ export default function Step07ChildInfoInput({
 
       const res = await api.post(requests.submitChildInfo, req);
 
-      if (res.data?.verified) {
+      if (res.data?.isSuccess) {
         setIsPasswordSheetOpen(false);
+        console.log("개설완료")
         onNext();
       } else {
         // 서버에서 인증 실패 응답을 받은 경우 에러를 발생시켜 비밀번호 재입력을 유도합니다.
