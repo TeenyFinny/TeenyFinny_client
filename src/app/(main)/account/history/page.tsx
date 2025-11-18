@@ -8,6 +8,7 @@ import { useUserStore } from "@/store/userStore";
 import { StateBadge } from "@/components/ui/badge/StateBadge";
 import { BottomSheetDetail } from "@/components/custom/account/BottomSheetDetail";
 import { useSearchParams } from "next/navigation";
+import { useAccountHistoryStore } from "@/store/accountHistory";
 
 interface Transaction {
   id: string;
@@ -28,22 +29,12 @@ interface DetailData {
   balanceAfter: string;
 }
 
-interface Props {
-  childName: string;
-  accountType: string;
-  currentBalance: number;
-}
-
-export default function Page({
-  childName,
-  accountType,
-  currentBalance,
-}: Props) {
+export default function Page() {
   const { userType } = useUserStore();
   const params = useSearchParams();
 
   const childId = params.get("childId");
-  const account = params.get("account");
+  const accountType = params.get("account");
 
   // 기본 월
   const now = new Date();
@@ -58,6 +49,7 @@ export default function Page({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<DetailData | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
+  const { childName, accountName, balance } = useAccountHistoryStore();
 
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -79,7 +71,7 @@ export default function Page({
 
   /* 거래내역 불러오기 */
   useEffect(() => {
-    if (!childId || !account) return;
+    if (!childId || !accountType) return;
 
     const [yearStr, monthStr] = currentMonth.split("-");
 
@@ -87,7 +79,7 @@ export default function Page({
       const res = await api.get(requests.fetchAccountHistory, {
         params: {
           childId: Number(childId),
-          accountType: account,
+          accountType: accountType,
           year: yearStr,
           month: monthStr,
         },
@@ -97,11 +89,10 @@ export default function Page({
     };
 
     fetchHistory();
-  }, [childId, account, currentMonth]);
+  }, [childId, accountType, currentMonth]);
 
   /* 거래 클릭 → id 저장 → 상세 가져오기 */
   const handleTransactionClick = async (t: Transaction) => {
-    console.log(t.id);
     setSelectedId(t.id);
     setSheetOpen(true);
     setLoadingDetail(true);
@@ -112,7 +103,6 @@ export default function Page({
         transactionId: t.id,   // ← 쿼리 파라미터로 id 전달
       },
     });
-    console.log(res.data[0])
       setDetail(res.data[0]);
     } finally {
       setLoadingDetail(false);
@@ -126,7 +116,7 @@ export default function Page({
         <div className="h-[130px] mx-[18px] p-[24px] rounded-[16px] bg-primary-1/12">
           <div className="flex justify-between mb-[10px]">
             <p className="text-body-05 text-neutral-3">
-              {childName}님의 {accountType} 계좌
+              {childName}님의 {accountName}
             </p>
 
             {userType === "child" && (
@@ -139,7 +129,7 @@ export default function Page({
           </div>
 
           <p className="text-account-title text-neutral-1">
-            {currentBalance} 원
+            {balance} 원
           </p>
         </div>
 
