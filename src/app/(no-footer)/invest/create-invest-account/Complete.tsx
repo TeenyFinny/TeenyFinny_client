@@ -3,7 +3,7 @@ import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 import Image from "next/image"
 import { useRouter } from "next/navigation";
 
-export default function CompleteCreateInvestAccountPage() {
+export default function Complete() {
   const router = useRouter();
   return (
     <div className="flex flex-col items-center justify-between px-6 pb-6 pt-20">
@@ -34,7 +34,7 @@ export default function CompleteCreateInvestAccountPage() {
       </div>
 
       {/* Bottom Button */}
-      <div className="w-full mt-28">
+      <div className="fixed bottom-[56px] w-full max-w-[327px]">
         <BigButtonActivated label="투자 홈으로 돌아가기" onClick={() => router.push("/invest")}></BigButtonActivated>
       </div>
     </div>

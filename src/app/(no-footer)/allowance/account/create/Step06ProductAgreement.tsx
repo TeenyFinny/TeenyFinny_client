@@ -72,6 +72,7 @@ export default function Step06ProductAgreement({ onNext }: Step06ProductAgreemen
     const newValue = !allCheckedTop
     const updated = Object.fromEntries(consentItemsTop.map((item) => [item.id, newValue]))
     setConsentsTop(updated)
+    setIsExpanded(false)
   }
 
   /** 개별 항목 클릭 시 해당 항목의 체크 상태 토글 */
@@ -88,7 +89,7 @@ export default function Step06ProductAgreement({ onNext }: Step06ProductAgreemen
       {/** 스크롤 가능한 약관 영역 */}
       <div className="flex-1 overflow-y-auto px-[24px] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {/** 타이틀 */}
-        <div className="mt-[43px] mb-[26px] text-left">
+        <div className="mt-[15px] mb-[20px] text-left">
           <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
             {"상품 가입을 위해\n약관을 확인해 주세요."}
           </h1>
@@ -122,7 +123,7 @@ export default function Step06ProductAgreement({ onNext }: Step06ProductAgreemen
                 alt="토글"
                 width={24}
                 height={24}
-                className={`${isExpanded ? "rotate-0" : "rotate-180"}`}
+                className={`${isExpanded ? "rotate-180" : "rotate-0"}`}
                 style={{
                   filter:
                     "brightness(0) saturate(100%) invert(53%) sepia(54%) saturate(0%) hue-rotate(221deg) brightness(92%) contrast(99%)",

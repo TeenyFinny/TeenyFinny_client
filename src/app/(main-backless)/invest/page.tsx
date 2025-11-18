@@ -17,7 +17,7 @@ export default function Page(){
     (async () => {
       try {
         const [stockRes, investRes] = await Promise.all([
-          api.get(requests.dashMyStockList),
+          api.get(requests.myStocksTop3),
           api.get(requests.investmentsSummary),
         ]);
         setStocks(stockRes.data ?? []);
@@ -90,18 +90,18 @@ export default function Page(){
         <div className="mx-5 h-[1px] mt-[10px] bg-monochrome-gray" />
         {stocks.map((stock, index) => (
           <div key={stock.id}>
-      <TradeHistory
-        stockName={stock.name}
-        stockCode={`거래량 ${stock.code}`}
-        currentPrice={`${stock.price.toLocaleString()} 원`}
-        changeRate={stock.changePercent}
-      />
+            <TradeHistory
+              stockName={stock.name}
+              stockCode={`거래량 ${stock.code}`}
+              currentPrice={`${stock.price.toLocaleString()} 원`}
+              changeRate={stock.changePercent}
+            />
 
-      {/* 항목 사이 구분선 (마지막 요소 제외) */}
-      {index < stocks.length - 1 && (
-        <div className="mx-5 h-[1px] bg-monochrome-gray" />
-      )}
-    </div>
+            {/* 항목 사이 구분선 (마지막 요소 제외) */}
+            {index < stocks.length - 1 && (
+              <div className="mx-5 h-[1px] bg-monochrome-gray" />
+            )}
+          </div>
         ))}
       </div>
 
@@ -134,7 +134,7 @@ export default function Page(){
 
       {/* Investment Report Link */}
       <a
-        href="/invest/my-stock-account"
+        href="/invest/portfolios"
         className="w-full py-3 px-5 mb-6 bg-neutral-7 border border-monochrome-gray rounded-[20px] flex items-center gap-3 hover:bg-monochrome-lightgray"
       >
         <img src="/images/invest/icon_invest_graph.png" alt="chart icon" className="w-6 h-6" />

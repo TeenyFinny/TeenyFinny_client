@@ -89,7 +89,7 @@ export default function Step03AuthAgreement({
   return (
     <div className="flex flex-col px-[24px]">
       {/* 타이틀 */}
-      <div className="mt-[43px] mb-[26px] text-left">
+      <div className="mt-[15px] mb-[20px] text-left">
         <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
           {"휴대폰 본인확인을 위해\n필수사항에 동의해 주세요"}
         </h1>
@@ -134,7 +134,7 @@ export default function Step03AuthAgreement({
                 filter:
                   "brightness(0) saturate(100%) invert(53%) sepia(54%) saturate(0%) hue-rotate(221deg) brightness(92%) contrast(99%)",
               }}
-              className={`${isExpanded ? "rotate-0" : "rotate-180"}`}
+              className={`${isExpanded ? "rotate-180" : "rotate-0"}`}
             />
           </button>
         </div>
@@ -182,9 +182,7 @@ export default function Step03AuthAgreement({
       )}
 
       {/* 하단 버튼 */}
-      <div className={`flex flex-col gap-5 items-center mb-[56px] ${
-          isExpanded ? "mt-[221px]" : "mt-[402px]"
-        }`}>
+      <div className="fixed bottom-[56px] left-1/2 -translate-x-1/2 w-[327px]">
         {allChecked ? (
           <BigButtonActivated label="동의하고 진행하기" onClick={onNext} />
         ) : (

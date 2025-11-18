@@ -101,9 +101,9 @@ export default function Step07ChildInfoInput({ onNext }: { onNext: () => void })
   }
 
   return (
-    <div className="flex flex-col px-[24px] h-full mb-[0px]">
+    <div className="flex flex-col px-[27px] h-full mb-[0px]">
       {/* 제목 영역 */}
-      <div className="mt-[43px] mb-[26px] text-left">
+      <div className="mt-[15px] mb-[26px] text-left">
         <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
           {"자녀 정보를 입력해 주세요"}
         </h1>
@@ -174,7 +174,7 @@ export default function Step07ChildInfoInput({ onNext }: { onNext: () => void })
       </div>
 
       {/* 하단 버튼 */}
-      <div className="mt-[62px] mb-[56px]">
+      <div className="fixed bottom-[56px] left-1/2 -translate-x-1/2 w-[327px]">
         {allChecked ? (
           <BigButtonActivated label="모두 입력했어요" onClick={handleButtonClick} />
         ) : (

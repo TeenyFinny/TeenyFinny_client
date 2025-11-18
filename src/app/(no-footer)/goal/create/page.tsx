@@ -13,7 +13,7 @@ export default function GoalSettingPage() {
   const [goalName, setGoalName] = useState("")
   const [totalAmount, setTotalAmount] = useState("")
   const [monthlyAmount, setMonthlyAmount] = useState("")
-  const [savingDay, setSavingDay] = useState("1")
+  const [payDay, setPayDay] = useState("1")
   const [calculatedMonths, setCalculatedMonths] = useState(0)
   const [isDialogOpen, setIsDialogOpen] = useState(false) // ✅ 모달 열림 상태
 
@@ -36,7 +36,7 @@ export default function GoalSettingPage() {
     goalName.trim() !== "" &&
     totalAmount.trim() !== "" &&
     monthlyAmount.trim() !== "" &&
-    savingDay.trim() !== ""
+    payDay.trim() !== ""
 
   // ✅ “확인” 버튼 클릭 시 페이지 이동
   const handleConfirm = () => {
@@ -87,9 +87,9 @@ export default function GoalSettingPage() {
 
           <NormalInput2
             label="언제 저금할까요?"
-            value={savingDay}
+            value={payDay}
             placeholder="1"
-            onChange={setSavingDay}
+            onChange={setPayDay}
             isNumeric
             unit="일"
           />
