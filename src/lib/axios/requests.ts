@@ -16,7 +16,7 @@ const requests = {
   updateProgress: (user_id: number) => `/quiz/progresses/${user_id}`,
   fetchQuiz: "/quiz/info",
   investmentsSummary: `/investmentsments/summary`,
-  fetchGoalConfirm: `/goal/account/create/confirm`,
+  fetchGoalConfirm: `/goal/account/create`,
   stockList: `/investments/my-stocks`,
   myStocksTop3: `/investments/my-stocks/top3`,
   stockDetail: `/investments/stockDetail`,
