@@ -18,7 +18,7 @@ export default function ParentWalletCard({ balance }: ParentWalletCardProps) {
   const formattedBalance = balance.toLocaleString("ko-KR");
 
   return (
-    <div className="w-full h-[240px] bg-neutral-7 rounded-2xl px-6 pt-[26px] pb-[20px] flex flex-col">
+    <div className="w-full h-[240px] bg-neutral-7 rounded-2xl px-6 pt-[26px] pb-[20px] flex flex-col shadow-lg">
       {/* Title Section */}
       <button
         className="flex items-center justify-between mb-[26px]"
