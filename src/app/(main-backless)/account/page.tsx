@@ -121,10 +121,8 @@ export default function Page() {
         }
       );
 
-      setCardInfo(res.data as CardInfo);
-      setCardOpen(true);
-    } catch (e) {
-      console.error(e);
+    const reportHandler = () => {
+        router.push(`/allowance/report`)
     }
   };
 

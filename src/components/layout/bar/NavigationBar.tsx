@@ -57,7 +57,7 @@ export function NavigationBar({
       path: "/account",
       label: "아이관리",
       iconPath: "/icons/child-management.png",
-      activePaths: ["/account"],
+      activePaths: ["/account", "/allowance"],
     },
     {
       path: "/profile",
