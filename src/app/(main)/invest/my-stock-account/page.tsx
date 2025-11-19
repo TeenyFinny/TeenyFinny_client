@@ -94,8 +94,8 @@ export default function Page() {
           </div>
           <div className="mx-5 h-[1px] mt-[10px] bg-monochrome-gray" />
           {stocks.map((stock, index) => (
-            <div key={stock.pdno} onClick={(pdno) => {
-                    router.push(`/invest/stock-details?stck_shrn_iscd=${pdno}&mode=buy`);
+            <div key={stock.pdno} onClick={() => {
+                    router.push(`/invest/stock-details?stck_shrn_iscd=${stock.pdno}&mode=buy`);
                   }}>
               <TradeHistory
                 stockName={stock.prdtName}
