@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
  * LoadingScreenSkeletonQuiz
  *
  * 퀴즈 페이지 로딩용 스켈레톤 UI 컴포넌트.
- * 중앙에 300x300 박스를 두고, 내부에는 상단 텍스트, 중앙 이미지, 하단 텍스트를 표시합니다.
+ * 중앙에 300x400 박스를 두고, 내부에는 상단 텍스트, 중앙 이미지, 하단 텍스트를 표시합니다.
  *
  * @example
  * return <LoadingScreenSkeletonQuiz />;
