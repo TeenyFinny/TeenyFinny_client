@@ -51,7 +51,7 @@ export default function Page() {
         ]);
         // const res = await api.get(requests.stockList);
         setStocks(stockRes.data.myStocks ?? []);
-        setInvestSummary(stockRes.data.summary ?? []);
+        setInvestSummary(stockRes.data.summary ?? null);
       } catch (e) {
 	      // 커스텀 에러관리
         const err = e as HttpError;
