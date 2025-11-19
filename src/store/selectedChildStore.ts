@@ -36,10 +36,10 @@ export const useSelectedChildStore = create(
 
       /** 자녀 선택 시 기본 정보 저장 */
       setChildBaseInfo: (id, name) =>
-        set(() => ({
+        set({
           selectedChildId: id,
           selectedChildName: name,
-        })),
+        }),
 
       /** 계좌 상세 페이지 이동 시 추가 정보 저장 */
       setHistoryData: (data) =>

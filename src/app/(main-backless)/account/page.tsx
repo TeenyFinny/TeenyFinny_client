@@ -169,6 +169,7 @@ export default function Page() {
   useEffect(() => {
     if (data && data.length > 0 && currentChild === 0) {
       setCurrentChild(data[0].childId);
+      setChildBaseInfo(data[0].childId, data[0].name);
     }
   }, [data]);
 
