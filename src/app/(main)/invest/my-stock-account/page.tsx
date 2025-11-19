@@ -4,7 +4,7 @@ import { HttpError } from "@/types/axios/httpError.t";
 import api from "@/lib/axios/axios";
 
 import requests from "@/lib/axios/requests"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation";
 import { TradeHistory } from "@/components/ui/tx-history-ui/TradeHistory";
 
@@ -80,6 +80,67 @@ export default function Page() {
     );
   }
 
+  // const isMounted = useRef(true);
+
+  // useEffect(() => {
+  //   return () => {
+  //     isMounted.current = false;
+  //   };
+  // }, []);
+
+  // /**
+  //  * myStocks + summary 폴링 적용
+  //  */
+  // useEffect(() => {
+  //   let timer: NodeJS.Timeout;
+
+  //   const poll = async () => {
+  //     if (!isMounted.current) return;
+
+  //     try {
+  //       const res = await api.post(requests.myStocks);
+
+  //       const newStocks = res.data.myStocks ?? [];
+  //       const newSummary = res.data.summary ?? null;
+
+  //       // stocks 변경 여부 체크(깜빡임 방지)
+  //       setStocks((prev) => {
+  //         const same = JSON.stringify(prev) === JSON.stringify(newStocks);
+  //         return same ? prev : newStocks;
+  //       });
+
+  //       // summary 변경 여부 체크
+  //       setInvestSummary((prev) => {
+  //         const same = JSON.stringify(prev) === JSON.stringify(newSummary);
+  //         return same ? prev : newSummary;
+  //       });
+
+  //       setLoading(false);
+  //     } catch (e) {
+  //       const err = e as HttpError;
+  //       if (err.statusCode === 403) {
+  //         alert(err.message);
+  //         router.push("/");
+  //       } else {
+  //         console.error(err);
+  //       }
+  //     }
+
+  //     timer = setTimeout(poll, 7000);
+  //   };
+
+  //   poll();
+
+  //   return () => clearTimeout(timer);
+  // }, [router]);
+
+  // if (loading || !investSummary) {
+  //   return (
+  //     <main className="min-h-screen flex justify-center items-center">
+  //       로딩중...
+  //     </main>
+  //   );
+  // }
 
   return (
     <main className="">

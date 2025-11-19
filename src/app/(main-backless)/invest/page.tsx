@@ -1,11 +1,10 @@
 "use client"
 import { HttpError } from "@/types/axios/httpError.t";
 import requests from "@/lib/axios/requests"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation";
 import api from "@/lib/axios/axios";
 import { TradeHistory } from "@/components/ui/tx-history-ui/TradeHistory";
-import { TinyButton } from "@/components/ui/button/TinyButton";
 
 export default function Page() {
   const router = useRouter();
@@ -18,12 +17,12 @@ export default function Page() {
 
     (async () => {
       try {
-        // const res = await api.get(`${requests.investAccount}?user_id=${userId}`);
+        const res = await api.get(`${requests.investAccount}?user_id=${userId}`);
       
-        // if (!res.data.hasAccount) {
-        //   router.push("/invest/no-account");//계좌가 없다면 안내페이지로
-        //   return;
-        // }
+        if (!res.data.hasAccount) {
+          router.push("/invest/no-account");//계좌가 없다면 안내페이지로
+          return;
+        }
 
         const [stockRes] = await Promise.all([
           api.post(requests.myStocksTop3),
@@ -55,6 +54,96 @@ export default function Page() {
       </main>
     );
   }
+
+
+
+  // unmount 검사용
+  // const isMounted = useRef(true);
+  // useEffect(() => {
+  //   return () => {
+  //     isMounted.current = false;
+  //   };
+  // }, []);
+
+  // /**
+  //  * Step 1 — 계좌 여부 검사
+  //  */
+  // useEffect(() => {
+  //   const checkAccount = async () => {
+  //     try {
+  //       const res = await api.get(
+  //         `${requests.investAccount}?user_id=${userId}`
+  //       );
+
+  //       if (!res.data?.hasAccount) {
+  //         router.push("/invest/no-account");
+  //         return;
+  //       }
+
+  //       // 계좌 정상 → 폴링 시작
+  //       startPolling();
+  //     } catch (e) {
+  //       const err = e as HttpError;
+  //       if (err.statusCode === 403) {
+  //         alert(err.message);
+  //         router.push("/");
+  //       } else {
+  //         console.error(err);
+  //       }
+  //     }
+  //   };
+
+  //   checkAccount();
+  // }, [router]);
+
+  /**
+   * Step 2 — 폴링으로 3개 주식 + Summary 받아오기
+   */
+  // const startPolling = () => {
+  //   let timer: NodeJS.Timeout;
+
+  //   const poll = async () => {
+  //     if (!isMounted.current) return;
+
+  //     try {
+  //       const res = await api.post(requests.myStocksTop3);
+
+  //       const newStocks = res.data.myStocks ?? [];
+  //       const newSummary = res.data.summary ?? [];
+
+  //       // 데이터 변경 여부 체크 (깜빡임 방지)
+  //       setStocks((prev) => {
+  //         const same = JSON.stringify(prev) === JSON.stringify(newStocks);
+  //         return same ? prev : newStocks;
+  //       });
+
+  //       setInvestSummary((prev: any) => {
+  //         const same = JSON.stringify(prev) === JSON.stringify(newSummary);
+  //         return same ? prev : newSummary;
+  //       });
+
+  //       setLoading(false);
+  //     } catch (e) {
+  //       console.error("폴링 오류:", e);
+  //     }
+
+  //     timer = setTimeout(poll, 7000);
+  //   };
+
+  //   poll();
+
+  //   return () => clearTimeout(timer);
+  // };
+
+  // // 로딩 UI
+  // if (loading || !investSummary) {
+  //   return (
+  //     <main className="min-h-screen flex justify-center items-center">
+  //       로딩중...
+  //     </main>
+  //   );
+  // }
+
 
   return (
     <div className="px-[18px]">
@@ -108,7 +197,6 @@ export default function Page() {
               currentPrice={`${stock.pchsAvgPric.toLocaleString()} 원`}
               changeRate={Number(stock.profitRate)}
             />
-            {/* <TinyButton label="팔기" onClick={() =>console.log("팔기 버튼 클릭")} /> */}
             {/* 항목 사이 구분선 (마지막 요소 제외) */}
             {index < stocks.length - 1 && (
               <div className="mx-5 h-[1px] bg-monochrome-gray" />
