@@ -6,7 +6,7 @@ import { ChildrenBadge } from "@/components/ui/badge/ChildrenBadge";
 import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
-import { useAccountHistoryStore } from "@/store/accountHistory";
+import { useAccountHistoryStore } from "@/store/accountHistoryStore";
 import { useUserStore } from "@/store/userStore";
 import { ApiResponse } from "@/types/axios/apiRes.t";
 import { HttpError } from "@/types/axios/httpError.t";
@@ -99,11 +99,6 @@ export default function Page() {
     router.push(`/account/auto-transfer/${currentChild}`);
   };
 
-  const reportHandler = () => {
-    console.log(
-      "(id=" + currentChild + ")인 아이의 리포트 페이지와 리다이렉트"
-    );
-  };
   /* 카드 버튼 클릭 이벤트 */
   const handleViewCard = async () => {
     if (!accountData) return;
@@ -121,8 +116,10 @@ export default function Page() {
         }
       );
 
-    const reportHandler = () => {
-        router.push(`/allowance/report`)
+      setCardInfo(res.data as CardInfo);
+      setCardOpen(true);
+    } catch (e) {
+      console.error(e);
     }
   };
 
