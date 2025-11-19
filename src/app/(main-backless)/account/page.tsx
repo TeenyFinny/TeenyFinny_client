@@ -24,6 +24,7 @@ type Accounts = {
   allowance: number | null;
   invest: number | null;
   saving: number | null;
+  card: { hasCard: boolean };
 };
 
 type CardInfo = {
@@ -98,6 +99,13 @@ export default function Page() {
   };
 
   const handleViewCard = async () => {
+    if (!accountData) return;
+
+    if (!accountData?.card?.hasCard){
+      router.push(`/allowance/card/create`);
+      return;
+    }
+
     try {
       const res = await api.get<ApiResponse<CardInfo>>(requests.fetchChildCard, {
         params: { childId: currentChild },
