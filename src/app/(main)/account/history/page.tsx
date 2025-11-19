@@ -7,7 +7,7 @@ import requests from "@/lib/axios/requests";
 import { useUserStore } from "@/store/userStore";
 import { StateBadge } from "@/components/ui/badge/StateBadge";
 import { BottomSheetDetail } from "@/components/custom/account/BottomSheetDetail";
-import { useAccountHistoryStore } from "@/store/accountHistoryStore";
+import { useSelectedChildStore } from "@/store/selectedChildStore";
 
 interface Transaction {
   id: string;
@@ -33,15 +33,15 @@ export default function Page() {
 
   /** Zustand 전역 State (완전 stateful) */
   const {
-    childId,
-    childName,
+    selectedChildId,
+    selectedChildName,
     accountName,
     accountType,
     balance,
     year,
     month,
     setHistoryData,
-  } = useAccountHistoryStore();
+  } = useSelectedChildStore();
 
   /** 거래내역 */
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -74,13 +74,13 @@ export default function Page() {
    *  거래내역 API 호출 (완전 state 기반)
    * ---------------------------- */
   useEffect(() => {
-    if (!childId || !accountType) return;
+    if (!selectedChildId || !accountType) return;
 
     const fetchHistory = async () => {
       try {
         const res = await api.get(requests.fetchAccountHistory, {
           params: {
-            childId,
+            selectedChildId,
             accountType,
             year,
             month,
@@ -93,7 +93,7 @@ export default function Page() {
         setTransactions([]); // 오류 발생 시 목록을 비워 사용자에게 피드백
       }
     };
-  }, [childId, accountType, year, month]);
+  }, [selectedChildId, accountType, year, month]);
 
   /* ----------------------------
    *  상세 클릭 → API
@@ -124,7 +124,7 @@ export default function Page() {
         <div className="h-[130px] mx-[18px] p-[24px] rounded-[16px] bg-primary-1/12">
           <div className="flex justify-between mb-[10px]">
             <p className="text-body-05 text-neutral-3">
-              {childName}님의 {accountName}
+              {selectedChildName}님의 {accountName}
             </p>
 
             {userType === "child" && (
