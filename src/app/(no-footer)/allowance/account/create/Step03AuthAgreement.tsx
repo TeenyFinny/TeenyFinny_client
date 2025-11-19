@@ -89,7 +89,7 @@ export default function Step03AuthAgreement({
   return (
     <div className="flex flex-col px-[24px]">
       {/* 타이틀 */}
-      <div className="mt-[15px] mb-[20px] text-left">
+      <div className="mt-[43px] mb-[26px] text-left">
         <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
           {"휴대폰 본인확인을 위해\n필수사항에 동의해 주세요"}
         </h1>
