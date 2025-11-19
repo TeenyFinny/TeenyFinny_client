@@ -66,12 +66,12 @@ export default function Page() {
     };
     const typeCode = typeMap[accountType];
 
-    const balance =
-      accountType === "용돈 계좌"
-        ? allowance
-        : accountType === "투자 계좌"
-        ? invest
-        : saving;
+    const balanceMap: Record<string, number | null> = {
+      "용돈 계좌": allowance,
+      "투자 계좌": invest,
+      "목표 적금": saving,
+    };
+    const balance = balanceMap[accountType];
 
     const now = new Date();
 
@@ -101,15 +101,18 @@ export default function Page() {
   const handleViewCard = async () => {
     if (!accountData) return;
 
-    if (!accountData?.card?.hasCard){
+    if (!accountData?.card?.hasCard) {
       router.push(`/allowance/card/create`);
       return;
     }
 
     try {
-      const res = await api.get<ApiResponse<CardInfo>>(requests.fetchChildCard, {
-        params: { childId: currentChild },
-      });
+      const res = await api.get<ApiResponse<CardInfo>>(
+        requests.fetchChildCard,
+        {
+          params: { childId: currentChild },
+        }
+      );
 
       setCardInfo(res.data as CardInfo);
       setCardOpen(true);
@@ -181,7 +184,6 @@ export default function Page() {
   return (
     <div className="max-h-screen px-[17px]">
       <div className="max-w-md mx-auto space-y-4">
-        
         {/* 자녀 선택 */}
         <div className="flex justify-start">
           <div className="flex justify-evenly gap-[13px]">
@@ -274,9 +276,7 @@ export default function Page() {
           />
         )}
 
-        <button
-          className="flex justify-start w-[335px] h-[48px] border border-monochrome-gray bg-neutral-7 rounded-4xl text-body-04 items-center mt-0"
-        >
+        <button className="flex justify-start w-[335px] h-[48px] border border-monochrome-gray bg-neutral-7 rounded-4xl text-body-04 items-center mt-0">
           <img
             src="/images/account/illust_account_report.png"
             alt="리포트 아이콘"
