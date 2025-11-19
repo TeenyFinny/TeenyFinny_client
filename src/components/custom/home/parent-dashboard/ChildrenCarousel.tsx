@@ -15,16 +15,6 @@ interface ChildrenCarouselProps {
   readonly childAccounts: ChildSummary[];
 }
 
-const AVATAR_COLORS = [
-  "bg-primary-2/10",
-  "bg-primary-3/10",
-  "bg-primary-4/10",
-  "bg-primary-1/10",
-] as const;
-
-const pickAvatarColor = (index: number): string =>
-  AVATAR_COLORS[index % AVATAR_COLORS.length];
-
 /**
  * ChildrenCarousel
  *
@@ -48,12 +38,11 @@ export default function ChildrenCarousel({
    */
   const extendedSlides = useMemo(() => {
     return [
-      ...childAccounts.map((c, idx) => ({
+      ...childAccounts.map((c) => ({
         ...c,
-        avatarColor: pickAvatarColor(idx),
         isAddCard: false,
       })),
-      { isAddCard: true } as any, // 마지막 AddCard
+      { isAddCard: true } as any,
     ];
   }, [childAccounts]);
 
@@ -186,6 +175,11 @@ export default function ChildrenCarousel({
            * ▶ 일반 자녀 카드
            * ─────────────────────────────────────────────
            */
+          const avatarImage =
+            Number(item.gender) === 1
+              ? "/images/profile/icon_profile_2.png"
+              : "/images/profile/icon_profile_1.png";
+
           return (
             <div
               key={item.userId}
@@ -199,15 +193,13 @@ export default function ChildrenCarousel({
                 {item.balance.toLocaleString("ko-KR")} 원
               </div>
 
-              <div
-                className="absolute right-8 top-12 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full"
-                style={{ backgroundColor: item.avatarColor }}
-              >
+              <div className="absolute right-8 top-12 flex h-24 w-24 items-center justify-center rounded-full bg-primary-4 overflow-hidden">
                 <Image
-                  src="/images/profile/icon_profile_1.png"
+                  src={avatarImage}
                   alt={`${item.name} 프로필`}
                   width={96}
                   height={96}
+                  className="object-cover"
                 />
               </div>
 
