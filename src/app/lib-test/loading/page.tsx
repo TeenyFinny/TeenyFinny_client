@@ -4,6 +4,9 @@ import { useState } from "react";
 import LoadingScreenCircle from "@/components/ui/LoadingScreenCircle"; // 경로 맞춰서 변경
 import { useRouter } from "next/navigation";
 import LoadingScreen from "@/components/ui/LoadingScreen";
+import LoadingScreenSkeleton from "@/components/ui/LoadingScreenSkeleton";
+import LoadingScreenSkeletonDashboard from "@/components/ui/LoadingScreenSkeletonDashboard";
+import LoadingScreenSkeletonDetail from "@/components/ui/LoadingScreenSkeletonDetail";
 
 export default function Page() {
     
@@ -27,14 +30,14 @@ export default function Page() {
       )}
 
       {showLoading && (
-        <LoadingScreen 
-          duration={2000} // 3초 동안 차오름
-          imageSrc = "/images/common/illust_common_bigcoin.png"
-          progressBgColor="bg-monochrome-lightgray"
-          progressIndicatorColor="bg-primary-1"
-          onComplete={() => {
-            setShowLoading(false);
-          }}
+        <LoadingScreenCircle
+        //   duration={2000} // 3초 동안 차오름
+        //   imageSrc = "/images/common/illust_common_bigcoin.png"
+        //   progressBgColor="bg-monochrome-lightgray"
+        //   progressIndicatorColor="bg-primary-1"
+        //   onComplete={() => {
+        //     setShowLoading(false);
+        //   }}
         />
       )}
     </main>
