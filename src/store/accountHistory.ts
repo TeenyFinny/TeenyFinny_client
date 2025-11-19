@@ -33,7 +33,7 @@ export const useAccountHistoryStore = create(
     {
       name: "teenfinny-account-history",
       version: 1,
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => sessionStorage),
     }
   )
 );
