@@ -77,19 +77,22 @@ export default function Page() {
     if (!childId || !accountType) return;
 
     const fetchHistory = async () => {
-      const res = await api.get(requests.fetchAccountHistory, {
-        params: {
-          childId,
-          accountType,
-          year,
-          month,
-        },
-      });
+      try {
+        const res = await api.get(requests.fetchAccountHistory, {
+          params: {
+            childId,
+            accountType,
+            year,
+            month,
+          },
+        });
 
-      setTransactions(res.data);
+        setTransactions(res.data);
+      } catch (error) {
+        console.error("거래 내역 조회 중 오류가 발생했습니다:", error);
+        setTransactions([]); // 오류 발생 시 목록을 비워 사용자에게 피드백
+      }
     };
-
-    fetchHistory();
   }, [childId, accountType, year, month]);
 
   /* ----------------------------
@@ -191,7 +194,9 @@ export default function Page() {
 
               <div className="text-right">
                 <p className="text-head-08 text-neutral-1">{t.amount}원</p>
-                <p className="text-body-07 text-neutral-3">{t.balanceAfter}원</p>
+                <p className="text-body-07 text-neutral-3">
+                  {t.balanceAfter}원
+                </p>
               </div>
             </div>
           ))
