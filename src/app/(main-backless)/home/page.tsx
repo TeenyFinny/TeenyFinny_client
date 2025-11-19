@@ -9,6 +9,8 @@ import requests from "@/lib/axios/requests";
 import api from "@/lib/axios/axios";
 import type { ChildSummary } from "@/types/user";
 import ChildDashboard from "@/components/custom/home/child-dashboard/ChildDashboard";
+import { useNotificationStore } from "@/store/notificationStore";
+import { PushNotification } from "@/components/ui/notice/PushNotification";
 
 interface ParentDashboardState {
   balance: number;
@@ -32,12 +34,34 @@ interface HomeApiResponse {
  */
 export default function Page() {
   const { userType } = useUserStore();
+
+  const { message, setMessage } = useNotificationStore();
+
+  /** PushNotification 표시 여부 */
+  const [open, setOpen] = useState(false);
+
   const [parentData, setParentData] = useState<ParentDashboardState | null>(
     null
   );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * message 변화 감지 → PushNotification 실행
+   */
+  useEffect(() => {
+    if (message) {
+      setOpen(true);
+
+      const timer = setTimeout(() => {
+        setMessage(null);
+      }, 3500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [message, setMessage]);
+
+  /** 사용자 정보 로드 */
   useEffect(() => {
     const controller = new AbortController();
 
@@ -123,43 +147,41 @@ export default function Page() {
     );
   }
 
-  if (userType === "parent" && parentData) {
-    return (
-      <div className="w-full bg-primary-4">
-        <div className="mx-auto w-full max-w-[375px] px-4.5 pt-4">
-          <ParentDashboard
-            balance={parentData.balance}
-            childAccounts={parentData.children}
+  return (
+    <>
+      <PushNotification open={open} setOpen={setOpen} message={message ?? ""} />
+
+      {userType === "parent" && parentData ? (
+        <div className="w-full bg-primary-4">
+          <div className="mx-auto w-full max-w-[375px] px-4.5 pt-4">
+            <ParentDashboard
+              balance={parentData.balance}
+              childAccounts={parentData.children}
+            />
+          </div>
+        </div>
+      ) : userType === "child" ? (
+        <div className="flex h-full w-full items-center justify-center">
+          <ChildDashboard
+            data={{
+              user: {
+                userId: 2,
+                name: "김티니",
+                role: "CHILD",
+                email: "child@teenyfinny.com",
+                totalBalance: 10000,
+                depositBalance: 1000,
+                investmentBalance: 0,
+                savingBalance: 9000,
+              },
+            }}
           />
         </div>
-      </div>
-    );
-  }
-
-  if (userType === "child") {
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        <ChildDashboard
-          data={{
-            user: {
-              userId: 2,
-              name: "김티니",
-              role: "CHILD",
-              email: "child@teenyfinny.com",
-              totalBalance: 10000,
-              depositBalance: 1000,
-              investmentBalance: 0,
-              savingBalance: 9000,
-            },
-          }}
-        />
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex h-full w-full items-center justify-center">
-      <p className="text-body-01">로그인이 필요합니다.</p>
-    </div>
+      ) : (
+        <div className="flex h-full w-full items-center justify-center">
+          <p className="text-body-01">로그인이 필요합니다.</p>
+        </div>
+      )}
+    </>
   );
 }

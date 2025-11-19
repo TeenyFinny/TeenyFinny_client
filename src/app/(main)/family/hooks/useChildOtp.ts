@@ -6,6 +6,7 @@ import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 import { HttpError } from "@/types/axios/httpError.t";
 import { useUserStore } from "@/store/userStore";
+import { useNotificationStore } from "@/store/notificationStore";
 
 /**
  * useChildOtp
@@ -39,6 +40,7 @@ import { useUserStore } from "@/store/userStore";
 export const useChildOtp = (enabled: boolean) => {
   const router = useRouter();
   const { userId } = useUserStore();
+  const { setMessage } = useNotificationStore();
 
   /** 입력된 OTP 숫자 (최대 6자리) */
   const [value, setValue] = useState("");
@@ -51,6 +53,10 @@ export const useChildOtp = (enabled: boolean) => {
 
   /** OTP 검증 요청 중 상태 */
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  /** 모달 제어 */
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogText, setDialogText] = useState("");
 
   /**
    * OTP 변경 핸들러
@@ -96,15 +102,26 @@ export const useChildOtp = (enabled: boolean) => {
       const res = await api.post(requests.verifyFamilyOtp, body);
 
       /** 검증 성공 */
-      if (res.data) router.push("/home");
-    } catch (err) {
+      setMessage("가족 등록에 성공했습니다.");
+      router.push("/home");
+    } catch (err: any) {
       /** 서버 오류 */
       setInputError(true);
-      setError(
-        err instanceof HttpError
-          ? err.message
-          : "인증에 실패했습니다. 다시 시도해주세요."
-      );
+
+      const status = err.response?.status;
+
+      if (status === 400) {
+        setDialogText("코드가 일치하지 않습니다\n다시 입력해주세요");
+      } else if (status === 410) {
+        setDialogText("만료된 코드입니다\n새로운 코드를 발급받으세요");
+      } else {
+        setDialogText(
+          err instanceof HttpError
+            ? err.message
+            : "인증에 실패했습니다.\n다시 시도해주세요."
+        );
+      }
+      setDialogOpen(true);
     } finally {
       setIsSubmitting(false);
     }
@@ -117,5 +134,8 @@ export const useChildOtp = (enabled: boolean) => {
     inputError,
     isSubmitting,
     submit,
+    dialogOpen,
+    setDialogOpen,
+    dialogText,
   };
 };
