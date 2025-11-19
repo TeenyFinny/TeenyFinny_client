@@ -17,6 +17,7 @@ interface PortfolioSummary {
   dncaTotAmt: string; // 예수금
   profitAmount: string; // 수익금
   profitRate: string; // 수익률 (%)
+  isPositive: boolean; // 수익률이 양수인지 여부
 }
 
 interface HoldingSummary {
@@ -86,7 +87,7 @@ export default function Page() {
     profitAmount: summary.profitAmount,
     profitRate: summary.profitRate,
     availableAmount: summary.dncaTotAmt,
-    isPositive: Number(summary.profitRate) >= 0,
+    isPositive: summary.isPositive,
   };
 
   return (
