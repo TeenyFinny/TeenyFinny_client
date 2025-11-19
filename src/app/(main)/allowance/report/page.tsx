@@ -7,6 +7,11 @@ import { HttpError } from "@/types/axios/httpError.t";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 import { ApiResponse } from "@/types/axios/apiRes.t";
+import { useAccountHistoryStore } from "@/store/historyStore";
+import Image from "next/image";
+
+// 루시드 아이콘
+import { Triangle } from "lucide-react";
 
 interface Category {
   category: string;
@@ -29,20 +34,19 @@ export default function Page() {
   const [report, setReport] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const { childName } = useAccountHistoryStore();
 
+  useEffect(() => {
     (async () => {
       try {
         setLoading(true);
         const res = await api.get<ApiResponse<ReportData>>(
           requests.fetchReport,
           {
-            params: {
-              month: month,
-            },
+            params: { month },
           }
         );
-        // ✅ 인터셉터가 res.data를 반환하므로
+
         const data = res.data as ReportData;
         if (!data) throw new Error("No Report data found");
 
@@ -59,7 +63,7 @@ export default function Page() {
         setLoading(false);
       }
     })();
-  }, [month, router]); // ✅ 의존성 배열 수정
+  }, [month, router]);
 
   const prevMonth = () => setMonth((prev) => (prev === 1 ? 12 : prev - 1));
   const nextMonth = () => setMonth((prev) => (prev === 12 ? 1 : prev + 1));
@@ -74,86 +78,99 @@ export default function Page() {
 
   if (!report) {
     return (
-      <div className="min-h-screen flex justify-center items-center">
+      <div className="flex justify-center items-center">
         <p className="text-body-04 text-neutral-3">소비 리포트 정보 없음</p>
       </div>
     );
   }
 
-  // comparedType 한글 변환
-  const comparedTypeText = report.comparedType === "more" ? "더 사용" : "덜 사용";
+  const comparedTypeText =
+    report.comparedType === "more" ? "더 썼어요" : "아꼈어요";
 
   return (
-    <div className="min-h-screen bg-[#f7f9fc] p-4 pb-20">
-      {/* 월 이동 */}
-      <div className="flex justify-center items-center gap-6 mt-4 mb-6">
-        <button 
-          onClick={prevMonth}
-          className="text-2xl text-neutral-2 hover:text-neutral-1"
-        >
-          ◀
-        </button>
-        <span className="text-xl font-bold text-neutral-1">{month}월</span>
-        <button 
-          onClick={nextMonth}
-          className="text-2xl text-neutral-2 hover:text-neutral-1"
-        >
-          ▶
-        </button>
+    <div className="px-[27px] pb-[20px]">
+      {/* ---------- 상단 헤더 ---------- */}
+      <div className="flex flex-col items-center gap-[8px] mt-[16px]">
+        <div className="flex items-center gap-[4px] text-head-01 text-neutral-1">
+          <span>{childName}의</span>
+
+          {/* 이전 달 */}
+          <Triangle
+            size={17}
+            className="cursor-pointer text-neutral-2 fill-neutral-2 rotate-270"
+            onClick={prevMonth}
+          />
+
+          <span>{month}월</span>
+
+          {/* 다음 달 */}
+          <Triangle
+            size={17}
+            className="cursor-pointer text-neutral-2 fill-neutral-2 rotate-90"
+            onClick={nextMonth}
+          />
+
+          <span>소비리포트</span>
+        </div>
       </div>
 
-      {/* 요약 카드 */}
-      <div className="p-6 bg-white rounded-3xl shadow-sm mb-6">
-        <div className="flex items-center justify-between">
-          {/* 왼쪽 텍스트 */}
-          <div className="flex-1 pr-4">
-            <p className="text-body-05 text-neutral-3 mb-2">
-              {month}월 소비 내역
+      {/* ---------- 요약 카드 ---------- */}
+      <div className="bg-neutral-7 rounded-[24px] shadow-[0_4px_12px_rgba(0,0,0,0.05)] px-[24px] py-[28px] mt-[24px]">
+        <div className="flex flex-row">
+          {/* LEFT SECTION */}
+          <div className="flex flex-col w-[45%] pr-[16px]">
+            {/* 제목 */}
+            <p className="text-head-05 text-neutral-1 mb-[12px]">
+              {report.month}월
+              <br />총 소비금액
             </p>
 
-            <p className="text-head-01 text-neutral-1 mb-4">
-              {report.totalAmount}원
+            {/* 총 금액 */}
+            <p className="text-head-01 text-neutral-1 mb-[12px]">
+              <span className="whitespace-nowrap">{report.totalAmount}원</span>
             </p>
 
-            <div className="border-t border-neutral-5 pt-4">
-              <p className="text-body-06 text-neutral-3 mb-1">저번 달보다</p>
+            {/* 지난 달과 비교 */}
+            <div className="pt-[11px] border-t border-neutral-4">
+              <p className="text-body-06 text-neutral-1">
+                지난 달보다
+              </p>
 
-              <p className="text-head-03 text-neutral-1">
+              <p className="text-head-02 text-neutral-1">
                 {report.comparedAmount}원
               </p>
 
-              <p className="text-body-06 text-neutral-3 mt-1">
+              <p className="text-body-06 text-neutral-1">
                 {comparedTypeText}
               </p>
             </div>
           </div>
 
-          {/* 오른쪽 도넛 차트 */}
-          <DonutChart
-            data={report.categories.map((c) => ({
-              name: c.category,
-              percentage: c.percentage,
-            }))}
-            size={176}
-            innerRadius={20}
-            outerRadius={75}
-          />
+          {/* RIGHT SECTION (차트) */}
+          <div className="w-[55%] flex justify-center items-center translate-y-[8px]">
+            <DonutChart
+              data={report.categories.map((c) => ({
+                name: c.category,
+                percentage: c.percentage,
+              }))}
+              size={176}
+              innerRadius={20}
+              outerRadius={75}
+            />
+          </div>
         </div>
       </div>
 
-      {/* 카테고리 리스트 */}
-      <div className="space-y-3 bg-white rounded-2xl shadow-sm p-4">
+      {/* ---------- 카테고리 리스트 ---------- */}
+      <div className="mt-[20px] bg-neutral-7 rounded-[24px] shadow-[0_4px_12px_rgba(0,0,0,0.05)] px-[24px] py-[10px]">
         {report.categories.map((c, i) => (
-          <div
-            key={i}
-            className="flex items-center justify-between py-3 border-b border-neutral-6 last:border-0"
-          >
+          <div key={i} className="flex items-center justify-between py-[8px]">
             <div>
-              <p className="text-head-04 text-neutral-1">{c.category}</p>
-              <p className="text-body-07 text-neutral-3">{c.percentage}%</p>
+              <p className="text-head-02 text-neutral-1">{c.category}</p>
+              <p className="text-body-04 text-neutral-2">{c.percentage}%</p>
             </div>
 
-            <p className="text-head-05 text-neutral-1">{c.amount}원</p>
+            <p className="text-head-08 text-neutral-1">{c.amount}원</p>
           </div>
         ))}
       </div>
