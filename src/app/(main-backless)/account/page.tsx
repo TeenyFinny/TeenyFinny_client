@@ -6,7 +6,7 @@ import { ChildrenBadge } from "@/components/ui/badge/ChildrenBadge";
 import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
-import { useAccountHistoryStore } from "@/store/accountHistory";
+import { useAccountHistoryStore } from "@/store/accountHistoryStore";
 import { useUserStore } from "@/store/userStore";
 import { ApiResponse } from "@/types/axios/apiRes.t";
 import { HttpError } from "@/types/axios/httpError.t";
@@ -107,9 +107,6 @@ export default function Page() {
     router.push(`/account/auto-transfer/${currentChild}`);
   };
 
-  const reportHandler = () => {
-    router.push(`/allowance/report`);
-  };
   /* 카드 버튼 클릭 이벤트 */
   const handleViewCard = async () => {
     if (!accountData) return;
