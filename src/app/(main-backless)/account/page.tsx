@@ -56,7 +56,11 @@ export default function Page() {
 
   // URL 파라미터에서 childId 가져오기
   const searchParams = useSearchParams();
-  const presetChildId = Number(searchParams.get("childId"));
+  const rawChildId = searchParams.get("childId");
+
+  // 쿼리가 있을 때만 number로 변환
+  const presetChildId =
+    rawChildId !== null && rawChildId !== "" ? Number(rawChildId) : null;
 
   /* 상세 내용 보기 클릭 이벤트 */
   const handleViewDetails = (accountType: string) => {
@@ -174,16 +178,17 @@ export default function Page() {
     return () => {};
   }, [currentChild]);
 
-  /** URL로 전달된 childId 우선 선택 → fallback으로 첫 번째 아이 선택 */
+  /** URL로 전달된 childId 우선 선택 → 없으면 첫 번째 아이 선택 */
   useEffect(() => {
-    if (presetChildId && currentChild === 0) {
+    // 1) URL로 유효한 childId가 넘어온 경우
+    if (presetChildId !== null && !Number.isNaN(presetChildId)) {
       setCurrentChild(presetChildId);
       return;
     }
 
-    /** fall back: 처음 진입 + 자녀 목록 있음 → 첫 번째 아이 선택 */
-    if (data && data.length > 0 && currentChild === 0) {
-      setCurrentChild(data[0].childId);
+    // 2) URL에 childId가 없고, 자녀 목록이 로드된 경우 → 첫 번째 아이로 fallback
+    if (presetChildId === null && data && data.length > 0) {
+      setCurrentChild(Number(data[0].childId));
     }
   }, [presetChildId, data]);
 
