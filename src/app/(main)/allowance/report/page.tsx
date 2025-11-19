@@ -29,7 +29,7 @@ interface ReportData {
 
 export default function Page() {
   const now = new Date();
-  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [month, setMonth] = useState(now.getMonth());
 const router = useRouter();
   const [report, setReport] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
