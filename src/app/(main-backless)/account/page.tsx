@@ -69,6 +69,12 @@ export default function Page() {
       "목표 적금": "saving",
     };
 
+    const mappedType = typeMap[accountType]
+    if(mappedType === "saving"){
+      router.push("/goal");
+      return;
+    }
+
     const balanceMap: Record<string, number | null> = {
       "용돈 계좌": accountData?.allowance ?? null,
       "투자 계좌": accountData?.invest ?? null,
@@ -79,7 +85,7 @@ export default function Page() {
 
     setHistoryData({
       accountName: accountType,
-      accountType: typeMap[accountType],
+      accountType: mappedType,
       balance: balanceMap[accountType] ?? 0,
       year: now.getFullYear(),
       month: now.getMonth() + 1,
