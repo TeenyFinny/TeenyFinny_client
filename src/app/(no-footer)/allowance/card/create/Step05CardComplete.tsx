@@ -1,53 +1,46 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-export default function Step05CardComplete() {
+export default function Step06Complete() {
   const router = useRouter();
-
-  // ✅ 버튼 클릭 시 홈으로 이동
   const handleClick = () => {
     router.push("/home");
-  };
-
+  }
   return (
-    <div className="flex flex-col">
-      {/* 제목 */}
-      <div className="mt-[76px] px-[167px] text-center justify-center">
-        <Image
-          src="/icons/check-primary-1.png"
-          alt="파란 체크 이미지"
-          width={41}
-          height={40}
-          className="object-contain"
-        />
-      </div>
-
-      {/* 부제 */}
-      <div className="mt-[16px] space-y-[24px] text-center">
-        <p className="text-head-01 text-neutral-1 whitespace-pre-line">
-          {"TeenyFinny 카드 발급에\n성공했어요!"}
-        </p>
-      </div>
-
-      {/* 토끼와 코인 이미지 */}
-      <div className="flex justify-center mt-[23px]">
-        <div className="relative">
-          <Image
-            src="/images/common/illust_common_1.png"
-            alt="발급 성공"
-            width={350}
-            height={233}
-            className="object-contain"
+    <div className="flex h-[712px] flex-col overflow-hidden bg-primary-4">
+      <main className="flex flex-1 flex-col items-center px-6">
+        {/* 성공 아이콘 */}
+        <div className="mt-31 flex justify-center">
+          <img
+            src="/icons/check-primary-1.png"
+            alt="완료 체크 아이콘"
+            className="h-[40px] w-[41px] object-contain"
           />
         </div>
-      </div>
 
-      <div className="fixed bottom-[56px] left-1/2 -translate-x-1/2 w-[327px]">
-        <BigButtonActivated label="홈으로 돌아가기" onClick={handleClick} />
-      </div>
+        {/* 텍스트 */}
+        <div className="mt-4 text-center">
+          <span className="text-head-01 text-neutral-1 whitespace-pre-line">
+            {"TeenyFinny 카드 발급에\n성공했어요!"}
+          </span>
+        </div>
+
+        {/* 캐릭터 이미지 */}
+        <div className="mt-4 flex justify-center">
+          <img
+            src="/images/common/illust_common_1.png"
+            alt="티니피니 캐릭터"
+            className="h-[233px] w-[350px] object-contain"
+          />
+        </div>
+
+        {/* 버튼 */}
+        <div className="fixed bottom-[56px] left-1/2 -translate-x-1/2 w-[327px]">
+          <BigButtonActivated label="홈으로 돌아가기" onClick={handleClick} />
+        </div>
+      </main>
     </div>
   );
 }
