@@ -19,6 +19,7 @@ export default function SignupCompletePage() {
         setRole(savedRole);
         // 사용 후 sessionStorage에서 제거
         globalThis.window.sessionStorage.removeItem("signup-complete-role");
+        globalThis.window.sessionStorage.removeItem("register-form-storage");
       }
     }
   }, []);
