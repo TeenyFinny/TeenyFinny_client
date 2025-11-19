@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation";
 import api from "@/lib/axios/axios";
 import { TradeHistory } from "@/components/ui/tx-history-ui/TradeHistory";
+import { TinyButton } from "@/components/ui/button/TinyButton";
 
 export default function Page() {
   const router = useRouter();
@@ -17,19 +18,18 @@ export default function Page() {
 
     (async () => {
       try {
-        const res = await api.get(`${requests.investAccount}?user_id=${userId}`);
+        // const res = await api.get(`${requests.investAccount}?user_id=${userId}`);
       
-        if (!res.data.hasAccount) {
-          router.push("/invest/no-account");//계좌가 없다면 안내페이지로
-          return;
-        }
+        // if (!res.data.hasAccount) {
+        //   router.push("/invest/no-account");//계좌가 없다면 안내페이지로
+        //   return;
+        // }
 
-        const [stockRes, investRes] = await Promise.all([
-          api.get(requests.myStocksTop3),
-          api.get(requests.investmentsSummary),
+        const [stockRes] = await Promise.all([
+          api.post(requests.myStocksTop3),
         ]);
-        setStocks(stockRes.data ?? []);
-        setInvestSummary(investRes.data ?? []);
+        setStocks(stockRes.data.myStocks ?? []);
+        setInvestSummary(stockRes.data.summary ?? []);
       } catch (e) {
         // 커스텀 에러관리
         const err = e as HttpError;
@@ -61,14 +61,14 @@ export default function Page() {
       {/* Investment Status */}
       <div className="w-[340px] pl-3">
         <div className="">
-          <h2 className="text-body-04 text-neutral-1">{investSummary.userName}의</h2>
+          <h2 className="text-body-04 text-neutral-1">{"민트"}의</h2>
           <p className="text-body-06 text-neutral-1">총 투자 현황입니다.</p>
         </div>
 
         {/* Current Amount */}
         <div>
           <p className="text-landing-01 text-neutral-1 leading-none tracking-tight">
-            {investSummary.currentAmount} <span className="text-body-06">원</span>
+            {investSummary.sctsEvluAmt} <span className="text-body-06">원</span>
           </p>
         </div>
 
@@ -101,14 +101,14 @@ export default function Page() {
         </div>
         <div className="mx-5 h-[1px] mt-[10px] bg-monochrome-gray" />
         {stocks.map((stock, index) => (
-          <div key={stock.id}>
+          <div key={stock.pdno}>
             <TradeHistory
-              stockName={stock.name}
-              stockCode={`보유 수량 ${stock.code}주`}
-              currentPrice={`${stock.price.toLocaleString()} 원`}
-              changeRate={stock.changePercent}
+              stockName={stock.prdtName}
+              stockCode={`보유 수량 ${stock.hldgQty}주`}
+              currentPrice={`${stock.pchsAvgPric.toLocaleString()} 원`}
+              changeRate={stock.profitRate}
             />
-
+            {/* <TinyButton label="팔기" onClick={() =>console.log("팔기 버튼 클릭")} /> */}
             {/* 항목 사이 구분선 (마지막 요소 제외) */}
             {index < stocks.length - 1 && (
               <div className="mx-5 h-[1px] bg-monochrome-gray" />
