@@ -7,6 +7,7 @@ import LoadingScreen from "@/components/ui/LoadingScreen";
 import LoadingScreenSkeleton from "@/components/ui/LoadingScreenSkeleton";
 import LoadingScreenSkeletonDashboard from "@/components/ui/LoadingScreenSkeletonDashboard";
 import LoadingScreenSkeletonDetail from "@/components/ui/LoadingScreenSkeletonDetail";
+import LoadingScreenSkeletonQuiz from "@/components/ui/LoadingScreenSkeletonQuiz";
 
 export default function Page() {
     
@@ -30,7 +31,7 @@ export default function Page() {
       )}
 
       {showLoading && (
-        <LoadingScreenCircle
+        <LoadingScreenSkeletonQuiz
         />
       )}
     </main>
