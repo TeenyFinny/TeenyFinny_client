@@ -1,16 +1,12 @@
 "use client"
 import { InvestStatus } from "@/components/ui/invest/InvestStatus";
-import { StockList } from "@/components/ui/invest/StockList";
 import { HttpError } from "@/types/axios/httpError.t";
 import api from "@/lib/axios/axios";
 
 import requests from "@/lib/axios/requests"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation";
-import { BottomSheetSellStock } from "@/components/ui/bottom-sheet/BottomSheetSellStock";
-import { createTradeOrder } from "@/lib/api/tradeOrder";
 import { TradeHistory } from "@/components/ui/tx-history-ui/TradeHistory";
-import { TinyButton } from "@/components/ui/button/TinyButton";
 
 
 interface Stock {
@@ -30,23 +26,12 @@ interface Stock {
 }
 
 
-interface StockDetail {
-  stck_shrn_iscd: string
-  hts_kor_isnm: string
-  stck_prpr: string
-  availableStocks: number
-  maxQuantity: number
-}
-
-
 
 export default function Page() {
   const router = useRouter();
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [investSummary, setInvestSummary] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
-  const [selectedStock, setSelectedStock] = useState<StockDetail | null>(null)
 
 
   useEffect(() => {
@@ -87,27 +72,6 @@ export default function Page() {
     );
   }
 
-  const onClickRow = async (pdno: string) => {
-    try {
-      const res = await api.get(`${requests.koreainvestmentStockDetail}?FID_COND_MRKT_DIV_CODE=J&FID_INPUT_ISCD=${pdno}`)
-      const stock = res.output
-      setSelectedStock({
-        stck_shrn_iscd: stock.stck_shrn_iscd,
-        hts_kor_isnm: stock.hts_kor_isnm,
-        stck_prpr: stock.stck_prpr,
-        availableStocks: stock.availableStocks,
-        maxQuantity: stock.maxQuantity,
-
-      })
-      router.push(`/invest/stock-details?stck_shrn_iscd=${stck_shrn_iscd}&mode=${mode}`)
-      setOpen(true)
-    } catch (e) {
-      const err = e as HttpError
-      alert(`주식 정보를 불러오지 못했습니다: ${err.message}`)
-    }
-  }
-
-
 
   return (
     <main className="">
@@ -123,7 +87,7 @@ export default function Page() {
         }
         {/* My Stocks Section */}
         <h2 className="text-head-06 text-neutral-2 px-4 pt-12 self-start">내가 산 주식</h2>
-        <div className="mb-5 mt-2 w-[376px] h-[267px] flex flex-col">
+        <div className="mb-5 mt-2 w-[376px] flex flex-col">
           <div className="flex items-center justify-between px-6">
             <span className="text-body-07 text-neutral-2 mt-3">종목명</span>
             <span className="text-body-07 text-neutral-2 mt-3">평균단가</span>
