@@ -26,11 +26,19 @@ interface Stock {
 }
 
 
+interface InvestSummary {
+  sctsEvluAmt: string;
+  profitAmount: string;
+  profitRate: string;
+  dncaTotAmt: string;
+  isPositive: boolean;
+}
+
 
 export default function Page() {
   const router = useRouter();
   const [stocks, setStocks] = useState<Stock[]>([]);
-  const [investSummary, setInvestSummary] = useState<any>(null);
+  const [investSummary, setInvestSummary] = useState<InvestSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
 
@@ -43,7 +51,7 @@ export default function Page() {
         ]);
         // const res = await api.get(requests.stockList);
         setStocks(stockRes.data.myStocks ?? []);
-        setInvestSummary(stockRes.data.summary ?? []);
+        setInvestSummary(stockRes.data.summary ?? null);
       } catch (e) {
 	      // 커스텀 에러관리
         const err = e as HttpError;
