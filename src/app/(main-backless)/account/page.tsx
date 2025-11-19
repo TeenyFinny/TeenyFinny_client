@@ -10,7 +10,7 @@ import { useAccountHistoryStore } from "@/store/accountHistoryStore";
 import { useUserStore } from "@/store/userStore";
 import { ApiResponse } from "@/types/axios/apiRes.t";
 import { HttpError } from "@/types/axios/httpError.t";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type Child = {
@@ -55,7 +55,15 @@ export default function Page() {
   const { userType, userId } = useUserStore();
   const { setHistoryData } = useAccountHistoryStore();
 
-  /* 상세 내용 보기 → stateful 이동 */
+  // URL 파라미터에서 childId 가져오기
+  const searchParams = useSearchParams();
+  const rawChildId = searchParams.get("childId");
+
+  // 쿼리가 있을 때만 number로 변환
+  const presetChildId =
+    rawChildId !== null && rawChildId !== "" ? Number(rawChildId) : null;
+
+  /* 상세 내용 보기 클릭 이벤트 */
   const handleViewDetails = (accountType: string) => {
     const child = data?.find((child) => child.childId === currentChild);
     const childName = child?.name ?? "";
@@ -166,12 +174,25 @@ export default function Page() {
     })();
   }, [currentChild]);
 
-  /* 첫 아이 자동선택 */
+  /** URL로 전달된 childId 우선 선택 → 없으면 첫 번째 아이 선택 */
   useEffect(() => {
-    if (data && data.length > 0 && currentChild === 0) {
-      setCurrentChild(data[0].childId);
+    if (!data || data.length === 0) {
+      return; // 자녀 데이터가 없으면 아무것도 하지 않음
     }
-  }, [data]);
+
+    // URL의 childId가 유효한 자녀 목록에 있는지 확인
+    const isValidPreset =
+      presetChildId !== null &&
+      !Number.isNaN(presetChildId) &&
+      data.some((child) => Number(child.childId) === presetChildId);
+
+    if (isValidPreset) {
+      setCurrentChild(presetChildId as number);
+    } else {
+      // 유효하지 않으면 첫 번째 자녀로 fallback
+      setCurrentChild(Number(data[0].childId));
+    }
+  }, [presetChildId, data]);
 
   /* balance 적용 */
   useEffect(() => {
@@ -195,13 +216,13 @@ export default function Page() {
                   key={child.childId}
                   name={child.name}
                   gender={child.gender}
-                  childId={child.childId}
+                  childId={Number(child.childId)}
                   currentChild={currentChild}
-                  setCurrentChild={() => childHandler(child.childId)}
+                  setCurrentChild={() => childHandler(Number(child.childId))}
                 />
               ))
             ) : (
-              <span className="text-body-04 text-[#989898]">
+              <span className="text-body-04 text-neutral-3">
                 아이의 데이터를 불러오고 있어요!
               </span>
             )}
@@ -234,7 +255,9 @@ export default function Page() {
         ) : (
           <AccountCardDisabled
             accountName="용돈 계좌"
-            onCardClick={() => router.push("/allowance/account/create")}
+            onCardClick={() => {
+              router.push(`/allowance/account/create`);
+            }}
           />
         )}
 
