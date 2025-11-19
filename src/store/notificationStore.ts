@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 /**
  * @typedef {Object} NotificationStore
@@ -6,8 +7,8 @@ import { create } from "zustand";
  * @property {(msg: string | null) => void} setMessage - 메시지를 설정하거나 초기화하는 setter 함수.
  */
 interface NotificationStore {
-    message: string | null;
-    setMessage: (msg: string | null) => void;
+  message: string | null;
+  setMessage: (msg: string | null) => void;
 }
 
 /**
@@ -23,7 +24,7 @@ interface NotificationStore {
  * ### 예시
  * ```tsx
  * const { setMessage } = useNotificationStore();
- * 
+ *
  * const onSuccess = () => {
  *   setMessage("비밀번호 변경에 성공하였습니다.");
  *   router.push("/profile");
@@ -32,7 +33,15 @@ interface NotificationStore {
  *
  * @returns {NotificationStore} PushNotification 전역 상태와 setter 함수
  */
-export const useNotificationStore = create<NotificationStore>((set) => ({
-    message: null,
-    setMessage: (msg) => set({ message: msg }),
-}));
+export const useNotificationStore = create(
+  persist<NotificationStore>(
+    (set) => ({
+      message: null,
+      setMessage: (msg) => set({ message: msg }),
+    }),
+    {
+      name: "teenyfinny-notification",
+      storage: createJSONStorage(() => sessionStorage),
+    }
+  )
+);
