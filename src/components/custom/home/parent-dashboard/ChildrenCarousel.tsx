@@ -205,7 +205,7 @@ export default function ChildrenCarousel({
 
               <button
                 className="mt-auto flex items-center justify-end gap-1"
-                onClick={() => console.log(`Navigate to ${item.userId}`)}
+                onClick={() => router.push(`/account?childId=${item.userId}`)}
               >
                 <span className="text-body-02 text-primary-1">
                   상세 내역 보기

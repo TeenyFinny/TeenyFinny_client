@@ -9,7 +9,7 @@ import requests from "@/lib/axios/requests";
 import { useUserStore } from "@/store/userStore";
 import { ApiResponse } from "@/types/axios/apiRes.t";
 import { HttpError } from "@/types/axios/httpError.t";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type Child = {
@@ -53,6 +53,10 @@ export default function Page() {
   const [cardInfo, setCardInfo] = useState<CardInfo | null>(null);
 
   const { userType, userId } = useUserStore();
+
+  // URL 파라미터에서 childId 가져오기
+  const searchParams = useSearchParams();
+  const presetChildId = Number(searchParams.get("childId"));
 
   /* 상세 내용 보기 클릭 이벤트 */
   const handleViewDetails = (accountType: string) => {
@@ -170,12 +174,18 @@ export default function Page() {
     return () => {};
   }, [currentChild]);
 
-  /* 자녀 불러오기 api 호출이 성공적이라면 첫번째 아이로 currentchild 세팅 */
+  /** URL로 전달된 childId 우선 선택 → fallback으로 첫 번째 아이 선택 */
   useEffect(() => {
+    if (presetChildId && currentChild === 0) {
+      setCurrentChild(presetChildId);
+      return;
+    }
+
+    /** fall back: 처음 진입 + 자녀 목록 있음 → 첫 번째 아이 선택 */
     if (data && data.length > 0 && currentChild === 0) {
       setCurrentChild(data[0].childId);
     }
-  }, [data]);
+  }, [presetChildId, data]);
 
   /* 계좌정보 api 호출이 성공적이라면 첫번째 아이로 currentchild 세팅 */
   useEffect(() => {
@@ -198,13 +208,13 @@ export default function Page() {
                   key={child.childId}
                   name={child.name}
                   gender={child.gender}
-                  childId={child.childId}
+                  childId={Number(child.childId)}
                   currentChild={currentChild}
-                  setCurrentChild={() => childHandler(child.childId)}
+                  setCurrentChild={() => childHandler(Number(child.childId))}
                 />
               ))
             ) : (
-              <span className="text-body-04 text-[#989898]">
+              <span className="text-body-04 text-neutral-3">
                 아이의 데이터를 불러오고 있어요!
               </span>
             )}
@@ -238,7 +248,7 @@ export default function Page() {
           <AccountCardDisabled
             accountName="용돈 계좌"
             onCardClick={() => {
-              router.push(`/allowance/account/create`)
+              router.push(`/allowance/account/create`);
             }}
           />
         )}
