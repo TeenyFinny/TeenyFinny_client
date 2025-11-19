@@ -108,9 +108,7 @@ export default function Page() {
   };
 
   const reportHandler = () => {
-    console.log(
-      "(id=" + currentChild + ")인 아이의 리포트 페이지와 리다이렉트"
-    );
+    router.push(`/allowance/report`);
   };
   /* 카드 버튼 클릭 이벤트 */
   const handleViewCard = async () => {
@@ -129,8 +127,10 @@ export default function Page() {
         }
       );
 
-    const reportHandler = () => {
-        router.push(`/allowance/report`)
+      setCardInfo(res.data as CardInfo);
+      setCardOpen(true);
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -179,14 +179,20 @@ export default function Page() {
 
   /** URL로 전달된 childId 우선 선택 → 없으면 첫 번째 아이 선택 */
   useEffect(() => {
-    // 1) URL로 유효한 childId가 넘어온 경우
-    if (presetChildId !== null && !Number.isNaN(presetChildId)) {
-      setCurrentChild(presetChildId);
-      return;
+    if (!data || data.length === 0) {
+      return; // 자녀 데이터가 없으면 아무것도 하지 않음
     }
 
-    // 2) URL에 childId가 없고, 자녀 목록이 로드된 경우 → 첫 번째 아이로 fallback
-    if (presetChildId === null && data && data.length > 0) {
+    // URL의 childId가 유효한 자녀 목록에 있는지 확인
+    const isValidPreset =
+      presetChildId !== null &&
+      !Number.isNaN(presetChildId) &&
+      data.some((child) => Number(child.childId) === presetChildId);
+
+    if (isValidPreset) {
+      setCurrentChild(presetChildId as number);
+    } else {
+      // 유효하지 않으면 첫 번째 자녀로 fallback
       setCurrentChild(Number(data[0].childId));
     }
   }, [presetChildId, data]);
