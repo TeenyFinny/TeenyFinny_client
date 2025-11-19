@@ -59,12 +59,13 @@ export default function SignupCompletePage() {
 
       {/* 하단 버튼 */}
       <div className="fixed bottom-[56px] w-full max-w-[327px]">
-        {role === "PARENT" ? (
+        {role === "PARENT" && (
           <BigButtonActivated
             label="내 계좌 불러오기"
             onClick={() => router.push("/home")}
           />
-        ) : (
+        )}
+        {role === "CHILD" && (
           <BigButtonActivated
             label="가족 등록하기"
             onClick={() => router.push("/family/info")}
