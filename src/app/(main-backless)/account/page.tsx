@@ -99,6 +99,10 @@ export default function Page() {
     router.push(`/account/auto-transfer/${currentChild}`);
   };
 
+  const reportHandler = () => {
+    router.push(`/allowance/report`);
+  };
+
   /* 카드 버튼 클릭 이벤트 */
   const handleViewCard = async () => {
     if (!accountData) return;
@@ -280,7 +284,9 @@ export default function Page() {
           />
         )}
 
-        <button className="flex justify-start w-[335px] h-[48px] border border-monochrome-gray bg-neutral-7 rounded-4xl text-body-04 items-center mt-0">
+        <button 
+        onClick={reportHandler}
+        className="flex justify-start w-[335px] h-[48px] border border-monochrome-gray bg-neutral-7 rounded-4xl text-body-04 items-center mt-0">
           <img
             src="/images/account/illust_account_report.png"
             alt="리포트 아이콘"
