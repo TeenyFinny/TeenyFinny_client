@@ -7,7 +7,7 @@ import requests from "@/lib/axios/requests";
 import { useUserStore } from "@/store/userStore";
 import { StateBadge } from "@/components/ui/badge/StateBadge";
 import { BottomSheetDetail } from "@/components/custom/account/BottomSheetDetail";
-import { useAccountHistoryStore } from "@/store/accountHistory";
+import { useAccountHistoryStore } from "@/store/accountHistoryStore";
 
 interface Transaction {
   id: string;
