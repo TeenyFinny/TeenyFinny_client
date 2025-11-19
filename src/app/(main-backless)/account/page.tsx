@@ -70,7 +70,7 @@ export default function Page() {
     }
 
     const reportHandler = () => {
-        console.log("(id=" + currentChild + ")인 아이의 리포트 페이지와 리다이렉트")
+        router.push(`/allowance/report`)
     }
     /* 카드 버튼 클릭 이벤트 */
     const handleViewCard = async () => {

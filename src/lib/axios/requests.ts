@@ -45,8 +45,9 @@ const requests = {
   submitChildInfo: `/allowance/accounts`,
   submitCardInfo: `/allowance/cards`,
 
-  fetchProfile: `/profile`
+  fetchProfile: `/profile`,
 
+  fetchReport: `allowance/report`
 
 };
 
