@@ -61,12 +61,12 @@ export default function SignupCompletePage() {
         {role === "PARENT" ? (
           <BigButtonActivated
             label="내 계좌 불러오기"
-            onClick={() => router.push("/home")} // TODO: 계좌 연동 페이지로 이동
+            onClick={() => router.push("/home")}
           />
         ) : (
           <BigButtonActivated
             label="가족 등록하기"
-            onClick={() => {}} // TODO: 가족 등록 페이지로 이동
+            onClick={() => router.push("/family/info")}
           />
         )}
       </div>
