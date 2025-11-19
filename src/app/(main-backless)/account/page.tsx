@@ -10,7 +10,7 @@ import { useSelectedChildStore } from "@/store/selectedChildStore";
 import { useUserStore } from "@/store/userStore";
 import { ApiResponse } from "@/types/axios/apiRes.t";
 import { HttpError } from "@/types/axios/httpError.t";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type Child = {
@@ -36,34 +36,32 @@ type CardInfo = {
 
 export default function Page() {
   const router = useRouter();
-  const [data, setData] = useState<Child[] | null>(null);
-  const [accountData, setAccountData] = useState<Accounts | null>(null);
-  const [currentChild, setCurrentChild] = useState<number>(0);
-
-  const [total, setTotal] = useState<number | null>(null);
-  const [allowance, setAllowance] = useState<number | null>(null);
-  const [invest, setInvest] = useState<number | null>(null);
-  const [saving, setSaving] = useState<number | null>(null);
-
-  const [isInvestOpen, setIsInvestOpen] = useState<boolean>(false);
-  const [isSavingOpen, setIsSavingOpen] = useState<boolean>(false);
-
-  // 카드 정보 상태
-  const [cardOpen, setCardOpen] = useState(false);
-  const [cardInfo, setCardInfo] = useState<CardInfo | null>(null);
-
+  const searchParams = useSearchParams();
+  
+  // Store
   const { userType, userId } = useUserStore();
   const { setChildBaseInfo, setHistoryData } = useSelectedChildStore();
 
-  const childHandler = (id: number) => {
+  // State
+  const [data, setData] = useState<Child[] | null>(null);
+  const [currentChild, setCurrentChild] = useState<number>(0);
+  const [accountData, setAccountData] = useState<Accounts | null>(null);
+  const [cardInfo, setCardInfo] = useState<CardInfo | null>(null);
+  const [cardOpen, setCardOpen] = useState(false);
+  const [isInvestOpen, setIsInvestOpen] = useState(false);
+  const [isSavingOpen, setIsSavingOpen] = useState(false);
+
+  // URL에서 childId 파싱, 쿼리가 있을 때만 number로 변환
+  const presetChildId = searchParams.get("childId") 
+    ? Number(searchParams.get("childId")) 
+    : null;
+
+  /* ===== 이벤트 핸들러 ===== */
+  
+  const handleChildSelect = (id: number) => {
     setCurrentChild(id);
-    const selectedChild = data?.find((c) => c.childId === id);
-    if (selectedChild) {
-      setChildBaseInfo(selectedChild.childId, selectedChild.name);
-    }
   };
 
-  /* 상세 내용 보기 → stateful 이동 */
   const handleViewDetails = (accountType: string) => {
     const typeMap: Record<string, string> = {
       "용돈 계좌": "allowance",
@@ -72,9 +70,9 @@ export default function Page() {
     };
 
     const balanceMap: Record<string, number | null> = {
-      "용돈 계좌": allowance,
-      "투자 계좌": invest,
-      "목표 적금": saving,
+      "용돈 계좌": accountData?.allowance ?? null,
+      "투자 계좌": accountData?.invest ?? null,
+      "목표 적금": accountData?.saving ?? null,
     };
 
     const now = new Date();
@@ -90,19 +88,10 @@ export default function Page() {
     router.push("/account/history");
   };
 
-  const autoTransHandler = () => {
-    router.push(`/account/auto-transfer/${currentChild}`);
-  };
-
-  const reportHandler = () => {
-    router.push(`/allowance/report`);
-  };
-
-  /* 카드 버튼 클릭 이벤트 */
   const handleViewCard = async () => {
     if (!accountData) return;
 
-    if (!accountData?.card?.hasCard) {
+    if (!accountData.card.hasCard) {
       router.push(`/allowance/card/create`);
       return;
     }
@@ -110,11 +99,8 @@ export default function Page() {
     try {
       const res = await api.get<ApiResponse<CardInfo>>(
         requests.fetchChildCard,
-        {
-          params: { childId: currentChild },
-        }
+        { params: { childId: currentChild } }
       );
-
       setCardInfo(res.data as CardInfo);
       setCardOpen(true);
     } catch (e) {
@@ -122,7 +108,9 @@ export default function Page() {
     }
   };
 
-  /* 자녀 조회 */
+  /* ===== Effects ===== */
+
+  // 1. 자녀 목록 조회
   useEffect(() => {
     const controller = new AbortController();
 
@@ -133,8 +121,9 @@ export default function Page() {
           params: { id: userId },
         });
 
-        if (controller.signal.aborted) return;
-        setData(res.data as Child[]);
+        if (!controller.signal.aborted) {
+          setData(res.data as Child[]);
+        }
       } catch (e) {
         if (e instanceof HttpError && e.statusCode === 403) {
           router.push("/");
@@ -143,9 +132,36 @@ export default function Page() {
     })();
 
     return () => controller.abort();
-  }, []);
+  }, [userId, router]);
 
-  /* 계좌 조회 */
+  // 2. 초기 자녀 선택 (URL 파라미터 우선 → 첫 번째 자녀)
+  useEffect(() => {
+    if (!data || data.length === 0) return;
+
+    const isValidPreset =
+      presetChildId !== null &&
+      !Number.isNaN(presetChildId) &&
+      data.some((child) => child.childId === presetChildId);
+
+    if (isValidPreset) {
+      setCurrentChild(presetChildId);
+    } else {
+      setCurrentChild(data[0].childId);
+    }
+  }, [data, presetChildId]);
+
+  // 3. currentChild 변경 시 store에 자녀 정보 저장
+  useEffect(() => {
+    if (!data || !currentChild) return;
+
+    const selectedChild = data.find((child) => child.childId === currentChild);
+
+    if (selectedChild) {
+      setChildBaseInfo(selectedChild.childId, selectedChild.name);
+    }
+  }, [currentChild, data, setChildBaseInfo]);
+
+  // 4. 선택된 자녀의 계좌 정보 조회
   useEffect(() => {
     if (!currentChild) return;
 
@@ -155,7 +171,6 @@ export default function Page() {
           requests.fetchTotalAccount,
           { params: { id: currentChild } }
         );
-
         setAccountData(res.data as Accounts);
       } catch (e) {
         if (e instanceof HttpError && e.statusCode === 403) {
@@ -163,29 +178,14 @@ export default function Page() {
         }
       }
     })();
-  }, [currentChild]);
+  }, [currentChild, router]);
 
-  /* 첫 아이 자동선택 */
-  useEffect(() => {
-    if (data && data.length > 0 && currentChild === 0) {
-      setCurrentChild(data[0].childId);
-      setChildBaseInfo(data[0].childId, data[0].name);
-    }
-  }, [data]);
-
-  /* balance 적용 */
-  useEffect(() => {
-    if (accountData) {
-      setTotal(accountData.total);
-      setAllowance(accountData.allowance);
-      setInvest(accountData.invest);
-      setSaving(accountData.saving);
-    }
-  }, [accountData]);
+  /* ===== 렌더링 ===== */
 
   return (
     <div className="max-h-screen px-[17px]">
       <div className="max-w-md mx-auto space-y-4">
+        
         {/* 자녀 선택 */}
         <div className="flex justify-start">
           <div className="flex justify-evenly gap-[13px]">
@@ -197,36 +197,39 @@ export default function Page() {
                   gender={child.gender}
                   childId={child.childId}
                   currentChild={currentChild}
-                  setCurrentChild={() => childHandler(child.childId)}
+                  setCurrentChild={() => handleChildSelect(child.childId)}
                 />
               ))
             ) : (
-              <span className="text-body-04 text-[#989898]">
+              <span className="text-body-04 text-neutral-3">
                 아이의 데이터를 불러오고 있어요!
               </span>
             )}
           </div>
         </div>
 
+        {/* 총 잔액 헤더 */}
         <div className="h-[21px] flex justify-between items-center">
           <p className="text-head-03 text-neutral-3">총 잔액</p>
           {userType === "parent" && (
             <button
               className="w-[59px] h-[31px] text-body-03 bg-primary-2 rounded-2xl"
-              onClick={autoTransHandler}
+              onClick={() => router.push(`/account/auto-transfer/${currentChild}`)}
             >
               자동이체
             </button>
           )}
         </div>
 
-        <div className="text-head-00 text-neutral-1 mb-4">{total} 원</div>
+        <div className="text-head-00 text-neutral-1 mb-4">
+          {accountData?.total ?? 0} 원
+        </div>
 
         {/* 용돈 계좌 */}
-        {allowance != null ? (
+        {accountData?.allowance != null ? (
           <AccountCard
             accountName="용돈 계좌"
-            balance={allowance}
+            balance={accountData.allowance}
             showCard
             onViewDetails={() => handleViewDetails("용돈 계좌")}
             onCardClick={handleViewCard}
@@ -234,42 +237,30 @@ export default function Page() {
         ) : (
           <AccountCardDisabled
             accountName="용돈 계좌"
-            onCardClick={() => router.push("/allowance/account/create")}
+            onCardClick={() => router.push(`/allowance/account/create`)}
           />
         )}
 
-        {/* 카드 상세 */}
-        <CardDetail
-          open={cardOpen}
-          setOpen={setCardOpen}
-          cardName={cardInfo?.cardName ?? ""}
-          cardNumber={cardInfo?.cardNumber ?? ""}
-          expiry={cardInfo?.expiry ?? ""}
-          cvc={cardInfo?.cvc ?? ""}
-        />
-
         {/* 투자 계좌 */}
-        {invest != null && invest != undefined ? (
+        {accountData?.invest != null ? (
           <AccountCard
             accountName="투자 계좌"
-            balance={invest}
+            balance={accountData.invest}
             onViewDetails={() => handleViewDetails("투자 계좌")}
             onCardClick={() => null}
           />
         ) : (
           <AccountCardDisabled
             accountName="투자 계좌"
-            onCardClick={() => {
-              setIsInvestOpen(true);
-            }}
+            onCardClick={() => setIsInvestOpen(true)}
           />
         )}
 
         {/* 목표 적금 */}
-        {saving != null && saving != undefined ? (
+        {accountData?.saving != null ? (
           <AccountCard
             accountName="목표 적금"
-            balance={saving}
+            balance={accountData.saving}
             onViewDetails={() => handleViewDetails("목표 적금")}
             onCardClick={() => null}
           />
@@ -280,8 +271,9 @@ export default function Page() {
           />
         )}
 
+        {/* 소비 리포트 버튼 */}
         <button
-          onClick={reportHandler}
+          onClick={() => router.push(`/allowance/report`)}
           className="flex justify-start w-[335px] h-[48px] border border-monochrome-gray bg-neutral-7 rounded-4xl text-body-04 items-center mt-0"
         >
           <img
@@ -293,12 +285,22 @@ export default function Page() {
         </button>
       </div>
 
-      {/* 모달 */}
+      {/* 카드 상세 모달 */}
+      <CardDetail
+        open={cardOpen}
+        setOpen={setCardOpen}
+        cardName={cardInfo?.cardName ?? ""}
+        cardNumber={cardInfo?.cardNumber ?? ""}
+        expiry={cardInfo?.expiry ?? ""}
+        cvc={cardInfo?.cvc ?? ""}
+      />
+
+      {/* 안내 모달 */}
       <ConfirmationDialog
         open={isInvestOpen}
         onOpenChange={() => setIsInvestOpen(false)}
         title="아직 투자 계좌가 없어요!"
-        description={`아이가 계좌 개설을 요청할 때까지 기다려주세요!`}
+        description="아이가 계좌 개설을 요청할 때까지 기다려주세요!"
         confirmText="확인"
       />
 
@@ -306,7 +308,7 @@ export default function Page() {
         open={isSavingOpen}
         onOpenChange={() => setIsSavingOpen(false)}
         title="아직 목표 적금 계좌가 없어요!"
-        description={`아이가 계좌 개설을 요청할 때까지 기다려주세요!`}
+        description="아이가 계좌 개설을 요청할 때까지 기다려주세요!"
         confirmText="확인"
       />
     </div>
