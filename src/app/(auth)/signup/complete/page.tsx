@@ -19,6 +19,7 @@ export default function SignupCompletePage() {
         setRole(savedRole);
         // 사용 후 sessionStorage에서 제거
         globalThis.window.sessionStorage.removeItem("signup-complete-role");
+        globalThis.window.sessionStorage.removeItem("register-form-storage");
       }
     }
   }, []);
@@ -58,15 +59,16 @@ export default function SignupCompletePage() {
 
       {/* 하단 버튼 */}
       <div className="fixed bottom-[56px] w-full max-w-[327px]">
-        {role === "PARENT" ? (
+        {role === "PARENT" && (
           <BigButtonActivated
             label="내 계좌 불러오기"
-            onClick={() => router.push("/home")} // TODO: 계좌 연동 페이지로 이동
+            onClick={() => router.push("/home")}
           />
-        ) : (
+        )}
+        {role === "CHILD" && (
           <BigButtonActivated
             label="가족 등록하기"
-            onClick={() => {}} // TODO: 가족 등록 페이지로 이동
+            onClick={() => router.push("/family/info")}
           />
         )}
       </div>
