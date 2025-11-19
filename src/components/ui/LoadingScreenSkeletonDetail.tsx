@@ -31,7 +31,7 @@ export default function LoadingScreenSkeletonDetail({
   count = 3,
 }: LoadingScreenSkeletonDetailProps): JSX.Element {
   return (
-    <main className="w-full h-full flex flex-col gap-8 p-6 animate-in fade-in-50">
+    <div className="w-full h-full flex flex-col gap-8 p-6 animate-in fade-in-50">
 
       {/* 상단 카드 1개 */}
       <div className="flex w-full items-start gap-4 p-2 rounded-xl">
@@ -52,6 +52,6 @@ export default function LoadingScreenSkeletonDetail({
         ))}
       </div>
 
-    </main>
+    </div>
   );
 }

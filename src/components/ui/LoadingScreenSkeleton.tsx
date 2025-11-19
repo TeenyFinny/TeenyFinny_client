@@ -30,7 +30,7 @@ export default function LoadingScreenSkeleton({
   count = 3,
 }: LoadingScreenSkeletonProps): JSX.Element {
   return (
-    <main className="w-full h-full flex flex-col gap-8 p-6 animate-in fade-in-50">
+    <div className="w-full h-full flex flex-col gap-8 p-6 animate-in fade-in-50">
       {Array.from({ length: count }).map((_, idx) => (
         <div key={idx} className="flex items-center gap-4">
           <Skeleton className="h-12 w-12 rounded-full" />
@@ -40,6 +40,6 @@ export default function LoadingScreenSkeleton({
           </div>
         </div>
       ))}
-    </main>
+    </div>
   );
 }

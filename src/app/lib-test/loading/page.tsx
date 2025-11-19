@@ -31,13 +31,6 @@ export default function Page() {
 
       {showLoading && (
         <LoadingScreenCircle
-        //   duration={2000} // 3초 동안 차오름
-        //   imageSrc = "/images/common/illust_common_bigcoin.png"
-        //   progressBgColor="bg-monochrome-lightgray"
-        //   progressIndicatorColor="bg-primary-1"
-        //   onComplete={() => {
-        //     setShowLoading(false);
-        //   }}
         />
       )}
     </main>

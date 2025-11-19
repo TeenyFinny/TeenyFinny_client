@@ -92,7 +92,7 @@ export default function LoadingScreen({
   }, [duration, onComplete]);
 
   return (
-    <main className=" flex flex-col justify-center items-center gap-3">
+    <div className=" flex flex-col justify-center items-center gap-3">
       {/* 중앙 로딩 이미지 */}
       <Image
         src={imageSrc}
@@ -110,6 +110,6 @@ export default function LoadingScreen({
           indicatorColor={progressIndicatorColor}
         />
       </div>
-    </main>
+    </div>
   );
 }
