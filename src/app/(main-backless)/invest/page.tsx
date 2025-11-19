@@ -106,7 +106,7 @@ export default function Page() {
               stockName={stock.prdtName}
               stockCode={`보유 수량 ${stock.hldgQty}주`}
               currentPrice={`${stock.pchsAvgPric.toLocaleString()} 원`}
-              changeRate={stock.profitRate}
+              changeRate={Number(stock.profitRate)}
             />
             {/* <TinyButton label="팔기" onClick={() =>console.log("팔기 버튼 클릭")} /> */}
             {/* 항목 사이 구분선 (마지막 요소 제외) */}
