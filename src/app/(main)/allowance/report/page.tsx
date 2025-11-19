@@ -10,7 +10,7 @@ import { ApiResponse } from "@/types/axios/apiRes.t";
 import SummaryCard from "@/components/custom/allowance/report/SummaryCard";
 import ChartSection from "@/components/custom/allowance/report/ChartSection";
 import CategoryList from "@/components/custom/allowance/report/CategoryList";
-import { useAccountHistoryStore } from "@/store/accountHistoryStore";
+import { useSelectedChildStore } from "@/store/selectedChildStore";
 
 
 interface Category {
@@ -34,7 +34,7 @@ const router = useRouter();
   const [report, setReport] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
   
-  const { childName } = useAccountHistoryStore();
+  const { selectedChildName } = useSelectedChildStore();
 
   useEffect(() => {
     (async () => {
@@ -74,7 +74,7 @@ const router = useRouter();
       {/* ------ 상단 Header ------ */}
       <div className="flex flex-col items-center gap-[8px] mt-[16px]">
         <div className="flex items-center gap-[4px] text-head-01 text-neutral-1">
-          <span>{childName}의</span>
+          <span>{selectedChildName}의</span>
 
           {month > 1 ? (
             <Triangle

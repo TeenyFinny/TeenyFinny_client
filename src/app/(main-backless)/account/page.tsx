@@ -6,7 +6,7 @@ import { ChildrenBadge } from "@/components/ui/badge/ChildrenBadge";
 import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
-import { useAccountHistoryStore } from "@/store/accountHistoryStore";
+import { useSelectedChildStore } from "@/store/selectedChildStore";
 import { useUserStore } from "@/store/userStore";
 import { ApiResponse } from "@/types/axios/apiRes.t";
 import { HttpError } from "@/types/axios/httpError.t";
@@ -53,46 +53,41 @@ export default function Page() {
   const [cardInfo, setCardInfo] = useState<CardInfo | null>(null);
 
   const { userType, userId } = useUserStore();
-  const { setHistoryData } = useAccountHistoryStore();
+  const { setChildBaseInfo, setHistoryData } = useSelectedChildStore();
+
+  const childHandler = (id: number) => {
+    setCurrentChild(id);
+    const selectedChild = data?.find((c) => c.childId === id);
+    if (selectedChild) {
+      setChildBaseInfo(selectedChild.childId, selectedChild.name);
+    }
+  };
 
   /* 상세 내용 보기 → stateful 이동 */
   const handleViewDetails = (accountType: string) => {
-    const child = data?.find((child) => child.childId === currentChild);
-    const childName = child?.name ?? "";
-
     const typeMap: Record<string, string> = {
       "용돈 계좌": "allowance",
       "투자 계좌": "invest",
       "목표 적금": "saving",
     };
-    const typeCode = typeMap[accountType];
 
     const balanceMap: Record<string, number | null> = {
       "용돈 계좌": allowance,
       "투자 계좌": invest,
       "목표 적금": saving,
     };
-    const balance = balanceMap[accountType];
 
     const now = new Date();
 
-    // 🔥 Zustand에 완전 저장하여 stateful 라우팅
     setHistoryData({
-      childId: currentChild,
-      childName,
       accountName: accountType,
-      accountType: typeCode,
-      balance: balance ?? 0,
+      accountType: typeMap[accountType],
+      balance: balanceMap[accountType] ?? 0,
       year: now.getFullYear(),
       month: now.getMonth() + 1,
     });
 
-    // 쿼리 없이 이동!
     router.push("/account/history");
-  };
-
-  const childHandler = (id: number) => {
-    setCurrentChild(id);
   };
 
   const autoTransHandler = () => {
@@ -284,9 +279,10 @@ export default function Page() {
           />
         )}
 
-        <button 
-        onClick={reportHandler}
-        className="flex justify-start w-[335px] h-[48px] border border-monochrome-gray bg-neutral-7 rounded-4xl text-body-04 items-center mt-0">
+        <button
+          onClick={reportHandler}
+          className="flex justify-start w-[335px] h-[48px] border border-monochrome-gray bg-neutral-7 rounded-4xl text-body-04 items-center mt-0"
+        >
           <img
             src="/images/account/illust_account_report.png"
             alt="리포트 아이콘"
