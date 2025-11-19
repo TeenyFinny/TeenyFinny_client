@@ -8,7 +8,6 @@ import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 import { ApiResponse } from "@/types/axios/apiRes.t";
 import { useAccountHistoryStore } from "@/store/historyStore";
-import Image from "next/image";
 
 // 루시드 아이콘
 import { Triangle } from "lucide-react";
@@ -95,20 +94,28 @@ export default function Page() {
           <span>{childName}의</span>
 
           {/* 이전 달 */}
-          <Triangle
-            size={17}
+          {month > 1 ? (
+            <Triangle
+              size={17}
             className="cursor-pointer text-neutral-2 fill-neutral-2 rotate-270"
             onClick={prevMonth}
-          />
+            />
+          ) : (
+            <span className="w-[17px] h-[17px]" /> // 자리를 유지하기 위한 빈 박스
+          )}
 
           <span>{month}월</span>
 
-          {/* 다음 달 */}
-          <Triangle
-            size={17}
-            className="cursor-pointer text-neutral-2 fill-neutral-2 rotate-90"
-            onClick={nextMonth}
-          />
+          {/* 다음 달(전월까지만 보여주기 때문에 현재 달일 때는 숨김) */}
+          {month < now.getMonth() || month < 12 ? (
+            <Triangle
+              size={17}
+              className="cursor-pointer text-neutral-2 fill-neutral-2 rotate-90"
+              onClick={nextMonth}
+            />
+          ) : (
+            <span className="w-[17px] h-[17px]" /> // 자리를 유지하기 위한 빈 박스
+          )}
 
           <span>소비리포트</span>
         </div>
@@ -132,17 +139,13 @@ export default function Page() {
 
             {/* 지난 달과 비교 */}
             <div className="pt-[11px] border-t border-neutral-4">
-              <p className="text-body-06 text-neutral-1">
-                지난 달보다
-              </p>
+              <p className="text-body-06 text-neutral-1">지난 달보다</p>
 
               <p className="text-head-02 text-neutral-1">
                 {report.comparedAmount}원
               </p>
 
-              <p className="text-body-06 text-neutral-1">
-                {comparedTypeText}
-              </p>
+              <p className="text-body-06 text-neutral-1">{comparedTypeText}</p>
             </div>
           </div>
 
