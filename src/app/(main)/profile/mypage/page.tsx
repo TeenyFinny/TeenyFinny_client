@@ -120,7 +120,7 @@ export default function MyPage() {
 
       {/* 비밀번호 변경 */}
       <div className="mt-6">
-        <BigButtonActivated label="비밀번호 변경하기" onClick={() => {}} />
+        <BigButtonActivated label="비밀번호 변경하기" onClick={() => router.push("/profile/mypage/password")} />
       </div>
 
       {/* 탈퇴 */}

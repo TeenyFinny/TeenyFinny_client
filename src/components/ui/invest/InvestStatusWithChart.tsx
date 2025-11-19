@@ -44,10 +44,10 @@ export default function InvestStatusWithChart({
               <span className="text-body-06 text-neutral-1 ml-1">원</span>
             </div>
             <div className="flex items-center gap-1">
-              <span className="text-body-07 text-error">↑</span>
-              <span className="text-body-07 text-error">
-                {profitAmount}원 ({profitRate}%)
-              </span>
+              <p className={`text-body-06 ${isPositive ? "text-error" : "text-primary-1"}`}>
+                {isPositive ? "↑" : "↓"} {profitAmount}원 (
+                {profitRate}%)
+              </p>
             </div>
 
             <div className="mt-8 pt-6 border-t border-monochrome-gray">

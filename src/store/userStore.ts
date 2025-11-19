@@ -108,13 +108,9 @@ export const useUserStore = create<UserState>()(
         }),
     }),
     {
-      name: "teenfinny-user", // ✅ 로컬스토리지 key
+      name: "teenyfinny-user",
       version: 1,
-      storage: createJSONStorage(() => localStorage),
-      // 필요한 경우 특정 필드만 저장하려면 partialize 옵션 사용
-      // partialize: (state) => ({ userName: state.userName, userType: state.userType, hasChildren: state.hasChildren }),
-      // 마이그레이션이 필요한 경우:
-      // migrate: (persisted, fromVersion) => persisted,
+      storage: createJSONStorage(() => sessionStorage),
     }
   )
 );
