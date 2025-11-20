@@ -3,7 +3,7 @@
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { useRouter } from "next/navigation";
 
-export default function Step06Complete() {
+export default function Step08Complete() {
   const router = useRouter();
   const handleClick = () => {
     router.push("/home");
