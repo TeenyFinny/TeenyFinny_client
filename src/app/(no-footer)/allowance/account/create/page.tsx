@@ -12,14 +12,14 @@ export default function Page() {
   const [step, setStep] = useState(1);
   return (
     <>
-      {step === 1 && <Step01Intro onNext={() => setStep(2)} />}
-      {step === 2 && <Step02Checklist onNext={() => setStep(3)} />}
+      {step == 1 &&  <Step01Intro onNext={() => setStep(2)} />}
+      {step == 2 &&  <Step02Checklist onNext={() => setStep(3)} />}
       {step == 3 &&  <Step03AuthAgreement onNext={() => setStep(4)} />}
       {step == 4 &&  <Step04Auth onNext={() => setStep(5)} />}
-      {step === 5 && <LoadingScreenCircle onComplete={() => setStep(6)}/> }
+      {step == 5 &&  <LoadingScreenCircle onComplete={() => setStep(6)}/> }
       {step == 6 &&  <Step06ProductAgreement onNext={() => setStep(7)} />}
       {step == 7 &&  <Step07ChildInfoInput onNext={() => setStep(8)} />}
-      {step === 8 &&  <Steop08Complete/> }
+      {step == 8 &&  <Steop08Complete/> }
     </>
   );
 }
