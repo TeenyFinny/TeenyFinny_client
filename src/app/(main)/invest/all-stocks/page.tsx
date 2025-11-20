@@ -10,6 +10,8 @@ import { BottomSheetBuyStock } from "@/components/ui/bottom-sheet/BottomSheetBuy
 import { BottomSheetSellStock } from "@/components/ui/bottom-sheet/BottomSheetSellStock";
 import { createTradeOrder } from "@/lib/api/tradeOrder";
 
+
+
 interface Stock {
   stck_shrn_iscd: string // 종목코드
   hts_kor_isnm: string, // 종목명
@@ -43,9 +45,9 @@ export default function Page() {
 
 
   const [stocks, setStocks] = useState<Stock[]>([]);
-  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState<StockDetail | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
 
@@ -54,7 +56,7 @@ export default function Page() {
         const [stockRes] = await Promise.all([
           api.get(requests.koreainvestmentStockList),
         ]);
-        // const res = await api.get(requests.stockList);
+        // const res = await api.get(requests.koreainvestmentStockList);
         setStocks(stockRes.output ?? []);
       } catch (e) {
 	      // 커스텀 에러관리
@@ -74,7 +76,6 @@ export default function Page() {
     })();
   }, [router]);
 
-
   if (loading) {
     return (
       <main className="min-h-screen flex justify-center items-center">
@@ -82,7 +83,63 @@ export default function Page() {
       </main>
     );
   }
+  
 
+
+  // 폴링 방식 - 핵심 필드 비교
+//   useEffect(() => {
+//   let active = true;
+
+//   const poll = async () => {
+//     if (!active) return;
+
+//     try {
+//       const res = await api.get(requests.koreainvestmentStockList);
+//       const newData = res.output ?? [];
+
+//       setStocks(prev => {
+//         if (!prev || prev.length !== newData.length) {
+//           console.log("데이터 길이 변화 → 업데이트");
+//           return newData;
+//         }
+
+//         // 변화 체크를 위한 핵심 필드 비교
+//         const changed = newData.some((item: Stock, idx: number) => {
+//           const prevItem = prev[idx];
+
+//           return (
+//             prevItem.stck_prpr !== item.stck_prpr ||
+//             prevItem.prdy_ctrt !== item.prdy_ctrt
+//           );
+//         });
+
+//         console.log(changed ? "데이터 변경됨" : "동일 — 렌더링 안 함");
+
+//         return changed ? newData : prev;
+//       });
+
+//     } catch (e) {
+//       console.error(e);
+//     }
+
+//     setTimeout(poll, 7000);
+//   };
+
+//   poll();
+
+//   return () => {
+//     active = false;
+//   };
+// }, []);
+
+  if (!stocks) {
+    return (
+      <div className="flex justify-center items-center h-screen text-neutral-1">
+        데이터를 불러올 수 없습니다.
+      </div>
+    );
+  }
+  
   const handleStockDetail = async (stck_shrn_iscd: string) => {
     try {
       const res = await api.get(`${requests.koreainvestmentStockDetail}?FID_COND_MRKT_DIV_CODE=J&FID_INPUT_ISCD=${stck_shrn_iscd}`)
@@ -133,15 +190,17 @@ export default function Page() {
     <div className="w-full bg-primary-4 pb-20">
       <div className="flex justify-center items-center gap-2 pt-4 pb-7">
         <h2 className="text-head-06 text-neutral-1">전체 주식 목록</h2>
-        <img src="/icons/refresh.png" alt="새로고침" className="w-5 h-5" />
       </div>
-      <StockList stocks={stocks} 
-                  onClickBtn={handleStockDetail} 
-                  btnLab={mode === "buy" ? "사기" : "팔기"}
-                  onClickRow={(stck_shrn_iscd) => {
-                    router.push(`/invest/stock-details?stck_shrn_iscd=${stck_shrn_iscd}&mode=${mode}`);
-                  }}
-                  />
+      {Array.isArray(stocks) && stocks.length > 0 ? (
+        <StockList stocks={stocks} 
+                    onClickBtn={handleStockDetail} 
+                    btnLab={mode === "buy" ? "사기" : "팔기"}
+                    onClickRow={(stck_shrn_iscd) => {
+                      router.push(`/invest/stock-details?stck_shrn_iscd=${stck_shrn_iscd}&mode=${mode}`);
+                    }}
+                    /> ) : (
+        <p className="text-center text-neutral-2">표시할 주식 데이터가 없습니다.</p>
+      )}
 
 
       {/* 팔기 바텀시트 컴포넌트 */}

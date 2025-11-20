@@ -4,7 +4,7 @@ import { HttpError } from "@/types/axios/httpError.t";
 import api from "@/lib/axios/axios";
 
 import requests from "@/lib/axios/requests"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation";
 import { TradeHistory } from "@/components/ui/tx-history-ui/TradeHistory";
 
@@ -80,6 +80,88 @@ export default function Page() {
     );
   }
 
+  // const isMounted = useRef(true);
+
+  // useEffect(() => {
+  //   return () => {
+  //     isMounted.current = false;
+  //   };
+  // }, []);
+
+  
+  
+  // 폴링 방식
+//   useEffect(() => {
+//   let timer: NodeJS.Timeout;
+
+//   const poll = async () => {
+//     if (!isMounted.current) return;
+
+//     try {
+//       const res = await api.post(requests.myStocks);
+
+//       const newStocks = res.data.myStocks ?? [];
+//       const newSummary = res.data.summary ?? null;
+
+//       // 1) Stocks 비교
+//       setStocks((prev) => {
+//         if (!prev || prev.length !== newStocks.length) {
+//           return newStocks;
+//         }
+
+//         // 항목별로 비교 → 변경된 데이터가 하나라도 있으면 업데이트
+//         const changed = newStocks.some((item: Stock, idx: number) => {
+//           const p = prev[idx];
+//           return (
+//             p.pdno !== item.pdno ||
+//             p.hldgQty !== item.hldgQty ||
+//             p.pchsAvgPric !== item.pchsAvgPric ||
+//             p.profitRate !== item.profitRate
+//           );
+//         });
+
+//         return changed ? newStocks : prev;
+//       });
+
+//       // 2) Summary 비교
+//       setInvestSummary((prev) => {
+//         if (!prev) return newSummary;
+
+//         const changed =
+//           prev.sctsEvluAmt !== newSummary.sctsEvluAmt ||
+//           prev.profitAmount !== newSummary.profitAmount ||
+//           prev.profitRate !== newSummary.profitRate ||
+//           prev.dncaTotAmt !== newSummary.dncaTotAmt;
+
+//         return changed ? newSummary : prev;
+//       });
+
+//       setLoading(false);
+//     } catch (e) {
+//       const err = e as HttpError;
+//       if (err.statusCode === 403) {
+//         alert(err.message);
+//         router.push("/");
+//       } else {
+//         console.error(err);
+//       }
+//     }
+
+//     timer = setTimeout(poll, 7000);
+//   };
+
+//   poll();
+
+//   return () => clearTimeout(timer);
+// }, [router]);
+
+  if (loading || !investSummary) {
+    return (
+      <main className="min-h-screen flex justify-center items-center">
+        로딩중...
+      </main>
+    );
+  }
 
   return (
     <main className="">
