@@ -56,7 +56,7 @@ export default function Page() {
         const [stockRes] = await Promise.all([
           api.get(requests.koreainvestmentStockList),
         ]);
-        // const res = await api.get(requests.stockList);
+        // const res = await api.get(requests.koreainvestmentStockList);
         setStocks(stockRes.output ?? []);
       } catch (e) {
 	      // 커스텀 에러관리
@@ -84,43 +84,61 @@ export default function Page() {
     );
   }
   
-  // 폴링 방식
-  // useEffect(() => {
-  //   let active = true;
 
-  //   const poll = async () => {
-  //     if (!active) return;
-  //     try {
-  //       const res = await api.get(requests.koreainvestmentStockList);
-  //       const newData = res.output ?? [];
 
-  //       console.log("폴링 데이터:", res);
-  //       setStocks(prev => {
-  //         const same = JSON.stringify(prev) === JSON.stringify(newData);
-  //         console.log("데이터 변경 여부:", same ? "변경 없음" : "변경됨");
-  //         return same ? prev : newData;
-  //       });
-  //     } catch (e) {
-  //       console.error(e);
-  //     }
+  // 폴링 방식 - 핵심 필드 비교
+//   useEffect(() => {
+//   let active = true;
 
-  //     setTimeout(poll, 7000);
-  //   };
+//   const poll = async () => {
+//     if (!active) return;
 
-  //   poll();
+//     try {
+//       const res = await api.get(requests.koreainvestmentStockList);
+//       const newData = res.output ?? [];
 
-  //   return () => {
-  //     active = false;
-  //   };
-  // }, []);
+//       setStocks(prev => {
+//         if (!prev || prev.length !== newData.length) {
+//           console.log("데이터 길이 변화 → 업데이트");
+//           return newData;
+//         }
 
-  // if (!stock) {
-  //   return (
-  //     <div className="flex justify-center items-center h-screen text-neutral-1">
-  //       데이터를 불러올 수 없습니다.
-  //     </div>
-  //   );
-  // }
+//         // 변화 체크를 위한 핵심 필드 비교
+//         const changed = newData.some((item: Stock, idx: number) => {
+//           const prevItem = prev[idx];
+
+//           return (
+//             prevItem.stck_prpr !== item.stck_prpr ||
+//             prevItem.prdy_ctrt !== item.prdy_ctrt
+//           );
+//         });
+
+//         console.log(changed ? "데이터 변경됨" : "동일 — 렌더링 안 함");
+
+//         return changed ? newData : prev;
+//       });
+
+//     } catch (e) {
+//       console.error(e);
+//     }
+
+//     setTimeout(poll, 7000);
+//   };
+
+//   poll();
+
+//   return () => {
+//     active = false;
+//   };
+// }, []);
+
+  if (!stocks) {
+    return (
+      <div className="flex justify-center items-center h-screen text-neutral-1">
+        데이터를 불러올 수 없습니다.
+      </div>
+    );
+  }
   
   const handleStockDetail = async (stck_shrn_iscd: string) => {
     try {
@@ -181,7 +199,7 @@ export default function Page() {
                       router.push(`/invest/stock-details?stck_shrn_iscd=${stck_shrn_iscd}&mode=${mode}`);
                     }}
                     /> ) : (
-        <p className="text-center text-neutral-2">주식 데이터를 불러오는 중...</p>
+        <p className="text-center text-neutral-2">표시할 주식 데이터가 없습니다.</p>
       )}
 
 

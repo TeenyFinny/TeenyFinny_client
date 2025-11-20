@@ -57,50 +57,61 @@ export default function Page(){
     })();
   }, [stck_shrn_iscd]);
 
-  // if (loading) {
-  //   return (
-  //     <main className="min-h-screen flex justify-center items-center">
-  //       로딩중...
-  //     </main>
-  //   );
-  // }
-  // if (!stock) {
-  //   return (
-  //     <div className="flex justify-center items-center h-screen text-neutral-1">
-  //       데이터를 불러올 수 없습니다.
-  //     </div>
-  //   );
-  // }
+  if (loading) {
+    return (
+      <main className="min-h-screen flex justify-center items-center">
+        로딩중...
+      </main>
+    );
+  }
+  if (!stock) {
+    return (
+      <div className="flex justify-center items-center h-screen text-neutral-1">
+        데이터를 불러올 수 없습니다.
+      </div>
+    );
+  }
 
-  // 폴링 방식으로 주식 데이터 최신화
-  // useEffect(() => {
-  //   let active = true;
+// 폴링 방식
+//   useEffect(() => {
+//   let active = true;
 
-  //   const poll = async () => {
-  //     if (!active) return;
-  //     try {
-  //       const res = await api.get(`${requests.koreainvestmentStockDetail}?FID_COND_MRKT_DIV_CODE=J&FID_INPUT_ISCD=${stck_shrn_iscd}`);
-  //       const newData = res.output ?? [];
+//   const poll = async () => {
+//     if (!active) return;
 
-  //       console.log("폴링 데이터:", res);
-  //       setStock(prev => {
-  //         const same = JSON.stringify(prev) === JSON.stringify(newData);
-  //         console.log("데이터 변경 여부:", same ? "변경 없음" : "변경됨");
-  //         return same ? prev : newData;
-  //       });
-  //     } catch (e) {
-  //       console.error(e);
-  //     }
+//     try {
+//       const res = await api.get(
+//         `${requests.koreainvestmentStockDetail}?FID_COND_MRKT_DIV_CODE=J&FID_INPUT_ISCD=${stck_shrn_iscd}`
+//       );
 
-  //     setTimeout(poll, 7000);
-  //   };
+//       const newData = res.output ?? null;
 
-  //   poll();
+//       setStock((prev) => {
+//         if (!prev) return newData;
 
-  //   return () => {
-  //     active = false;
-  //   };
-  // }, []);
+//         // ---- 핵심 필드 비교 ----
+//         const changed =
+//           prev.stck_prpr !== newData.stck_prpr ||
+//           prev.prdy_vrss !== newData.prdy_vrss ||
+//           prev.prdy_ctrt !== newData.prdy_ctrt ||
+//           prev.acml_vol !== newData.acml_vol;
+
+//         return changed ? newData : prev;
+//       });
+//     } catch (e) {
+//       console.error(e);
+//     }
+
+//     setTimeout(poll, 7000);
+//   };
+
+//   poll();
+
+//   return () => {
+//     active = false;
+//   };
+// }, [stck_shrn_iscd]);
+
 
   /** 주문 공통 처리 (buy / sell) */
   const handleTradeOrder = async (quantity: number, totalPrice?: number) => {
@@ -112,7 +123,7 @@ export default function Page(){
     try {
       const res = await createTradeOrder(
         stock.stck_shrn_iscd,
-        stock.stck_prpr,
+        stock.hts_kor_isnm,
         price,
         quantity,
         type
@@ -167,7 +178,7 @@ export default function Page(){
           <p className="text-body-06 text-neutral-1 mb-2">
             {"어제보다 "}
             <span className={`${priceColor} text-head-03`}>{stock.prdy_vrss}원</span>
-            {" 올랐어요!"}
+            {isUp ? " 올랐어요!" : " 내렸어요!"}
           </p>
           <p className="text-body-06 text-neutral-1">지금까지 {stock.acml_vol}만큼 이 주식을 사고 팔았어요!</p>
         </div>
