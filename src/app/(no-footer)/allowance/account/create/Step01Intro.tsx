@@ -44,19 +44,19 @@ export default function Step01Intro({ onNext }: Step1IntroProps) {
   return (
     <div className="flex flex-col">
       {/* 제목 */}
-      <div className="mt-[15px] text-center">
+      <div className="mt-[47px] text-center">
         <h1 className="text-account-title text-primary-1">TeenyFinny</h1>
         <h2 className="text-head-01 text-neutral-1 whitespace-pre-line">통장으로 금융의 첫 걸음 시작!</h2>
       </div>
 
       {/* 부제 */}
-      <div className="mt-[20px] space-y-[24px] text-center">
-        <p className="text-head-06 text-neutral-2 whitespace-pre-line">{"계좌를 만들기만 해도\n수수료 면제"}</p>
+      <div className="mt-[33px] space-y-[24px] text-center">
+        <p className="text-head-05 text-neutral-2 whitespace-pre-line">{"계좌를 만들기만 해도\n수수료 면제"}</p>
       </div>
 
       {/* 토끼와 코인 이미지 */}
       <div className="flex justify-center mt-[23px]">
-        <div className="relative h-[270px] w-[270px]">
+        <div className="relative h-[312px] w-[312px]">
           <Image
             src="/images/allowance/illust_allowance_makeaccount.png"
             alt="입출금 계좌"
