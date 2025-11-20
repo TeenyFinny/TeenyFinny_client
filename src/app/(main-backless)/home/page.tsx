@@ -52,14 +52,8 @@ export default function Page() {
   useEffect(() => {
     if (message) {
       setOpen(true);
-
-      const timer = setTimeout(() => {
-        setMessage(null);
-      }, 3500);
-
-      return () => clearTimeout(timer);
     }
-  }, [message, setMessage]);
+  }, [message]);
 
   /** 사용자 정보 로드 */
   useEffect(() => {
@@ -149,7 +143,14 @@ export default function Page() {
 
   return (
     <>
-      <PushNotification open={open} setOpen={setOpen} message={message ?? ""} />
+      <PushNotification
+        open={open}
+        setOpen={(isOpen) => {
+          setOpen(isOpen);
+          if (!isOpen) setMessage(null);
+        }}
+        message={message ?? ""}
+      />
 
       {userType === "parent" && parentData ? (
         <div className="w-full bg-primary-4">

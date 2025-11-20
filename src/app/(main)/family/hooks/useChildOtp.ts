@@ -108,18 +108,19 @@ export const useChildOtp = (enabled: boolean) => {
       /** 서버 오류 */
       setInputError(true);
 
-      const status = err.response?.status;
-
-      if (status === 400) {
-        setDialogText("코드가 일치하지 않습니다\n다시 입력해주세요");
-      } else if (status === 410) {
-        setDialogText("만료된 코드입니다\n새로운 코드를 발급받으세요");
+      if (err instanceof HttpError) {
+        const { statusCode } = err;
+        if (statusCode === 400) {
+          setDialogText("코드가 일치하지 않습니다\n다시 입력해주세요");
+        } else if (statusCode === 410) {
+          setDialogText("만료된 코드입니다\n새로운 코드를 발급받으세요");
+        } else {
+          setDialogText(
+            err.message || "인증에 실패했습니다.\n다시 시도해주세요."
+          );
+        }
       } else {
-        setDialogText(
-          err instanceof HttpError
-            ? err.message
-            : "인증에 실패했습니다.\n다시 시도해주세요."
-        );
+        setDialogText("인증에 실패했습니다.\n다시 시도해주세요.");
       }
       setDialogOpen(true);
     } finally {
