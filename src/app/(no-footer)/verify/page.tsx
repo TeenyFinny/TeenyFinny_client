@@ -98,7 +98,7 @@ export default function VerifyPage() {
         return;
       }
 
-      const res = await api.patch(requests.updateProfileInfo(userId), req);
+      const res = await api.patch(requests.fetchProfileInfo, req);
 
       if (res.data?.isSuccess) {
         setSuccess(true);

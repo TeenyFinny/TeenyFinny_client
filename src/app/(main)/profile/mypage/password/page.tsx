@@ -62,7 +62,7 @@ export default function ChangePasswordPage() {
         newPassword: newPw,
       };
 
-      const res = await api.patch(requests.updatePassword, payload);
+      const res = await api.patch(requests.passwordRequest, payload);
 
       if (res.data?.isSuccess) {
         setMessage("비밀번호가 변경되었습니다.");
