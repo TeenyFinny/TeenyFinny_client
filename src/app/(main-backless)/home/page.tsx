@@ -170,51 +170,28 @@ export default function Page() {
             />
           </div>
         </div>
-      ) : userType === "child" ? (
+      ) : userType === "child" && childData ? (
         <div className="flex h-full w-full items-center justify-center">
           <ChildDashboard
             data={{
               user: {
-                userId: 2,
-                name: "김티니",
-                role: "CHILD",
-                email: "child@teenyfinny.com",
-                totalBalance: 10000,
-                depositBalance: 1000,
+                userId: Number(childData.userId ?? 0),
+                name: childData.name ?? "",
+                role: childData.role ?? "CHILD",
+                email: childData.email ?? "",
+                totalBalance: Number(childData.balance ?? 0),
+                depositBalance: 0,
                 investmentBalance: 0,
-                savingBalance: 9000,
+                savingBalance: 0,
               },
             }}
           />
         </div>
-      </div>
-    );
-  }
-
-  if (userType === "child" && childData) {
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        <ChildDashboard
-          data={{
-            user: {
-              userId: Number(childData.userId ?? 0),
-              name: childData.name ?? "",
-              role: childData.role ?? "CHILD",
-              email: childData.email ?? "",
-              totalBalance: Number(childData.balance ?? 0),
-              depositBalance: 0, // API 응답에 없을 경우 기본값
-              investmentBalance: 0, // API 응답에 없을 경우 기본값
-              savingBalance: 0, // API 응답에 없을 경우 기본값
-            },
-          }}
-        />
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex h-full w-full items-center justify-center">
-      <p className="text-body-01">로그인이 필요합니다.</p>
-    </div>
+      ) : (
+        <div className="flex h-full w-full items-center justify-center">
+          <p className="text-body-01">로그인이 필요합니다.</p>
+        </div>
+      )}
+    </>
   );
 }

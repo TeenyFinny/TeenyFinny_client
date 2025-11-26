@@ -6,7 +6,7 @@ import { ChildrenBadge } from "@/components/ui/badge/ChildrenBadge";
 import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
-import { useAccountHistoryStore } from "@/store/accountHistoryStore";
+import { useSelectedChildStore } from "@/store/selectedChildStore";
 import { useUserStore } from "@/store/userStore";
 import { ApiResponse } from "@/types/axios/apiRes.t";
 import { HttpError } from "@/types/axios/httpError.t";
@@ -53,7 +53,7 @@ function AccountContentInner() {
   const [cardInfo, setCardInfo] = useState<CardInfo | null>(null);
 
   const { userType, userId } = useUserStore();
-  const { setHistoryData } = useAccountHistoryStore();
+  const { setHistoryData } = useSelectedChildStore();
 
   // URL 파라미터에서 childId 가져오기
   const searchParams = useSearchParams();
@@ -86,8 +86,8 @@ function AccountContentInner() {
 
     // 🔥 Zustand에 완전 저장하여 stateful 라우팅
     setHistoryData({
-      childId: currentChild,
-      childName,
+      selectedChildId: currentChild,
+      selectedChildName: childName,
       accountName: accountType,
       accountType: typeCode,
       balance: balance ?? 0,
