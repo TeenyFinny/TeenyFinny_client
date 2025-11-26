@@ -78,8 +78,8 @@ export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
   }, [password, passwordConfirm, touched.confirm, submitted]);
 
   const genderLabel = useMemo(() => {
-    if (form.gender === "M") return "남자";
-    if (form.gender === "F") return "여자";
+    if (form.gender === 1) return "남자";
+    if (form.gender === 2) return "여자";
     return "";
   }, [form.gender]);
 

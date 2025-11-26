@@ -39,12 +39,12 @@ export default function Step03Verification({
     const g = birthBack[0];
     const GENDER_INFO_MAP: Record<
       string,
-      { gender: "M" | "F"; prefix: "19" | "20" }
+      { gender: 1 | 2; prefix: "19" | "20" }
     > = {
-      "1": { gender: "M", prefix: "19" },
-      "2": { gender: "F", prefix: "19" },
-      "3": { gender: "M", prefix: "20" },
-      "4": { gender: "F", prefix: "20" },
+      "1": { gender: 1, prefix: "19" }, // 남자
+      "2": { gender: 2, prefix: "19" }, // 여자
+      "3": { gender: 1, prefix: "20" }, // 남자
+      "4": { gender: 2, prefix: "20" }, // 여자
     };
     const info = GENDER_INFO_MAP[g];
 

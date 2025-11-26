@@ -47,8 +47,7 @@ const requests = {
 
   fetchProfile: `/profile`,
 
-  fetchReport: `allowance/report`
-
+  fetchReport: `allowance/report`,
 };
 
 export default requests;
