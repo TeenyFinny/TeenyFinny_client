@@ -35,6 +35,9 @@ export default function Page() {
   const [parentData, setParentData] = useState<ParentDashboardState | null>(
     null
   );
+  const [childData, setChildData] = useState<HomeApiResponse["user"] | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -79,9 +82,15 @@ export default function Page() {
             balance: Number(userPayload.balance ?? 0),
             children,
           });
+          setChildData(null);
+          setError(null);
+        } else if (normalizedRole === "child") {
+          setChildData(userPayload);
+          setParentData(null);
           setError(null);
         } else {
           setParentData(null);
+          setChildData(null);
         }
       } catch (err) {
         if (controller.signal.aborted) return;
@@ -136,20 +145,20 @@ export default function Page() {
     );
   }
 
-  if (userType === "child") {
+  if (userType === "child" && childData) {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <ChildDashboard
           data={{
             user: {
-              userId: 2,
-              name: "김티니",
-              role: "CHILD",
-              email: "child@teenyfinny.com",
-              totalBalance: 10000,
-              depositBalance: 1000,
-              investmentBalance: 0,
-              savingBalance: 9000,
+              userId: Number(childData.userId ?? 0),
+              name: childData.name ?? "",
+              role: childData.role ?? "CHILD",
+              email: childData.email ?? "",
+              totalBalance: Number(childData.balance ?? 0),
+              depositBalance: 0, // API 응답에 없을 경우 기본값
+              investmentBalance: 0, // API 응답에 없을 경우 기본값
+              savingBalance: 0, // API 응답에 없을 경우 기본값
             },
           }}
         />

@@ -5,8 +5,6 @@ import { p } from "framer-motion/client";
 const requests = {
   fetchTest: `/noticeTest`,
   fetchHome: `/home`,
-  devParentHome: `/home/parent`,
-  devChildHome: `/home/child`,
   login: `/auth/login`,
   signup: `/auth/signup`,
   fetchProfileInfo: (id: number) => `/profile/info/${id}`, // JWT 도입 이후 ID 제거 예정
