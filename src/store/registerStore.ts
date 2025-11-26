@@ -24,7 +24,7 @@ export interface TermsState {
  * @property {string} name - 이름 (4단계)
  * @property {string} email - 이메일 (4단계)
  * @property {string} birthDate - 생년월일 (YYYYMMDD) 형식 (4단계)
- * @property {"M" | "F" | null} gender - 성별 (3단계)
+ * @property {1 | 2 | null} gender - 성별 (3단계) - 1: 남자, 2: 여자
  */
 export interface RegisterForm {
   terms: TermsState;
@@ -34,7 +34,7 @@ export interface RegisterForm {
   name: string;
   email: string;
   birthDate: string;
-  gender: "M" | "F" | null;
+  gender: 1 | 2 | null;
 }
 
 /** 회원가입 폼의 초기 상태 (중복 방지용 상수) */

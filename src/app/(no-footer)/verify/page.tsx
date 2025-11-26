@@ -24,7 +24,21 @@ export default function VerifyPage() {
   const [message, setMessage] = useState("");
   const userId = useUserStore((state) => state.userId);
 
-  if (!userId) throw new Error("사용자 ID가 없습니다.");
+  // userId가 없을 때 리다이렉트 처리
+  useEffect(() => {
+    if (!userId) {
+      router.push("/");
+    }
+  }, [userId, router]);
+
+  // userId가 없으면 아무것도 렌더링하지 않음
+  if (!userId) {
+    return (
+      <div className="flex flex-col h-full px-[27px] items-center justify-center">
+        <p className="text-body-01 text-neutral-3">로딩 중...</p>
+      </div>
+    );
+  }
 
   /**
    * 인증 성공 시 자동으로 마이페이지로 이동시키는 effect
@@ -77,6 +91,12 @@ export default function VerifyPage() {
         name,
         phoneNumber,
       };
+
+      if (!userId) {
+        setMessage("사용자 ID가 없습니다.");
+        setSuccess(false);
+        return;
+      }
 
       const res = await api.patch(requests.updateProfileInfo(userId), req);
 
