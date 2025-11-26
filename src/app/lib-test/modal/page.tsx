@@ -9,8 +9,8 @@ export default function Page() {
         // onCancel={() => console.log("확인 clicked")}
         title = "정말 삭제하시겠어요?"
         description = "삭제하면 되돌릴 수 없어요"
-        cancelText = "취소"
-        deleteText = "삭제"
+        ltBtnTxt = "취소"
+        rtBtnTxt = "삭제"
       />
     </main>
   )

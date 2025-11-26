@@ -57,7 +57,7 @@ export default function Home() {
         <BottomSheetBuyStock
           open={isModalOpen}
           setOpen={setIsModalOpen}
-          price={stockPrice}
+          stck_prpr={stockPrice}
           availableStocks={availableStock}
           maxQuantity={maxQuantity}
           onConfirm={handlePurchaseConfirm}

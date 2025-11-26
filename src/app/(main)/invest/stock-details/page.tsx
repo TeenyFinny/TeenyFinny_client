@@ -38,7 +38,7 @@ export default function Page(){
     (async () => {
       try {
         const res = await api.get(`${requests.koreainvestmentStockDetail}?FID_COND_MRKT_DIV_CODE=J&FID_INPUT_ISCD=${stck_shrn_iscd}`);
-        setStock(res.output);
+        setStock((res as any).output);
       } catch (e) {
 	      // 커스텀 에러관리
         const err = e as HttpError;
@@ -151,7 +151,7 @@ export default function Page(){
         <BottomSheetSellStock
           open={open}
           setOpen={setOpen}
-          price={Number(String(stock.stck_prpr).replace(/,/g, ""))}
+          stck_prpr={Number(String(stock.stck_prpr).replace(/,/g, ""))}
           maxQuantity={stock.maxQuantity}
           onConfirm={handleTradeOrder}
           onCancel={() => setOpen(false)}

@@ -55,7 +55,7 @@ export default function Page() {
           api.get(requests.koreainvestmentStockList),
         ]);
         // const res = await api.get(requests.stockList);
-        setStocks(stockRes.output ?? []);
+        setStocks((stockRes as any).output ?? []);
       } catch (e) {
 	      // 커스텀 에러관리
         const err = e as HttpError;
@@ -86,7 +86,7 @@ export default function Page() {
   const handleStockDetail = async (stck_shrn_iscd: string) => {
     try {
       const res = await api.get(`${requests.koreainvestmentStockDetail}?FID_COND_MRKT_DIV_CODE=J&FID_INPUT_ISCD=${stck_shrn_iscd}`)
-      const stock = res.output
+      const stock = (res as any).output
       setSelectedStock({
         stck_shrn_iscd: stock.stck_shrn_iscd,
         hts_kor_isnm: stock.hts_kor_isnm,

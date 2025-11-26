@@ -128,7 +128,6 @@ export default function Page() {
       <div className="w-full bg-primary-4">
         <div className="mx-auto w-full max-w-[375px] px-4.5 pt-4">
           <ParentDashboard
-            hasChildren={hasChildren}
             balance={parentData.balance}
             childAccounts={parentData.children}
           />
