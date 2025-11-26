@@ -30,7 +30,7 @@ export default function Step02Checklist({ onNext }: Step2ChecklistProps) {
   return (
     <div className="flex flex-col px-[24px]">
       {/* Title Section */}
-      <div className="mt-[15px] mb-[12px] text-left">
+      <div className="mt-[43px] mb-[24px] text-left">
         <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
           {"계좌 개설 전에\n미리 확인해 주세요"}
         </h1>
@@ -48,7 +48,7 @@ export default function Step02Checklist({ onNext }: Step2ChecklistProps) {
 
       {/* Image Placeholder */}
       <div className="flex flex-1 items-center justify-center mb-[65px]">
-        <div className="relative h-[270px] w-[270px]">
+        <div className="relative h-[310px] w-[310px]">
           <Image
             src="/images/saving/illust_saving_7.png"
             alt="준비사항"

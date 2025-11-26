@@ -113,7 +113,7 @@ export default function Step04CardOptions({
       <div className="flex-1 overflow-y-auto px-[24px] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
 
         {/* 타이틀 */}
-        <div className="mt-[15px] mb-[20px] text-left">
+        <div className="mt-[43px] mb-[24px] text-left">
           <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
             {"신청하실 카드의\n서비스를 선택해 주세요"}
           </h1>

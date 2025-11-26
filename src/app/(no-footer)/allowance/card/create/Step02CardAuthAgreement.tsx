@@ -87,7 +87,7 @@ export default function Step02CardAuthAgreement({
   return (
     <div className="flex flex-col px-[24px]">
       {/* 타이틀 */}
-      <div className="mt-[15px] mb-[20px] text-left">
+      <div className="mt-[43px] mb-[26px] text-left">
         <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
           {"카드 신청을 위해\n약관을 확인해 주세요"}
         </h1>
