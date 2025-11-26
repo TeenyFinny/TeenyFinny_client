@@ -6,6 +6,8 @@ import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled";
 import { NormalInput2 } from "@/components/ui/input/NormalInput2";
 import { PasswordInput } from "@/components/ui/input/PasswordInput";
+import api from "@/lib/axios/axios";
+import requests from "@/lib/axios/requests";
 
 const EMAIL_REGEX = /^[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}$/;
 
@@ -51,7 +53,7 @@ const getConfirmError = (password: string, confirm: string) => {
  * 회원가입 단계 4: 개인정보 입력
  * - registerStore에는 비민감 데이터(이름, 이메일, 생년월일)만 저장
  * - 비밀번호는 로컬 상태에서만 관리 (store persist X)
- * - “다음” 클릭 시 입력 검증 후 props로 비밀번호 전달
+ * - "다음" 클릭 시 입력 검증 후 props로 비밀번호 전달
  */
 export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
   const { form, setField } = useRegisterStore();
@@ -61,6 +63,8 @@ export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [touched, setTouched] = useState<TouchedState>(initialTouched);
   const [submitted, setSubmitted] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationError, setVerificationError] = useState<string | undefined>(undefined);
 
   const emailError = useMemo(() => {
     if (!(touched.email || submitted)) return undefined;
@@ -119,9 +123,10 @@ export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
     return form.birthDate;
   }, [form.birthDate]);
 
-  /** “다음” 버튼 클릭 */
-  const handleNext = () => {
+  /** "다음" 버튼 클릭 */
+  const handleNext = async () => {
     setSubmitted(true);
+    setVerificationError(undefined);
 
     const latestEmailError = getEmailError(form.email);
     const latestPasswordError = getPasswordError(password);
@@ -138,7 +143,19 @@ export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
       return;
     }
 
-    onNext(password); // 다음 단계로 비밀번호 전달
+    // 이메일 중복 확인 API 호출
+    setIsVerifying(true);
+    try {
+      await api.post(requests.authEmail, { email: form.email });
+      
+      // API 호출이 성공하면 다음 단계로 진행
+      onNext(password);
+    } catch (error) {
+      // 에러 발생 시 (이미 사용 중인 이메일 등)
+      setVerificationError("이미 사용 중인 이메일입니다.");
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   return (
@@ -159,10 +176,13 @@ export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
             value={form.email}
             onChange={handleEmailChange}
           />
-          {emailError && (
-            <p className="px-1 text-body-08 text-error">{emailError}</p>
-          )}
         </div>
+        {emailError && (
+            <p className="pl-4 text-body-08 text-error">{emailError}</p>
+          )}
+          {verificationError && (
+            <p className="pl-4 text-body-08 text-error">{verificationError}</p>
+          )}
 
         {/* 비밀번호 */}
         <div className="flex flex-col gap-1">
@@ -205,7 +225,10 @@ export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
       {/* 하단 버튼 */}
       <div className="fixed bottom-[56px] w-full max-w-[327px]">
         {isButtonEnabled ? (
-          <BigButtonActivated label="다음" onClick={handleNext} />
+          <BigButtonActivated 
+            label={isVerifying ? "확인 중..." : "다음"} 
+            onClick={handleNext} 
+          />
         ) : (
           <BigButtonDisabled label="다음" onClick={() => {}} />
         )}
