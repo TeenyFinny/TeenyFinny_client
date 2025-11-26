@@ -2,6 +2,7 @@
 "use client";
 import { ApiResponse } from "@/types/axios/apiRes.t";
 import { HttpError } from "@/types/axios/httpError.t";
+import { clearAuthToken, getAuthorizationHeader } from "@/lib/auth/token";
 import axios, { AxiosError, AxiosResponse } from "axios";
 
 // 한 파일에서 응답 형식이나 에러처리 등을 관리
@@ -12,6 +13,17 @@ const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BASE_URL,    // .env에 정의된 baseURL
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     timeout: 15000,
+    withCredentials: true,
+});
+
+// 요청마다 Authorization 헤더를 주입한다.
+api.interceptors.request.use((config) => {
+    const authHeader = getAuthorizationHeader();
+    if (authHeader) {
+        config.headers = config.headers ?? {};
+        config.headers.Authorization = authHeader;
+    }
+    return config;
 });
 
 // 공통 응답/에러 처리
@@ -26,6 +38,10 @@ api.interceptors.response.use(
     (err: AxiosError<ApiResponse>) => {
         const statusCode = err.response?.status ?? 0; // HTTP status
         const payload = err.response?.data;
+
+        if (statusCode === 401) {
+            clearAuthToken();
+        }
 
         throw new HttpError({
             statusCode: statusCode,

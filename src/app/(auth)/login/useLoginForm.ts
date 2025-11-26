@@ -7,6 +7,7 @@ import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 import { useUserStore } from "@/store/userStore";
 import { HttpError } from "@/types/axios/httpError.t";
+import { saveAuthToken } from "@/lib/auth/token";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -96,13 +97,23 @@ export function useLoginForm() {
         password: password.trim(),
       });
 
-      const { user } = res.data;
+      const payload = res.data;
+      const { user, tokenType, accessToken } = payload ?? {};
       if (!user) {
         throw new HttpError({
           message: "서버 응답이 올바르지 않습니다.",
           statusCode: res.status,
         });
       }
+
+      if (!tokenType || !accessToken) {
+        throw new HttpError({
+          message: "인증 토큰을 받지 못했습니다. 잠시 후 다시 시도해주세요.",
+          statusCode: res.status,
+        });
+      }
+
+      saveAuthToken(tokenType, accessToken);
 
       const role = user.role?.toLowerCase();
       if (role !== "parent" && role !== "child") {

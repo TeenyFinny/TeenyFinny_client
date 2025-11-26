@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { ChildSummary } from "@/types/user";
+import { clearAuthToken } from "@/lib/auth/token";
 
 /**
  * 사용자 전역 상태 타입 정의
@@ -98,14 +99,16 @@ export const useUserStore = create<UserState>()(
        * 사용자 정보를 초기 상태로 되돌립니다.
        * (로그아웃 시 호출)
        */
-      clearUser: () =>
+      clearUser: () => {
+        clearAuthToken();
         set({
           userName: "",
           userId: null,
           userType: null,
           hasChildren: false,
           children: [],
-        }),
+        });
+      },
     }),
     {
       name: "teenyfinny-user",
