@@ -19,7 +19,6 @@ import { useQuizStore } from "@/store/quizStore"
  */
 export default function Page() {
   const router = useRouter()
-  const user_id = 1;//TODO: 유저ID 전역변수가 생기면 대체
   const {
     setQuizData,
     streak_days,        //연속 풀이 일수
@@ -38,7 +37,7 @@ export default function Page() {
 
       try {
         // 1) 기존 progress 불러오기
-        const res = await api.get(`${requests.fetchProgress}?user_id=${user_id}`);
+        const res = await api.get(requests.fetchProgress);
         console.log(res);
         const data = res.data        // 2) data가 존재하면 그대로 저장
         if (res) {
@@ -48,7 +47,7 @@ export default function Page() {
         }
 
         // 3) progress가 없으면 신규 생성
-        const created = await api.post(requests.fetchProgress, { user_id });
+        const created = await api.post(requests.fetchProgress);
         setQuizData(created.data.data);
 
       } catch (e) {
@@ -56,7 +55,7 @@ export default function Page() {
 
         // 404 → progress 없음 → 생성
         if (err.statusCode === 404) {
-          const created = await api.post(requests.fetchProgress, { user_id });
+          const created = await api.post(requests.fetchProgress);
           setQuizData(created.data.data);
           return;
         }
