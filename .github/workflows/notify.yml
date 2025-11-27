@@ -42,15 +42,9 @@ jobs:
             SLACK_AUTHOR_ID=${GITHUB_TO_SLACK[$PR_AUTHOR]}
           fi
 
-          # 기본 멘션 (전원 호출)
-          ALL_MENTIONS=""
-          for USER_ID in "${GITHUB_TO_SLACK[@]}"; do
-            ALL_MENTIONS+="<@$USER_ID> "
-          done
-
           # 액션별 메시지
           if [ "$PR_ACTION" == "opened" ]; then
-            PR_STATUS="💌 *새 PR이 생성되었습니다!*"
+            PR_STATUS="💻 *FE PR이 생성되었습니다!*"
 
           elif [ "$PR_ACTION" == "ready_for_review" ]; then
             PR_STATUS="🏃 *리뷰를 받을 준비가 되었습니다!*"
@@ -59,21 +53,8 @@ jobs:
             PR_STATUS="🏸 *리뷰 재요청이 발생했습니다!*"
             ALL_MENTIONS=""   # 🔥 리뷰어 호출 제거
 
-          elif [ "$PR_ACTION" == "closed" ]; then
-            if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
-              PR_STATUS="✅ *PR Merged*"
-            else
-              PR_STATUS="❌ *PR Closed*"
-            fi
-            ALL_MENTIONS=""
-
           elif [ "$PR_ACTION" == "reopened" ]; then
-            PR_STATUS="♻️ *PR이 다시 열렸습니다!*"
-
-          else
-            PR_STATUS="☝️ *PR 업데이트 알림*"
-            ALL_MENTIONS=""
-          fi
+            PR_STATUS="💻 *FE PR이 다시 열렸습니다!*"
 
           # Slack Webhook 호출
           curl -X POST \
