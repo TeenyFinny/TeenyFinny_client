@@ -82,9 +82,9 @@ export default function Page() {
   // ---------------------------
   const leftBadgeText = monthly_reward
     ? "이번 달 도전 완료"
-    : `${streak_days}일 연속 도전!`
+    : `${streak_days+1}일 연속 도전!`
 
-  const rightBadgeText = course_completed ? "랜덤" : `${quiz_date}일차`
+  const rightBadgeText = course_completed ? "랜덤" : `${quiz_date+1}일차`
 
   return (
     <main
