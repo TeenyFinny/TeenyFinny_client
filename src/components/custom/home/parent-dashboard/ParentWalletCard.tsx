@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { MiddleButtonActivated } from "@/components/ui/button/MiddleButtonActivated";
 
 interface ParentWalletCardProps {
-  readonly balance: number;
+  readonly balance: string;
 }
 
 /**
@@ -15,7 +15,6 @@ interface ParentWalletCardProps {
  * @returns {JSX.Element} 부모 지갑 카드 요소.
  */
 export default function ParentWalletCard({ balance }: ParentWalletCardProps) {
-  const formattedBalance = balance.toLocaleString("ko-KR");
 
   return (
     <div className="w-full h-[240px] bg-neutral-7 rounded-2xl px-6 pt-[26px] pb-[20px] flex flex-col shadow-lg">
@@ -33,7 +32,7 @@ export default function ParentWalletCard({ balance }: ParentWalletCardProps) {
 
       {/* Balance */}
       <div className="text-head-00 text-neutral-1 mb-[30px]">
-        {formattedBalance} 원
+        {balance} 원
       </div>
 
       {/* Send Money Button */}

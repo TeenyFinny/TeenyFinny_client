@@ -2,8 +2,7 @@
 
 import AboutBanner from "../AboutBanner";
 import { AccountCard } from "@/components/custom/account/AccountCard";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+
 
 /**
  * 사용자 데이터 타입
@@ -13,10 +12,10 @@ interface UserData {
   name: string;
   role: string;
   email: string;
-  totalBalance: number;
-  depositBalance: number;
-  investmentBalance: number;
-  savingBalance: number;
+  totalBalance: string;
+  depositBalance: string;
+  investmentBalance: string;
+  savingBalance: string;
 }
 
 /**
