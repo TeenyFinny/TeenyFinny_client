@@ -11,6 +11,7 @@ import type { ChildSummary } from "@/types/user";
 import ChildDashboard from "@/components/custom/home/child-dashboard/ChildDashboard";
 import { useNotificationStore } from "@/store/notificationStore";
 import { PushNotification } from "@/components/ui/notice/PushNotification";
+import LoadingScreenSkeletonDashboard from "@/components/ui/LoadingScreenSkeletonDashboard";
 
 interface ParentDashboardState {
   balance: number;
@@ -136,8 +137,10 @@ export default function Page() {
   // === 상태별 렌더링 분기 ===
   if (isLoading) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-primary-4">
-        <p className="text-body-01 text-color-neutral-2">불러오는 중...</p>
+      <div className="w-full bg-primary-4">
+        <div className="mx-auto w-full max-w-[375px]">
+          <LoadingScreenSkeletonDashboard />
+        </div>
       </div>
     );
   }

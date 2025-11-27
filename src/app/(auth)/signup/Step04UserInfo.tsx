@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useRegisterStore } from "@/store/registerStore";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled";
@@ -64,7 +64,20 @@ export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
   const [touched, setTouched] = useState<TouchedState>(initialTouched);
   const [submitted, setSubmitted] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
-  const [verificationError, setVerificationError] = useState<string | undefined>(undefined);
+  const [verificationError, setVerificationError] = useState<
+    string | undefined
+  >(undefined);
+
+  // 카카오 회원가입인 경우 카카오 이메일을 자동으로 설정
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isKakaoSignup =
+        sessionStorage.getItem("is-kakao-signup") === "true";
+      if (isKakaoSignup) {
+        setField("email", form.email);
+      }
+    }
+  }, [form.email, setField]);
 
   const emailError = useMemo(() => {
     if (!(touched.email || submitted)) return undefined;
@@ -147,12 +160,14 @@ export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
     setIsVerifying(true);
     try {
       await api.post(requests.authEmail, { email: form.email });
-      
+
       // API 호출이 성공하면 다음 단계로 진행
       onNext(password);
     } catch (error: any) {
       // 에러 발생 시 (이미 사용 중인 이메일 등)
-      setVerificationError(error.message || "이메일 확인 중 오류가 발생했습니다.");
+      setVerificationError(
+        error.message || "이메일 확인 중 오류가 발생했습니다."
+      );
     } finally {
       setIsVerifying(false);
     }
@@ -178,11 +193,11 @@ export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
           />
         </div>
         {emailError && (
-            <p className="pl-4 text-body-08 text-error">{emailError}</p>
-          )}
-          {verificationError && (
-            <p className="pl-4 text-body-08 text-error">{verificationError}</p>
-          )}
+          <p className="pl-4 text-body-08 text-error">{emailError}</p>
+        )}
+        {verificationError && (
+          <p className="pl-4 text-body-08 text-error">{verificationError}</p>
+        )}
 
         {/* 비밀번호 */}
         <div className="flex flex-col gap-1">
@@ -225,9 +240,9 @@ export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
       {/* 하단 버튼 */}
       <div className="fixed bottom-[56px] w-full max-w-[327px]">
         {isButtonEnabled ? (
-          <BigButtonActivated 
-            label={isVerifying ? "확인 중..." : "다음"} 
-            onClick={handleNext} 
+          <BigButtonActivated
+            label={isVerifying ? "확인 중..." : "다음"}
+            onClick={handleNext}
           />
         ) : (
           <BigButtonDisabled label="다음" onClick={() => {}} />
