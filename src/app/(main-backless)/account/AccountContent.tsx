@@ -20,7 +20,7 @@ type Child = {
 };
 
 type Accounts = {
-  total: number | null;
+  total: string | null;
   allowance: string | null;
   invest: string | null;
   saving: string | null;
@@ -40,7 +40,7 @@ function AccountContentInner() {
   const [accountData, setAccountData] = useState<Accounts | null>(null);
   const [currentChild, setCurrentChild] = useState<number>(0);
 
-  const [total, setTotal] = useState<number | null>(null);
+  const [total, setTotal] = useState<string | null>(null);
   const [allowance, setAllowance] = useState<string | null>(null);
   const [invest, setInvest] = useState<string | null>(null);
   const [saving, setSaving] = useState<string | null>(null);
