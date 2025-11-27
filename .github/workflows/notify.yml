@@ -56,6 +56,14 @@ jobs:
           elif [ "$PR_ACTION" == "reopened" ]; then
             PR_STATUS="💻 *FE PR이 다시 열렸습니다!*"
 
+          elif [ "$PR_ACTION" == "closed" ]; then
+            if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
+              PR_STATUS="✅ *FE PR이 Merged되었습니다!*"
+            else
+              PR_STATUS="❌ *FE PR이 Closed되었습니다!*"
+            fi
+          fi
+
           # Slack Webhook 호출
           curl -X POST \
                -H 'Content-type: application/json' \
