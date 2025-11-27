@@ -28,6 +28,7 @@ export default function RegisterPage() {
   const { step, next } = useRegisterStep();
   const { form, setField, reset } = useRegisterStore();
   const [password, setPassword] = useState("");
+  const setUser = useUserStore((state) => state.setUser);
 
   /** 모달 상태 */
   const [modalOpen, setModalOpen] = useState(false);
@@ -106,14 +107,12 @@ export default function RegisterPage() {
             // role을 소문자로 변환하여 저장
             const userRole = user.role?.toLowerCase();
             if (userRole === "parent" || userRole === "child") {
-              useUserStore
-                .getState()
-                .setUser(
-                  user.name,
-                  userRole as "parent" | "child",
-                  user.userId,
-                  Array.isArray(user.children) && user.children.length > 0
-                );
+              setUser(
+                user.name,
+                userRole,
+                user.userId,
+                Array.isArray(user.children) && user.children.length > 0
+              );
             }
           }
         }
