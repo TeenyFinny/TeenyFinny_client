@@ -49,7 +49,7 @@ export default function MyPage() {
         if (!userId) throw new Error("사용자 ID가 없습니다.");
         // 명시적 타입 지정 (ProfileInfo)
         const res = await api.get<ProfileInfo>(
-          requests.fetchProfileInfo(userId),
+          requests.fetchProfileInfo,
           {
             signal: controller.signal,
           }
