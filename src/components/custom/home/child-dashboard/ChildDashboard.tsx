@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import AboutBanner from "../AboutBanner";
 import { AccountCard } from "@/components/custom/account/AccountCard";
 import { getHomeData } from "@/lib/api/home";
-import { HomeRes, UserDto } from "@/types/home";
+import { UserDto } from "@/types/home";
 import LoadingScreenSkeletonDashboard from "@/components/ui/LoadingScreenSkeletonDashboard";
 
 /**
@@ -74,14 +74,14 @@ export default function ChildDashboard() {
         </div>
 
         {/* 계좌 제목 */}
-        <div className="h-[21px] flex justify-between items-center">
+        <div className="pl-[7px] h-[21px] flex justify-between items-center">
           <p className="text-head-03 font-bold text-neutral-3 mb-[10px] mt-[20px]">
             {user.name}의 계좌
           </p>
         </div>
 
         {/* 총 잔액 */}
-        <div className="text-head-00 font-bold text-neutral-1 mb-5">
+        <div className="pl-[7px] text-head-00 font-bold text-neutral-1 mb-5">
           {user.totalBalance ?? "0"} 원
         </div>
 
