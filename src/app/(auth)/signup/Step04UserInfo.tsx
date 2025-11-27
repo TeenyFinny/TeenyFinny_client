@@ -125,7 +125,7 @@ export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
 
   /** "다음" 버튼 클릭 */
   const handleNext = async () => {
-    setSubmitted(true);
+    if (isVerifying) return;
     setVerificationError(undefined);
 
     const latestEmailError = getEmailError(form.email);
@@ -150,9 +150,9 @@ export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
       
       // API 호출이 성공하면 다음 단계로 진행
       onNext(password);
-    } catch (error) {
+    } catch (error: any) {
       // 에러 발생 시 (이미 사용 중인 이메일 등)
-      setVerificationError("이미 사용 중인 이메일입니다.");
+      setVerificationError(error.message || "이메일 확인 중 오류가 발생했습니다.");
     } finally {
       setIsVerifying(false);
     }
