@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useLoginForm } from "./useLoginForm";
 import { FlexibleInputField } from "@/components/ui/input/FlexibleInputField";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
+import { startKakaoLogin } from "@/lib/auth/kakaoAuth";
 
 export default function Page() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function Page() {
   } = useLoginForm();
 
   const handleKakaoLogin = () => {
-    router.push("/signup");
+    startKakaoLogin();
   };
 
   return (

@@ -13,14 +13,9 @@ import { useState } from "react";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 import { TitleOnlyDialog } from "@/components/ui/modal/TitleOnlyDialog";
+import { saveAuthToken } from "@/lib/auth/token";
+import { useUserStore } from "@/store/userStore";
 
-/**
- * RegisterPage
- *
- * 회원가입 플로우의 단계별 화면을 렌더링하는 페이지입니다.
- * - 단계 전환: RegisterStepProvider Context를 사용합니다.
- * - 입력 상태: useRegisterStore
- */
 export default function RegisterPage() {
   const router = useRouter();
   const { step, next } = useRegisterStep();
@@ -34,21 +29,72 @@ export default function RegisterPage() {
   /** 회원가입 POST 요청 */
   const handleSignup = async (simplePassword: string) => {
     try {
-      // 요청 payload
-      const payload = {
-        email: form.email,
-        password,
-        name: form.name,
-        role: form.role,
-        simple_password: simplePassword,
-        birth_date: form.birthDate,
-        gender: form.gender,
-        phone_number: form.phoneNumber,
-      };
+      // 카카오 회원가입 여부 확인
+      const isKakaoSignup =
+        sessionStorage.getItem("is-kakao-signup") === "true";
+      const kakaoTempToken = sessionStorage.getItem("kakao-temp-token");
 
-      const res = await api.post(requests.signup, payload);
-      if (res?.data?.email && res?.data?.role) {
-        // 완료 페이지에서 사용할 role을 sessionStorage에 저장
+      let res;
+
+      if (isKakaoSignup && kakaoTempToken) {
+        // 카카오 회원가입
+        const payload = {
+          tempToken: kakaoTempToken,
+          role: form.role,
+          name: form.name,
+          birthDate: form.birthDate,
+          gender: form.gender,
+          phoneNumber: form.phoneNumber,
+          simplePassword: simplePassword,
+        };
+
+        // 카카오 회원가입은 백엔드에서 토큰을 반환함
+        res = await api.post(requests.kakaoSignup, payload);
+
+        // 카카오 관련 세션 정리
+        sessionStorage.removeItem("kakao-temp-token");
+        sessionStorage.removeItem("kakao-email");
+        sessionStorage.removeItem("kakao-name");
+        sessionStorage.removeItem("is-kakao-signup");
+      } else {
+        // 일반 회원가입
+        const payload = {
+          email: form.email,
+          password,
+          name: form.name,
+          role: form.role,
+          simplePassword: simplePassword,
+          birthDate: form.birthDate,
+          gender: form.gender,
+          phoneNumber: form.phoneNumber,
+        };
+
+        // 회원가입 요청만 수행 (로그인은 완료 페이지에서 처리)
+        await api.post(requests.signup, payload);
+        res = null; // 로그인 요청 제거
+      }
+
+      // 자동 로그인 제거 - 완료 페이지에서 로그인 처리
+
+      // 완료 페이지로 이동하면서 이메일, 비밀번호, 역할 전달
+      if (!isKakaoSignup) {
+        // 일반 회원가입인 경우에만 이메일과 비밀번호를 쿼리 파라미터로 전달
+        const params = new URLSearchParams({
+          email: form.email,
+          password: password,
+          role: form.role || "",
+        });
+        reset();
+        router.push(`/signup/complete?${params.toString()}`);
+      } else {
+        // 카카오 회원가입인 경우 토큰은 이미 받았으므로 그대로 사용
+        if (res?.data?.data) {
+          const { user, tokenType, accessToken } = res.data.data;
+          if (user && accessToken) {
+            saveAuthToken(tokenType, accessToken);
+            useUserStore.getState().setUser(user.name, user.role, user.userId);
+          }
+        }
         if (globalThis.window !== undefined && form.role) {
           globalThis.window.sessionStorage.setItem(
             "signup-complete-role",
@@ -57,9 +103,6 @@ export default function RegisterPage() {
         }
         reset();
         router.push("/signup/complete");
-      } else {
-        setModalMessage("회원가입에 실패했습니다.\n다시 시도해주세요.");
-        setModalOpen(true);
       }
     } catch (error) {
       if (process.env.NODE_ENV === "development") {
