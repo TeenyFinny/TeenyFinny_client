@@ -14,7 +14,7 @@ import { PushNotification } from "@/components/ui/notice/PushNotification";
 import LoadingScreenSkeletonDashboard from "@/components/ui/LoadingScreenSkeletonDashboard";
 
 interface ParentDashboardState {
-  balance: number;
+  balance: string;
   children: ChildSummary[];
 }
 
@@ -24,7 +24,7 @@ interface HomeApiResponse {
     name: string;
     role: string;
     email: string;
-    balance?: number;
+    balance?: string;
     children?: ChildSummary[];
   };
 }
@@ -81,7 +81,7 @@ export default function Page() {
           ? userPayload.children.map((child) => ({
               userId: Number(child.userId ?? 0),
               name: child.name,
-              balance: Number(child.balance ?? 0),
+              balance: String(child.balance ?? "0"),
               gender: Number(child.gender ?? 1),
             }))
           : [];
@@ -98,7 +98,7 @@ export default function Page() {
 
         if (normalizedRole === "parent") {
           setParentData({
-            balance: Number(userPayload.balance ?? 0),
+            balance: String(userPayload.balance ?? "0"),
             children,
           });
           setChildData(null);
@@ -182,10 +182,10 @@ export default function Page() {
                 name: childData.name ?? "",
                 role: childData.role ?? "CHILD",
                 email: childData.email ?? "",
-                totalBalance: Number(childData.balance ?? 0),
-                depositBalance: 0,
-                investmentBalance: 0,
-                savingBalance: 0,
+                totalBalance: String(childData.balance ?? "0"),
+                depositBalance: "0",
+                investmentBalance: "0",
+                savingBalance: "0",
               },
             }}
           />

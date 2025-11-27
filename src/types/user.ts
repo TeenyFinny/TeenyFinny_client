@@ -1,7 +1,7 @@
 export interface ChildSummary {
   userId: number;
   name: string;
-  balance: number;
+  balance: string;
   gender: number;
 }
 
@@ -10,5 +10,5 @@ export interface User {
   name: string;
   email: string;
   role: string;
-  balance?: number;
+  balance?: string;
 }

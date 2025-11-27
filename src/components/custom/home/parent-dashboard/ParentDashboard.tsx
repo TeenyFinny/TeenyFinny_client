@@ -5,7 +5,7 @@ import ChildrenCarousel from "./ChildrenCarousel";
 import type { ChildSummary } from "@/types/user";
 
 interface ParentDashboardProps {
-  readonly balance: number;
+  readonly balance: string;
   readonly childAccounts: ChildSummary[];
 }
 
