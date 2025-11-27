@@ -49,7 +49,7 @@ export default function MyPageBase({ menu }: MyPageBaseProps) {
 
   const handlePasswordComplete = async (simplePassword: string) => {
     try {
-      const res = await api.post(requests.verifySimplePassword, {
+      const res = await api.post(requests.simplePassword, {
         simplePassword,
       })
 
