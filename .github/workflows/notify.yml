@@ -1,0 +1,84 @@
+name: Notify Slack on Re-Requested Review
+
+on:
+  pull_request:
+    types: [ opened, ready_for_review, review_requested, closed, reopened ]
+    branches:
+      - '**'
+
+jobs:
+  notify-slack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Slack Notification with Mentions
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          PR_ACTION="${{ github.event.action }}"
+          PR_IS_DRAFT=${{ github.event.pull_request.draft }}
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+
+          # Draft 체크
+          if [ "$PR_ACTION" == "opened" ] && [ "$PR_IS_DRAFT" == "true" ]; then
+            echo "Draft PR입니다. Slack 알림을 생략합니다."
+            exit 0
+          fi
+
+          # GitHub 사용자명과 Slack ID 매핑
+          declare -A GITHUB_TO_SLACK          
+          GITHUB_TO_SLACK["yes2489"]="U092CL145CK"
+          GITHUB_TO_SLACK["mingQ28"]="U0925H4NAEB"
+          GITHUB_TO_SLACK["hyojeongbae"]="U092YBUK62J"
+          GITHUB_TO_SLACK["CHICHIT"]="U093HSNER3J"
+          GITHUB_TO_SLACK["yangyanghyunjung"]="U092J5GKMDK"
+          GITHUB_TO_SLACK["JBL28"]="U092L1230LU"
+
+          # 작성자 Slack ID
+          if [ -z "$PR_AUTHOR" ]; then
+            SLACK_AUTHOR_ID="정보 없음"
+          else
+            SLACK_AUTHOR_ID=${GITHUB_TO_SLACK[$PR_AUTHOR]}
+          fi
+
+          # 기본 멘션 (전원 호출)
+          ALL_MENTIONS=""
+          for USER_ID in "${GITHUB_TO_SLACK[@]}"; do
+            ALL_MENTIONS+="<@$USER_ID> "
+          done
+
+          # 액션별 메시지
+          if [ "$PR_ACTION" == "opened" ]; then
+            PR_STATUS="💌 *새 PR이 생성되었습니다!*"
+
+          elif [ "$PR_ACTION" == "ready_for_review" ]; then
+            PR_STATUS="🏃 *리뷰를 받을 준비가 되었습니다!*"
+
+          elif [ "$PR_ACTION" == "review_requested" ]; then
+            PR_STATUS="🏸 *리뷰 재요청이 발생했습니다!*"
+            ALL_MENTIONS=""   # 🔥 리뷰어 호출 제거
+
+          elif [ "$PR_ACTION" == "closed" ]; then
+            if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
+              PR_STATUS="✅ *PR Merged*"
+            else
+              PR_STATUS="❌ *PR Closed*"
+            fi
+            ALL_MENTIONS=""
+
+          elif [ "$PR_ACTION" == "reopened" ]; then
+            PR_STATUS="♻️ *PR이 다시 열렸습니다!*"
+
+          else
+            PR_STATUS="☝️ *PR 업데이트 알림*"
+            ALL_MENTIONS=""
+          fi
+
+          # Slack Webhook 호출
+          curl -X POST \
+               -H 'Content-type: application/json' \
+               --data '{
+                 "text": "'"${PR_STATUS}"'\n*PR 제목:* '"${PR_TITLE}"' (#'"${PR_NUMBER}"')\n*작성자:* <@'"${SLACK_AUTHOR_ID}"'>\n*대상:* '"${ALL_MENTIONS}"'\n*링크:* '"${PR_URL}"'"
+               }' \
+               ${{ secrets.SLACK_WEBHOOK_URL }}
