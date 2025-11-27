@@ -63,7 +63,7 @@ export default function Page() {
         </div>
 
         {/* 에러 메시지 */}
-        {error && <p className="pt-4 text-body-08 text-error">{error}</p>}
+        {error && <p className="pl-4 text-body-08 text-error">{error}</p>}
 
         {/* 로그인 버튼 */}
         <div className="pt-8.5 flex justify-center">
@@ -74,19 +74,27 @@ export default function Page() {
         </div>
 
         {/* 카카오 로그인 */}
-        <button
-          type="button"
-          onClick={handleKakaoLogin}
-          className="pt-8.5 flex justify-center"
-        >
-          <Image
-            src="/images/auth/kakao_login_medium_wide.png"
-            alt="카카오 로그인"
-            width={300}
-            height={45}
-            priority
-          />
-        </button>
+        <div className="pt-8.5 flex justify-center">
+          <button
+            type="button"
+            onClick={handleKakaoLogin}
+            className="
+              relative flex items-center justify-center
+              w-[327px] h-[56px] p-0
+              rounded-[15px]
+              overflow-hidden
+            "
+          >
+            <Image
+              src="/images/auth/kakao_login_medium_wide.png"
+              alt="카카오 로그인"
+              width={327}
+              height={56}
+              className="object-cover"
+              priority
+            />
+          </button>
+        </div>
 
         {/* 회원가입 이동 */}
         <Link
