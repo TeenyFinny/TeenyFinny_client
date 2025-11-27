@@ -16,6 +16,13 @@ import { TitleOnlyDialog } from "@/components/ui/modal/TitleOnlyDialog";
 import { saveAuthToken } from "@/lib/auth/token";
 import { useUserStore } from "@/store/userStore";
 
+/**
+ * RegisterPage
+ *
+ * 회원가입 플로우의 단계별 화면을 렌더링하는 페이지입니다.
+ * - 단계 전환: RegisterStepProvider Context를 사용합니다.
+ * - 입력 상태: useRegisterStore
+ */
 export default function RegisterPage() {
   const router = useRouter();
   const { step, next } = useRegisterStep();
@@ -77,16 +84,7 @@ export default function RegisterPage() {
       // 자동 로그인 제거 - 완료 페이지에서 로그인 처리
 
       // 완료 페이지로 이동하면서 이메일, 비밀번호, 역할 전달
-      if (!isKakaoSignup) {
-        // 일반 회원가입인 경우에만 이메일과 비밀번호를 쿼리 파라미터로 전달
-        const params = new URLSearchParams({
-          email: form.email,
-          password: password,
-          role: form.role || "",
-        });
-        reset();
-        router.push(`/signup/complete?${params.toString()}`);
-      } else {
+      if (isKakaoSignup) {
         // 카카오 회원가입인 경우 토큰은 이미 받았으므로 그대로 사용
         if (res?.data?.data) {
           const { user, tokenType, accessToken } = res.data.data;
@@ -103,7 +101,17 @@ export default function RegisterPage() {
         }
         reset();
         router.push("/signup/complete");
+        return;
       }
+
+      // 일반 회원가입인 경우에만 이메일과 비밀번호를 쿼리 파라미터로 전달
+      const params = new URLSearchParams({
+        email: form.email,
+        password: password,
+        role: form.role || "",
+      });
+      reset();
+      router.push(`/signup/complete?${params.toString()}`);
     } catch (error) {
       if (process.env.NODE_ENV === "development") {
         console.error("회원가입 요청 실패:", error);
