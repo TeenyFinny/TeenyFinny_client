@@ -49,9 +49,15 @@ export function AccountCard({ accountName, balance, showCard = false, onViewDeta
 
       {/* 잔액 */}
       <div className="mb-[10px] pt-[1px]">
-        <p className="text-neutral-1 text-[26px] leading-[31px] font-bold tracking-[-0.6px] whitespace-pre-line">
-          {balance} 원
-        </p>
+        {balance === "-1" ? (
+          <p className="text-body-04 text-neutral-3 leading-[22px] tracking-[-0.6px] whitespace-pre-line">
+            아직 개설된 계좌가 없어요
+          </p>
+        ) : (
+          <p className="text-neutral-1 text-[26px] leading-[31px] font-bold tracking-[-0.6px] whitespace-pre-line">
+            {balance} 원
+          </p>
+        )}
       </div>
 
       {/* 상세 내역 보기 버튼 */}
