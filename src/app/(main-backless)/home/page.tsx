@@ -175,20 +175,7 @@ export default function Page() {
         </div>
       ) : userType === "child" && childData ? (
         <div className="flex h-full w-full items-center justify-center">
-          <ChildDashboard
-            data={{
-              user: {
-                userId: Number(childData.userId ?? 0),
-                name: childData.name ?? "",
-                role: childData.role ?? "CHILD",
-                email: childData.email ?? "",
-                totalBalance: String(childData.balance ?? "0"),
-                depositBalance: "0",
-                investmentBalance: "0",
-                savingBalance: "0",
-              },
-            }}
-          />
+          <ChildDashboard />
         </div>
       ) : (
         <div className="flex h-full w-full items-center justify-center">
