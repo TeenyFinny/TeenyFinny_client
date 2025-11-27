@@ -2,27 +2,152 @@
 
 import Image from "next/image";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import api from "@/lib/axios/axios";
+import requests from "@/lib/axios/requests";
+import { saveAuthToken } from "@/lib/auth/token";
+import { useUserStore } from "@/store/userStore";
+import { HttpError } from "@/types/axios/httpError.t";
+import { TitleOnlyDialog } from "@/components/ui/modal/TitleOnlyDialog";
+import { RegisterForm } from "@/store/registerStore";
 
-export default function SignupCompletePage() {
+type UserRole = RegisterForm["role"];
+
+function SignupCompleteContent() {
   const router = useRouter();
-  const [role, setRole] = useState<"PARENT" | "CHILD" | null>(null);
+  const searchParams = useSearchParams();
+
+  // useState로 이메일, 비밀번호, 역할 관리
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [role, setRole] = useState<UserRole>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
   useEffect(() => {
-    // sessionStorage에서 role 읽기
-    if (globalThis.window !== undefined) {
-      const savedRole = globalThis.window.sessionStorage.getItem(
-        "signup-complete-role"
-      ) as "PARENT" | "CHILD" | null;
-      if (savedRole) {
-        setRole(savedRole);
-        // 사용 후 sessionStorage에서 제거
-        globalThis.window.sessionStorage.removeItem("signup-complete-role");
-        globalThis.window.sessionStorage.removeItem("register-form-storage");
-      }
+    // URL 쿼리 파라미터에서 이메일, 비밀번호, 역할 읽기
+    const emailParam = searchParams.get("email");
+    const passwordParam = searchParams.get("password");
+    const roleParam = searchParams.get("role") as UserRole;
+
+    if (emailParam && passwordParam && roleParam) {
+      setEmail(emailParam);
+      setPassword(passwordParam);
+      setRole(roleParam);
+
+      // 페이지 진입 시 자동으로 로그인 API 호출
+      handleLoginAndNavigate(emailParam, passwordParam, roleParam);
+      return;
     }
-  }, []);
+
+    // 카카오 회원가입인 경우 sessionStorage에서 role 읽기
+    if (globalThis.window === undefined) return;
+
+    const savedRole = globalThis.window.sessionStorage.getItem(
+      "signup-complete-role"
+    ) as UserRole;
+
+    if (!savedRole) return;
+
+    setRole(savedRole);
+    globalThis.window.sessionStorage.removeItem("signup-complete-role");
+    globalThis.window.sessionStorage.removeItem("register-form-storage");
+
+    // 카카오 회원가입인 경우 이미 토큰이 있으므로 바로 이동
+    if (savedRole === "PARENT") {
+      router.push("/home");
+    } else {
+      router.push("/family/info");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  /** 로그인 API 호출 및 페이지 이동 */
+  const handleLoginAndNavigate = async (
+    emailValue?: string,
+    passwordValue?: string,
+    roleValue?: UserRole
+  ) => {
+    if (isLoading) return; // 이미 처리 중이면 중복 실행 방지
+
+    const finalEmail = emailValue || email;
+    const finalPassword = passwordValue || password;
+    const finalRole = roleValue || role;
+
+    if (!finalEmail || !finalPassword || !finalRole) {
+      setModalMessage("정보를 불러오는 중입니다.\n잠시 후 다시 시도해주세요.");
+      setModalOpen(true);
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // 로그인 API 호출
+      const res = await api.post(requests.login, {
+        email: finalEmail.trim(),
+        password: finalPassword.trim(),
+      });
+
+      const payload = res.data;
+      const { user, tokenType, accessToken } = payload ?? {};
+
+      if (!user) {
+        throw new HttpError({
+          message: "서버 응답이 올바르지 않습니다.",
+          statusCode: res.status,
+        });
+      }
+
+      if (!tokenType || !accessToken) {
+        throw new HttpError({
+          message: "인증 토큰을 받지 못했습니다. 잠시 후 다시 시도해주세요.",
+          statusCode: res.status,
+        });
+      }
+
+      // 토큰 저장
+      saveAuthToken(tokenType, accessToken);
+
+      // 사용자 정보 저장
+      const userRole = user.role?.toLowerCase();
+      if (userRole !== "parent" && userRole !== "child") {
+        throw new HttpError({
+          message: "잘못된 요청입니다. 관리자에게 문의해주세요.",
+          statusCode: res.status,
+        });
+      }
+
+      useUserStore
+        .getState()
+        .setUser(
+          user.name,
+          userRole as "parent" | "child",
+          user.userId,
+          Array.isArray(user.children) && user.children.length > 0
+        );
+
+      // 역할에 따라 페이지 이동
+      if (finalRole === "PARENT") {
+        router.push("/home");
+      } else {
+        router.push("/family/info");
+      }
+    } catch (err) {
+      if (err instanceof HttpError) {
+        setModalMessage(err.message || "로그인에 실패했습니다.");
+      } else if (err instanceof Error) {
+        setModalMessage("예기치 못한 오류가 발생했습니다.");
+      } else {
+        setModalMessage("알 수 없는 오류가 발생했습니다.");
+      }
+      setModalOpen(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <main className="px-6 flex flex-col items-center">
@@ -61,17 +186,60 @@ export default function SignupCompletePage() {
       <div className="fixed bottom-[56px] w-full max-w-[327px]">
         {role === "PARENT" && (
           <BigButtonActivated
-            label="내 계좌 불러오기"
-            onClick={() => router.push("/home")}
+            label={isLoading ? "처리 중..." : "내 계좌 불러오기"}
+            onClick={() => {
+              if (!isLoading) {
+                if (role === "PARENT") {
+                  router.push("/home");
+                }
+              }
+            }}
           />
         )}
         {role === "CHILD" && (
           <BigButtonActivated
-            label="가족 등록하기"
-            onClick={() => router.push("/family/info")}
+            label={isLoading ? "처리 중..." : "가족 등록하기"}
+            onClick={() => {
+              if (!isLoading) {
+                if (role === "CHILD") {
+                  router.push("/family/info");
+                }
+              }
+            }}
           />
         )}
       </div>
+
+      {/* 에러 모달 */}
+      <TitleOnlyDialog
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        title={modalMessage}
+        confirmText="확인"
+        onConfirm={() => setModalOpen(false)}
+      />
     </main>
+  );
+}
+
+/**
+ * 회원가입 완료 페이지
+ *
+ * Suspense로 감싸서 useSearchParams 사용
+ */
+export default function SignupCompletePage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="px-6 flex flex-col items-center justify-center min-h-screen">
+          <div className="flex flex-col items-center gap-6">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-1"></div>
+            <div className="text-body-04 text-neutral-1">로딩 중...</div>
+          </div>
+        </main>
+      }
+    >
+      <SignupCompleteContent />
+    </Suspense>
   );
 }

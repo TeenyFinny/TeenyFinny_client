@@ -49,6 +49,10 @@ const requests = {
   fetchProfile: `/profile`,
 
   fetchReport: `allowance/report`,
+
+  // Kakao OAuth
+  kakaoLogin: `/auth/oauth/kakao/login`,
+  kakaoSignup: `/auth/oauth/kakao/signup`,
 };
 
 export default requests;
