@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useRegisterStore } from "@/store/registerStore";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled";
@@ -65,6 +65,19 @@ export default function Step04UserInfo({ onNext }: Step04UserInfoProps) {
   const [submitted, setSubmitted] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState<string | undefined>(undefined);
+
+  // 카카오 회원가입인 경우 카카오 이메일을 자동으로 설정
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isKakaoSignup = sessionStorage.getItem("is-kakao-signup") === "true";
+      if (isKakaoSignup) {
+        const kakaoEmail = sessionStorage.getItem("kakao-email");
+        if (kakaoEmail && !form.email) {
+          setField("email", kakaoEmail);
+        }
+      }
+    }
+  }, [form.email, setField]);
 
   const emailError = useMemo(() => {
     if (!(touched.email || submitted)) return undefined;

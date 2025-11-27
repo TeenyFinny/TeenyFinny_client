@@ -45,11 +45,21 @@ export default function RegisterPage() {
 
       if (isKakaoSignup && kakaoTempToken) {
         // 카카오 회원가입
+        // birthDate를 YYYY-MM-DD 형식으로 변환
+        let formattedBirthDate = form.birthDate;
+        if (form.birthDate.length === 8) {
+          formattedBirthDate = `${form.birthDate.slice(
+            0,
+            4
+          )}-${form.birthDate.slice(4, 6)}-${form.birthDate.slice(6, 8)}`;
+        }
+
         const payload = {
           tempToken: kakaoTempToken,
           role: form.role,
           name: form.name,
-          birthDate: form.birthDate,
+          email: form.email, // 이메일 추가
+          birthDate: formattedBirthDate,
           gender: form.gender,
           phoneNumber: form.phoneNumber,
           simplePassword: simplePassword,
@@ -86,11 +96,25 @@ export default function RegisterPage() {
       // 완료 페이지로 이동하면서 이메일, 비밀번호, 역할 전달
       if (isKakaoSignup) {
         // 카카오 회원가입인 경우 토큰은 이미 받았으므로 그대로 사용
-        if (res?.data?.data) {
-          const { user, tokenType, accessToken } = res.data.data;
-          if (user && accessToken) {
+        // 응답 형식 확인: res.data.data 또는 res.data
+        const payload = res?.data?.data || res?.data;
+        if (payload) {
+          const { user, tokenType, accessToken } = payload;
+          if (user && tokenType && accessToken) {
             saveAuthToken(tokenType, accessToken);
-            useUserStore.getState().setUser(user.name, user.role, user.userId);
+
+            // role을 소문자로 변환하여 저장
+            const userRole = user.role?.toLowerCase();
+            if (userRole === "parent" || userRole === "child") {
+              useUserStore
+                .getState()
+                .setUser(
+                  user.name,
+                  userRole as "parent" | "child",
+                  user.userId,
+                  Array.isArray(user.children) && user.children.length > 0
+                );
+            }
           }
         }
         if (globalThis.window !== undefined && form.role) {
