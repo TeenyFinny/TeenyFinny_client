@@ -36,7 +36,7 @@ export default function SavingsDetailScreen() {
   const userType = useUserStore((state) => state.userType)
 
   const handleDelete = () => router.push("/goal/delete")
-  const handleEdit = () => router.push("/goal/edit")
+  const handleEdit = () => router.push(`/goal/edit?goalId=${goalId}`)
 
   useEffect(() => {
     const controller = new AbortController()

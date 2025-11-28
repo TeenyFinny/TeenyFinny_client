@@ -29,7 +29,8 @@ const requests = {
   investDashboard: `/investments/dashboard`,
   investAccount: `/investments/account/check-account`,
 
-  updateGoal: `/goal/update`,
+  updateGoal: (goalId: number | string) => `/goal/${goalId}`,
+  fetchGoalForUpdate: (goalId: number | string) => `/goal/${goalId}/edit`,
   sellStock: `/investments/sellStock`,
   tradeBuy: `/investments/trade/buy`,
   tradeSell: `/investments/trade/sell`,
