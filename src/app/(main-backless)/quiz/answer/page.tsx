@@ -20,28 +20,28 @@ export default function Page() {
   const user_id = 1
   const {
     setQuizData,
-    streak_days,
-    course_completed,
-    monthly_reward,
-    today_solved,
+    streakDays,
+    courseCompleted,
+    monthlyReward,
+    todaySolved,
     coupon,
     explanation,
-    quiz_date
+    quizDate
   } = useQuizStore()
 
   const STREAK_DAYS_FOR_REWARD = 3 //용돈조르기권을 얻기 위한 연속 문제 풀이 일수
   const EDUCATION_COURSE_LAST_DAY = 15 //교육과정의 마지막 일차
 
-  const quizActive = !course_completed && !monthly_reward && today_solved < 2
+  const quizActive = !courseCompleted && !monthlyReward && todaySolved < 2
 
   // ---------------------------
   // 배지 텍스트
   // ---------------------------
-  const leftBadgeText = monthly_reward
+  const leftBadgeText = monthlyReward
     ? "이번 달 도전 완료"
-    : `${streak_days+1}일 연속 도전!`
+    : `${streakDays+1}일 연속 도전!`
 
-  const rightBadgeText = `${today_solved + 1} / 2 문제`
+  const rightBadgeText = `${todaySolved + 1} / 2 문제`
 
   /**
  * today_solved 값을 1 증가시키고 서버에 PATCH 요청으로 업데이트합니다.
@@ -55,7 +55,7 @@ export default function Page() {
   const updateTodaySolved = async (today_solved: number) => {
     const updatedSolved = today_solved + 1
     const res = await api.patch(requests.fetchProgress, { todaySolved: updatedSolved })
-    setQuizData({ today_solved: updatedSolved })
+    setQuizData({ todaySolved: updatedSolved })
     return updatedSolved
   }
 
@@ -69,7 +69,7 @@ export default function Page() {
    */
   const updateMonthlyReward = async (coupon: number) => {
     await api.patch(requests.fetchProgress, { monthlyReward: true, coupon: coupon + 1 })
-    setQuizData({ monthly_reward: true, coupon: coupon + 1 })
+    setQuizData({ monthlyReward: true, coupon: coupon + 1 })
   }
 
   /**
@@ -81,7 +81,7 @@ export default function Page() {
    */
   const updateCourseCompleted = async () => {
     await api.patch(requests.fetchProgress, { courseCompleted: true })
-    setQuizData({ course_completed: true })
+    setQuizData({ courseCompleted: true })
   }
 
   /**
@@ -95,19 +95,19 @@ export default function Page() {
  */
   const handleCompleteQuiz = async () => {
     try {
-      const updatedSolved = await updateTodaySolved(today_solved)
+      const updatedSolved = await updateTodaySolved(todaySolved)
 
       if (updatedSolved === 1) {
         router.push("/quiz/info")
       } else if (updatedSolved === 2) {
         // 보상 / 이동 처리 로직
-        if (streak_days === STREAK_DAYS_FOR_REWARD && !monthly_reward) {
-          if (quiz_date === EDUCATION_COURSE_LAST_DAY && !course_completed) {
+        if (streakDays === STREAK_DAYS_FOR_REWARD && !monthlyReward) {
+          if (quizDate === EDUCATION_COURSE_LAST_DAY && !courseCompleted) {
             await updateCourseCompleted()
           }
           await updateMonthlyReward(coupon)
           router.push("/quiz/coupon")
-        } else if (quiz_date === EDUCATION_COURSE_LAST_DAY && !course_completed) {
+        } else if (quizDate === EDUCATION_COURSE_LAST_DAY && !courseCompleted) {
           await updateCourseCompleted()
           router.push("/quiz/credit")
         } else {
@@ -165,12 +165,12 @@ export default function Page() {
 
       {/* 시작 버튼 */}
       <div className="w-[327px]">
-        {today_solved === 0 ? (
+        {todaySolved === 0 ? (
           <BigButtonActivated
             label="다음 문제로"
             onClick={handleCompleteQuiz}
           />
-        ) : today_solved === 1 ? (
+        ) : todaySolved === 1 ? (
           <BigButtonActivated
             label="오늘의 퀴즈 완료"
             onClick={handleCompleteQuiz}
