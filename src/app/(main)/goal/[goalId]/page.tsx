@@ -208,7 +208,6 @@ export default function SavingsDetailScreen() {
         <div>
           {transactions
             .slice()
-            .reverse()
             .map((tx) => (
               <TransactionHistory
                 key={tx.id}
