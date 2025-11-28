@@ -33,7 +33,7 @@ type CardInfo = {
 function AccountContentInner() {
   const router = useRouter();
   const { children, userType, userId } = useUserStore();
-  const { setHistoryData, setInvestAccountExists } = useSelectedChildStore();
+  const { setHistoryData, setInvestAccountExists, setChildBaseInfo } = useSelectedChildStore();
   const searchParams = useSearchParams();
 
   const [data, setData] = useState<ChildDto[] | null>(children ?? null);
@@ -58,7 +58,14 @@ function AccountContentInner() {
 
   const childHandler = (id: number) => setCurrentChild(id);
 
-  const autoTransHandler = () => router.push(`/account/auto-transfer/${currentChild}`);
+const autoTransHandler = () => {
+  // 현재 선택된 자녀 객체 찾기
+  const currentChildObj = data?.find((c) => c.userId === currentChild);
+  if (!currentChildObj) return; // 안전 체크
+
+  // store에 저장
+  setChildBaseInfo(currentChildObj.userId, currentChildObj.name);
+  router.push(`/account/auto-transfer`)};
 
   const handleViewCard = async () => {
     if (!accountData) return;
@@ -74,7 +81,7 @@ function AccountContentInner() {
         userType === "child"
           ? requests.fetchChildCard() // 자녀 본인 → /account/card
           : requests.fetchChildCard(currentChild); // 부모 → /account/{childId}/card
-
+      console.log(endpoint)
       const res = await api.get<ApiResponse<CardInfo>>(endpoint);
       console.log(res);
       setCardInfo(res.data as CardInfo);
@@ -244,7 +251,9 @@ function AccountContentInner() {
           <AccountCardDisabled accountName="목표 계좌" onCardClick={() => setIsSavingOpen(true)} />
         )}
 
-        <button className="flex justify-start w-[335px] h-[48px] border border-monochrome-gray bg-neutral-7 rounded-4xl text-body-04 items-center mt-0">
+        <button 
+        onClick={() => router.push(`/allowance/report`)}
+        className="flex justify-start w-[335px] h-[48px] border border-monochrome-gray bg-neutral-7 rounded-4xl text-body-04 items-center mt-0">
           <img
             src="/images/account/illust_account_report.png"
             alt="리포트 아이콘"
@@ -286,3 +295,7 @@ export default function AccountContent() {
     </Suspense>
   );
 }
+function setChildBaseInfo(currentChild: number, currentChildName: any) {
+  throw new Error("Function not implemented.");
+}
+
