@@ -19,6 +19,7 @@ const requests = {
   simplePassword: `/auth/simple-password`,
   verifyFamilyOtp: `/auth/otp`, // OTP 검증
   fetchGoal: (goalId: number | string) => `/goal/${goalId}`,
+  createGoal: `/goal`,
   fetchProgress: "/quiz/progresses",
   fetchQuiz: "/quiz/info",
   investmentsSummary: `/investments/summary`,
