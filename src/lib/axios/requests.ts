@@ -35,7 +35,7 @@ const requests = {
   koreainvestmentStockList: `/uapi/domestic-stock/v1/quotations/intstock-multprice`,
   koreainvestmentStockDetail: `/uapi/domestic-stock/v1/quotations/inquire-price`,
 
-  fetchReport: (childId: number) => childId ? `/allowance/${childId}/report` : `/allowacne/report`,
+  fetchReport: (childId: number) => childId ? `/allowance/${childId}/report` : `/allowance/report`,
   fetchMyHistory: "/account/history",
   fetchChildHistory: (childId: number) => `/account/${childId}/history`,
   fetchTransactionDetail: (transactionId: string) => `/account/history/${transactionId}`,
