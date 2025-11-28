@@ -98,12 +98,12 @@ if (loading) {
     return (
         <main
             aria-label="퀴즈 정보 페이지"
-            className="relative w-full max-w-[375px] mx-auto h-full max-h-[800px] bg-color-primary-4 font-sans flex flex-col items-center overflow-hidden"
+            className="relative w-full max-w-[375px] mx-auto h-full max-h-[800px] bg-primary-4 font-sans flex flex-col items-center overflow-hidden"
         >
             {/* ===============================
           카드 영역 (중앙 콘텐츠)
          =============================== */}
-            <div className="relative w-[327px] h-[490px] mx-auto bg-color-neutral-7 rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col items-center pt-[160px] pb-[80px] mb-[32px]">
+            <div className="relative w-[327px] h-[490px] mx-auto bg-neutral-7 rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col items-center pt-[160px] pb-[80px] mb-[32px]">
                 {/* 좌측 배지 */}
                 <div className="absolute top-[20px] left-[16px]">
                     <StateBadge enabled={true} label={leftBadgeText} onClick={() => { }} />
@@ -116,7 +116,7 @@ if (loading) {
 
                 {/* 상단 제목 텍스트 */}
                 {(
-                    <p className="absolute top-[67px] left-[33px] text-center text-head-00 font-bold text-color-neutral-1 w-[260px] mb-8 leading-relaxed">
+                    <p className="absolute top-[67px] left-[33px] text-center text-head-00 font-bold text-neutral-1 w-[260px] mb-8 leading-relaxed">
                         {title}
                     </p>
                 )}
@@ -128,7 +128,7 @@ if (loading) {
                         {info.split("\n").map((line, index) => (
                             <p
                                 key={index}
-                                className="text-left text-head-03 font-bold text-color-neutral-1 leading-loose tracking-wide indent-0 mb-7"
+                                className="text-left text-head-03 font-bold text-neutral-1 leading-loose tracking-wide indent-0 mb-7"
                             >
                                 {line}
                             </p>

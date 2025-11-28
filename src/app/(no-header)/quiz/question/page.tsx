@@ -41,13 +41,13 @@ export default function Page() {
   return (
     <main
       aria-label="퀴즈 문제 페이지"
-      className="relative h-[600px] bg-[var(--color-primary-4)] font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
+      className="relative h-[600px] bg-primary-4 font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
     >
       {/* ===============================
           카드 영역 (중앙 콘텐츠) + 오답 효과
          =============================== */}
       <motion.div
-        className="relative w-[327px] h-[238px] mx-auto  bg-[var(--color-neutral-7)] rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col justify-center items-center mb-[39px] mt-[156px]"
+        className="relative w-[327px] h-[238px] mx-auto  bg-neutral-7 rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col justify-center items-center mb-[39px] mt-[156px]"
         animate={
           isWrong
             ? {
@@ -65,7 +65,7 @@ export default function Page() {
         transition={{ duration: 0.4 }}
       >
         {/* 문제 텍스트 */}
-        <p className="text-center text-head-00 font-bold text-[var(--color-neutral-1)] w-[260px] leading-relaxed whitespace-normal break-keep">
+        <p className="text-center text-head-00 font-bold text-neutral-1 w-[260px] leading-relaxed whitespace-normal break-keep">
           {question}
         </p>
       </motion.div>

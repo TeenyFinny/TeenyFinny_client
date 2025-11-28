@@ -27,15 +27,15 @@ export default function Page() {
   return (
     <main
       aria-label="주식 크레딧 페이지"
-      className="h-[600px] bg-[var(--color-primary-4)] font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
+      className="h-[600px] bg-primary-4 font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
     >
       {/* ===============================
           카드 영역 (중앙 콘텐츠)
          =============================== */}
-      <div className="relative w-[327px] h-[490px] mx-auto bg-[var(--color-neutral-7)] rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col items-center pt-[160px] pb-[80px] mb-[32px]">
+      <div className="relative w-[327px] h-[490px] mx-auto bg-neutral-7 rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col items-center pt-[160px] pb-[80px] mb-[32px]">
 
         {/* 상단 제목 텍스트 */}
-        <p className="absolute top-[47px] left-[36px] text-center text-head-00 font-bold text-[var(--color-neutral-1)] w-[260px] mb-8 leading-relaxed">
+        <p className="absolute top-[47px] left-[36px] text-center text-head-00 font-bold text-neutral-1 w-[260px] mb-8 leading-relaxed">
           {"주식 크레딧을 받았어요!"}
         </p>
 
@@ -51,7 +51,7 @@ export default function Page() {
         </div>
 
         {/* 하단 설명 텍스트 */}
-        <p className="absolute top-[427px] text-center text-body-04 font-medium text-[var(--color-neutral-1)] w-[286px] mb-8 leading-relaxed">
+        <p className="absolute top-[427px] text-center text-body-04 font-medium text-neutral-1 w-[286px] mb-8 leading-relaxed">
           {"크레딧을 사용하기 위해서 투자 계좌가 필요해요."}
         </p>
       </div>
