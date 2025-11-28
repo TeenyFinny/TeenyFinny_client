@@ -27,7 +27,7 @@ export default function Page() {
   return (
     <main
       aria-label="주식 크레딧 페이지"
-      className="h-[600px] bg-primary-4 font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
+      className="h-[600px] bg-primary-4 font-sans flex flex-col items-center overflow-hidden"
     >
       {/* ===============================
           카드 영역 (중앙 콘텐츠)

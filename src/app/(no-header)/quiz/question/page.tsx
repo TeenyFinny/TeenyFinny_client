@@ -41,7 +41,7 @@ export default function Page() {
   return (
     <main
       aria-label="퀴즈 문제 페이지"
-      className="relative h-[600px] bg-primary-4 font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
+      className="relative h-[600px] bg-primary-4 font-sans flex flex-col items-center overflow-hidden"
     >
       {/* ===============================
           카드 영역 (중앙 콘텐츠) + 오답 효과

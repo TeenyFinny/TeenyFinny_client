@@ -96,7 +96,7 @@ if (loading) {
   return (
     <main
       aria-label="퀴즈 시작 페이지"
-      className="relative w-full max-w-[375px] mx-auto h-full max-h-[800px] bg-primary-4 font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
+      className="relative w-full max-w-[375px] mx-auto h-full max-h-[800px] bg-primary-4 font-sans flex flex-col items-center overflow-hidden"
     >
       {/* ===============================
           카드 영역 (중앙 콘텐츠)
@@ -116,7 +116,7 @@ if (loading) {
         {!courseCompleted && (
           <p className="absolute top-[85px] left-[48px] text-center text-head-04 font-bold text-neutral-1 w-[231px] mb-8 leading-relaxed">
             15일간의 퀴즈 교육 과정을 전부 마치면<br />
-            <span className="text-color-primary-1 font-bold">
+            <span className="text-primary-1 font-bold">
               주식 크레딧
             </span>
             을 얻을 수 있어요!

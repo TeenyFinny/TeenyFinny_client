@@ -48,7 +48,7 @@ export default function Page() {
   return (
     <main
       aria-label="용돈조르기권 획득 페이지"
-      className="relative w-full max-w-[375px] mx-auto h-full max-h-[800px] bg-primary-4 font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
+      className="relative w-full max-w-[375px] mx-auto h-full max-h-[800px] bg-primary-4 font-sans flex flex-col items-center overflow-hidden"
     >
       {/* ===============================
           카드 영역 (중앙 콘텐츠)
