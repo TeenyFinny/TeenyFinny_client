@@ -48,6 +48,7 @@ const requests = {
   fetchNotices: `/notices`,
   markAsRead: (id: number | string) => `/notices/${id}/read`,
   confirmCancel: (goalId: number | string) => `/goal/${goalId}/confirm-cancel`,
+  confirmComplete: (goalId: number | string) => `/goal/${goalId}/confirm-complete`,
   fetchChildGoal: (childId: number | string) => `/goal/child/${childId}/ongoing`,
 
   stocks: `/investments/stocks`,

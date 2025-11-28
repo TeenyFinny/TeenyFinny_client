@@ -24,6 +24,7 @@ export default function NotificationsPage() {
   const [modalContent, setModalContent] = useState({ title: "", description: "" })
   const [selectedGoalId, setSelectedGoalId] = useState<number | null>(null)
   const [children, setChildren] = useState<any[]>([])
+  const [confirmAction, setConfirmAction] = useState<"CANCEL" | "COMPLETE" | null>(null)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -63,6 +64,30 @@ export default function NotificationsPage() {
             title: `${childName}(이)가 목표 중도 해지를 요청했어요!`,
             description: "가까운 영업점에 방문하여 해지하세요."
           })
+          setConfirmAction("CANCEL") // 액션 타입 설정
+
+          // 자녀 이름으로 자녀 ID 찾기
+          const child = children.find((c: any) => c.name === childName)
+          if (child) {
+            try {
+              const goalRes = await api.get(requests.fetchChildGoal(child.userId))
+              setSelectedGoalId(goalRes.data)
+            } catch (err) {
+              console.error("목표 ID 조회 실패:", err)
+            }
+          }
+
+          setIsDialogOpen(true)
+        }
+
+        // 목표 달성 완료 알림 클릭 시 모달 띄우기
+        if (notification.type === "GOAL" && notification.title === "목표 달성 완료") {
+          const childName = notification.content.split("(이)가")[0]
+          setModalContent({
+            title: `${childName}(이)가 목표를 달성했습니다!`,
+            description: "가까운 영업점에 방문하여 해지하세요."
+          })
+          setConfirmAction("COMPLETE") // 액션 타입 설정
 
           // 자녀 이름으로 자녀 ID 찾기
           const child = children.find((c: any) => c.name === childName)
@@ -79,26 +104,26 @@ export default function NotificationsPage() {
         }
       }
 
-      // 목표 달성 완료 알림 클릭 시 라우팅
-      if (notification.type === "GOAL" && notification.title === "목표 달성 완료!") {
-        router.push("/goal/achieve")
-      }
-
     } catch (error) {
       console.error("읽음 처리 실패:", error)
     }
   }
 
-  const handleConfirmCancel = async () => {
+  const handleConfirm = async () => {
     if (!selectedGoalId) return
 
     try {
-      await api.put(requests.confirmCancel(selectedGoalId))
-      alert("목표 취소가 확정되었습니다.")
+      if (confirmAction === "CANCEL") {
+        await api.put(requests.confirmCancel(selectedGoalId))
+        alert("목표 취소가 확정되었습니다.")
+      } else if (confirmAction === "COMPLETE") {
+        await api.put(requests.confirmComplete(selectedGoalId))
+        alert("목표 완료가 확정되었습니다.")
+      }
       setIsDialogOpen(false)
     } catch (error) {
-      console.error("목표 취소 확정 실패:", error)
-      alert("목표 취소 확정에 실패했습니다.")
+      console.error("요청 처리 실패:", error)
+      alert("요청 처리에 실패했습니다.")
     }
   }
 
@@ -134,7 +159,7 @@ export default function NotificationsPage() {
         title={modalContent.title}
         description={modalContent.description}
         confirmText="확인"
-        onConfirm={handleConfirmCancel}
+        onConfirm={handleConfirm}
       />
     </div>
   )
