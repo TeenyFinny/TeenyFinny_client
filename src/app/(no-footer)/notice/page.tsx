@@ -60,7 +60,7 @@ export default function NotificationsPage() {
         if (notification.type === "GOAL" && notification.title === "목표 중도 해지 요청") {
           const childName = notification.content.split("(이)가")[0]
           setModalContent({
-            title: `${childName}(이)가 목표 적금 중도 해지를 원해요!`,
+            title: `${childName}(이)가 목표 중도 해지를 요청했어요!`,
             description: "가까운 영업점에 방문하여 해지하세요."
           })
 
