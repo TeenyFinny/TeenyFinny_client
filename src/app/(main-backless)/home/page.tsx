@@ -82,7 +82,8 @@ export default function Page() {
             userPayload.name ?? "",
             normalizedRole,
             (userPayload as any).userId,
-            children.length > 0
+            children.length > 0,
+            children
           );
 
         if (normalizedRole === "parent") {
