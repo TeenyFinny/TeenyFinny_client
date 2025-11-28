@@ -95,6 +95,17 @@ function KakaoCallbackContent() {
             Array.isArray(user.children) && user.children.length > 0
           );
 
+          // 자녀의 가족 연결 상태에 따른 hasFamily 플래그 관리
+          if (role === "child") {
+            if (user.familyId) {
+              // 가족 연결됨 -> 플래그 제거
+              sessionStorage.removeItem("hasFamily");
+            } else {
+              // 가족 연결 안 됨 -> 플래그 설정
+              sessionStorage.setItem("hasFamily", "false");
+            }
+          }
+
           // 홈으로 이동
           router.replace("/home");
         }

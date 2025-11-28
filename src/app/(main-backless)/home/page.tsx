@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/userStore";
 import { HttpError } from "@/types/axios/httpError.t";
 import ParentDashboard from "@/components/custom/home/parent-dashboard/ParentDashboard";
@@ -23,6 +24,7 @@ interface ParentDashboardState {
  * `/home` API를 호출해 사용자 정보를 불러오고 Zustand에 반영합니다.
  */
 export default function Page() {
+  const router = useRouter();
   const { userType } = useUserStore();
 
   const { message, setMessage } = useNotificationStore();
@@ -85,6 +87,12 @@ export default function Page() {
             children.length > 0,
             children
           );
+
+        // 자녀이면서 가족 연결이 없는 경우 가족 등록 페이지로 리다이렉트
+        if (normalizedRole === "child" && sessionStorage.getItem("hasFamily") === "false") {
+          router.replace("/family/info");
+          return;
+        }
 
         if (normalizedRole === "parent") {
           setParentData({
