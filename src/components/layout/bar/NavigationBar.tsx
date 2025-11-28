@@ -51,7 +51,7 @@ export function NavigationBar({
       path: "/home",
       label: "홈",
       iconPath: "/icons/home.png",
-      activePaths: ["/home"], // 하위 페이지 없으면 path 그대로
+      activePaths: ["/home", "/family"], // 하위 페이지 없으면 path 그대로
     },
     {
       path: "/account",
@@ -73,7 +73,7 @@ export function NavigationBar({
       path: "/home",
       label: "홈",
       iconPath: "/icons/home.png",
-      activePaths: ["/home"],
+      activePaths: ["/home", "/family"],
     },
     {
       path: "/quiz",
