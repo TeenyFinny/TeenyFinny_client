@@ -69,7 +69,7 @@ export default function Page() {
         const children: ChildDto[] = Array.isArray(userPayload.children)
           ? userPayload.children.map((child) => ({
               userId: Number(child.userId ?? 0),
-              name: child.name,
+              name: child.name ?? "",
               balance: String(child.balance ?? "0"),
               gender: Number(child.gender ?? 1),
             }))
