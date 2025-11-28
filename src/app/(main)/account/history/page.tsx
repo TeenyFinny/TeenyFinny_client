@@ -115,8 +115,8 @@ export default function Page() {
 
     try {
       const res = await api.get(requests.fetchTransactionDetail(t.transactionId));
-
-      setDetail(res.data[0]);
+      console.log(res.data);
+      setDetail(res.data);
     } finally {
       setLoadingDetail(false);
     }
