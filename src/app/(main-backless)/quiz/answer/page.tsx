@@ -30,7 +30,7 @@ export default function Page() {
   } = useQuizStore()
 
   const STREAK_DAYS_FOR_REWARD = 3 //용돈조르기권을 얻기 위한 연속 문제 풀이 일수
-  const EDUCATION_COURSE_LAST_DAY = 15 //교육과정의 마지막 일차
+  const EDUCATION_COURSE_LAST_DAY = 14 //교육과정의 마지막 일차
 
   const quizActive = !courseCompleted && !monthlyReward && todaySolved < 2
 
