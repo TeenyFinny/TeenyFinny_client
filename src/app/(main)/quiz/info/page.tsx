@@ -31,36 +31,37 @@ export default function Page() {
         firstQuizIdToday,
     } = useQuizStore()
 
-    const [loading, setLoading] = React.useState(true);
+   const [loading, setLoading] = React.useState(true);
 
-    // 퀴즈 페이지에서 useEffect 예시
+// 퀴즈 페이지에서 useEffect 예시
 useEffect(() => {
+  let isMounted = true; // 언마운트 여부 플래그
+
   (async () => {
     try {
       let quizId: number;
 
       if (!courseCompleted) {
         // 교육과정 문제: quiz_id 계산
-        quizId = quizDate * 2 + todaySolved+1;
+        quizId = quizDate * 2 + todaySolved + 1;
       } else {
         // 랜덤 문제: 총 30문제 가정
         const TOTAL_QUIZ = 30;
         do {
           quizId = Math.floor(Math.random() * TOTAL_QUIZ) + 1; // 1~30
-          console.log(quizId+"번 문제"+firstQuizIdToday);
-        } while (todaySolved === 1 && quizId === firstQuizIdToday); 
-        // 오늘 두 번째 문제일 때 첫 번째 문제와 겹치지 않게
+          console.log(quizId + "번 문제" + firstQuizIdToday);
+        } while (todaySolved === 1 && quizId === firstQuizIdToday);
       }
 
       // today_solved === 0이면 오늘 첫 문제 ID 저장
       if (todaySolved === 0) {
-        const res1 = await api.patch(requests.fetchProgress, { firstQuizIdToday: quizId })
-        setQuizData({ firstQuizIdToday: quizId });
+        const res1 = await api.patch(requests.fetchProgress, { firstQuizIdToday: quizId });
+        if (isMounted) setQuizData({ firstQuizIdToday: quizId });
       }
 
       // 퀴즈 정보 API 호출
       const res = await api.get(`${requests.fetchQuiz}?quiz_id=${quizId}`);
-      setQuizData(res.data);
+      if (isMounted) setQuizData(res.data);
 
     } catch (e) {
       const err = e as HttpError;
@@ -70,19 +71,20 @@ useEffect(() => {
       } else {
         console.error(err);
       }
+    } finally {
+      if (isMounted) setLoading(false); // 언마운트 여부 확인 후 로딩 종료
     }
-    finally {
-        setLoading(false); // 로딩 종료
-      }
   })();
-}, [courseCompleted, todaySolved, firstQuizIdToday, quizDate, setQuizData]);
 
+  return () => {
+    isMounted = false; // cleanup에서 언마운트 표시
+  };
+}, [courseCompleted, todaySolved, firstQuizIdToday, quizDate, setQuizData, router]);
 
-  // 로딩 중이면 스켈레톤 UI
-  if (loading) {
-    return <LoadingScreenSkeletonQuiz />;
-  }
-
+// 로딩 중이면 스켈레톤 UI
+if (loading) {
+  return <LoadingScreenSkeletonQuiz />;
+}
 
 
     // ---------------------------

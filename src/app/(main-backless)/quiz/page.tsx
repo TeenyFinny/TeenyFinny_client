@@ -29,58 +29,60 @@ export default function Page() {
     quizDate,          //교육과정진행일자
     progressId,        //퀴즈 진행도 id
   } = useQuizStore()
+const [loading, setLoading] = React.useState(true);
 
-   const [loading, setLoading] = React.useState(true);
-  
+// ✅ useEffect로 API 요청
+useEffect(() => {
+  let isMounted = true; // 언마운트 여부 플래그
 
-  // ✅ useEffect로 API 요청
-  useEffect(() => {
-    (async () => {
-      // 이미 progress_id가 저장돼 있다면 API 호출 안 함
-      //if (progressId !== 0) return;
+  (async () => {
+    try {
+      // 1) 기존 progress 불러오기
+      const res = await api.get(requests.fetchProgress);
+      console.log(res);
+      const data = res.data;
 
-      try {
-        // 1) 기존 progress 불러오기
-        const res = await api.get(requests.fetchProgress);
-        console.log(res);
-        const data = res.data        // 2) data가 존재하면 그대로 저장
-        if (res) {
-          setQuizData(data);
-          console.log(data)
-          console.log("데이터저장")
-          return;
-        }
-      } catch (e) {
-        const err = e as HttpError;
-
-        // 404 → progress 없음 → 생성
-        if (err.statusCode === 404) {
-          const created = await api.post(requests.fetchProgress);
-          setQuizData(created.data.data);
-          return;
-        }
-
-        // 권한 문제
-        if (err.statusCode === 403) {
-          alert(err.message);
-          router.push("/");
-          return;
-        }
-
-        // 기타 오류
-        console.error(err);
+      if (res && isMounted) {
+        setQuizData(data);
+        console.log(data);
+        console.log("데이터저장");
+        return;
       }
-      finally {
-        setLoading(false); // 로딩 종료
-      }
-    })();
-  }, [progressId, setQuizData]);
 
-  // 로딩 중이면 스켈레톤 UI
-  if (loading) {
-    return <LoadingScreenSkeletonQuiz />;
-  }
-  
+    } catch (e) {
+      const err = e as HttpError;
+
+      // 404 → progress 없음 → 생성
+      if (err.statusCode === 404) {
+        const created = await api.post(requests.fetchProgress);
+        if (isMounted) setQuizData(created.data.data);
+        return;
+      }
+
+      // 권한 문제
+      if (err.statusCode === 403) {
+        alert(err.message);
+        router.push("/");
+        return;
+      }
+
+      // 기타 오류
+      console.error(err);
+    } finally {
+      if (isMounted) setLoading(false); // 언마운트 여부 확인 후 로딩 종료
+    }
+  })();
+
+  return () => {
+    isMounted = false; // cleanup에서 언마운트 표시
+  };
+}, [progressId, setQuizData, router]);
+
+// 로딩 중이면 스켈레톤 UI
+if (loading) {
+  return <LoadingScreenSkeletonQuiz />;
+}
+
   //퀴즈 가능 여부 확인
   const quizActive = (!courseCompleted || !monthlyReward) && todaySolved < 2;
 
