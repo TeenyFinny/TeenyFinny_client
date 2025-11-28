@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Image from "next/image";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
@@ -29,7 +29,7 @@ interface DetailData {
   balanceAfter: string;
 }
 
-export default function Page() {
+function HistoryPageContent() {
   const { userType } = useUserStore();
   const searchParams = useSearchParams();
   const type = searchParams.get("accountType");
@@ -225,5 +225,13 @@ export default function Page() {
         />
       )}
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center h-full">로딩중...</div>}>
+      <HistoryPageContent />
+    </Suspense>
   );
 }
