@@ -46,9 +46,9 @@ export default function Page() {
           return;
         }
 
-        // 3) progress가 없으면 신규 생성
-        const created = await api.post(requests.fetchProgress);
-        setQuizData(created.data.data);
+        // // 3) progress가 없으면 신규 생성
+        // const created = await api.post(requests.fetchProgress);
+        // setQuizData(created.data.data);
 
       } catch (e) {
         const err = e as HttpError;
