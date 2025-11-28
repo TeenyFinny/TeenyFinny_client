@@ -8,6 +8,7 @@ import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled"
 import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog" // ✅ 모달 import
 import api from "@/lib/axios/axios"
 import requests from "@/lib/axios/requests"
+import { HttpError } from "@/types/axios/httpError.t"
 
 export default function GoalSettingPage() {
   const router = useRouter()
@@ -63,8 +64,9 @@ export default function GoalSettingPage() {
       setIsDialogOpen(true)
 
     } catch (e) {
-      console.error("목표 생성 실패:", e)
-      alert("목표 생성 중 문제가 발생했습니다.")
+      const err = e as HttpError
+      console.error("목표 생성 실패:", err)
+      alert(err.message || "목표 생성 중 문제가 발생했습니다.")
     }
   }
 
