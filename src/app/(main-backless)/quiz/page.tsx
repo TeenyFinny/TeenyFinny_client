@@ -10,6 +10,7 @@ import { HttpError } from "@/types/axios/httpError.t"
 import api from "@/lib/axios/axios"
 import requests from "@/lib/axios/requests"
 import { useQuizStore } from "@/store/quizStore"
+import LoadingScreenSkeletonQuiz from "@/components/ui/LoadingScreenSkeletonQuiz"
 
 /**
  * QuizStartPage
@@ -29,6 +30,7 @@ export default function Page() {
     progressId,        //퀴즈 진행도 id
   } = useQuizStore()
 
+   const [loading, setLoading] = React.useState(true);
   
 
   // ✅ useEffect로 API 요청
@@ -48,11 +50,6 @@ export default function Page() {
           console.log("데이터저장")
           return;
         }
-
-        // // 3) progress가 없으면 신규 생성
-        // const created = await api.post(requests.fetchProgress);
-        // setQuizData(created.data.data);
-
       } catch (e) {
         const err = e as HttpError;
 
@@ -73,9 +70,17 @@ export default function Page() {
         // 기타 오류
         console.error(err);
       }
+      finally {
+        setLoading(false); // 로딩 종료
+      }
     })();
   }, [progressId, setQuizData]);
 
+  // 로딩 중이면 스켈레톤 UI
+  if (loading) {
+    return <LoadingScreenSkeletonQuiz />;
+  }
+  
   //퀴즈 가능 여부 확인
   const quizActive = (!courseCompleted || !monthlyReward) && todaySolved < 2;
 
