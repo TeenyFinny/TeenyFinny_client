@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { Triangle } from "lucide-react";
 import api from "@/lib/axios/axios";
@@ -8,17 +7,14 @@ import { useRouter } from "next/navigation";
 import { HttpError } from "@/types/axios/httpError.t";
 import { ApiResponse } from "@/types/axios/apiRes.t";
 import SummaryCard from "@/components/custom/allowance/report/SummaryCard";
-import ChartSection from "@/components/custom/allowance/report/ChartSection";
+import { useUserStore } from "@/store/userStore";
 import CategoryList from "@/components/custom/allowance/report/CategoryList";
 import { useSelectedChildStore } from "@/store/selectedChildStore";
-
-
 interface Category {
   category: string;
   amount: string;
   percentage: number;
 }
-
 interface ReportData {
   month: number;
   totalAmount: string;
@@ -26,25 +22,25 @@ interface ReportData {
   comparedType: "more" | "less";
   categories: Category[];
 }
-
 export default function Page() {
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth());
 const router = useRouter();
   const [report, setReport] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
-  
-  const { selectedChildName } = useSelectedChildStore();
-
+  const { selectedChildName, selectedChildId } = useSelectedChildStore();
+  const { userType } = useUserStore();
+  const isChild = userType === "child";
+  const fetchUrl = isChild
+    ? `/allowance/report`
+    : `/allowance/${selectedChildId}/report`;
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
-
-        const res = await api.get<ApiResponse<ReportData>>(requests.fetchReport, {
+        const res = await api.get<ApiResponse<ReportData>>(fetchUrl, {
           params: { month },
         });
-
         const data = res.data as ReportData;
         if (!data) throw new Error("No Report data found");
         setReport(data);
@@ -61,21 +57,16 @@ const router = useRouter();
       }
     })();
   }, [month, router]);
-
   const prevMonth = () => setMonth((prev) => (prev === 1 ? 12 : prev - 1));
   const nextMonth = () => setMonth((prev) => (prev === 12 ? 1 : prev + 1));
-
   const comparedTypeText =
     report?.comparedType === "more" ? "더 썼어요" : "아꼈어요";
-
   return (
     <div className="px-[27px] pb-[20px]">
-
       {/* ------ 상단 Header ------ */}
       <div className="flex flex-col items-center gap-[8px] mt-[16px]">
         <div className="flex items-center gap-[4px] text-head-01 text-neutral-1">
           <span>{selectedChildName}의</span>
-
           {month > 1 ? (
             <Triangle
               size={17}
@@ -85,9 +76,7 @@ const router = useRouter();
           ) : (
             <span className="w-[17px] h-[17px]" />
           )}
-
           <span>{month}월</span>
-
           {month < now.getMonth() ? (
             <Triangle
               size={17}
@@ -97,21 +86,17 @@ const router = useRouter();
           ) : (
             <span className="w-[17px] h-[17px]" />
           )}
-
           <span>소비리포트</span>
         </div>
       </div>
-
       {/* ------ 요약 카드 ------ */}
       <SummaryCard
         loading={loading}
         report={report}
         comparedTypeText={comparedTypeText}
       />
-
       {/* ------ 카테고리 리스트 ------ */}
       <CategoryList loading={loading} report={report} />
-
     </div>
   );
 }

@@ -73,15 +73,21 @@ export default function Page() {
   /* ----------------------------
    *  거래내역 API 호출 (완전 state 기반)
    * ---------------------------- */
+  /* ----------------------------
+   *  거래내역 API 호출 (완전 state 기반)
+   * ---------------------------- */
   useEffect(() => {
     if (!selectedChildId || !accountType) return;
 
     const fetchHistory = async () => {
       try {
-        const res = await api.get(requests.fetchAccountHistory, {
+        const isParent = userType === "parent";
+        const url = isParent
+          ? requests.fetchChildHistory(selectedChildId) // 부모 → /account/{childId}/history
+          : requests.fetchMyHistory; // 자녀 → /account/history
+        const res = await api.get(url, {
           params: {
-            selectedChildId,
-            accountType,
+            accountType: accountType.toUpperCase(),
             year,
             month,
           },
@@ -93,6 +99,7 @@ export default function Page() {
         setTransactions([]); // 오류 발생 시 목록을 비워 사용자에게 피드백
       }
     };
+    fetchHistory();
   }, [selectedChildId, accountType, year, month]);
 
   /* ----------------------------
@@ -104,9 +111,7 @@ export default function Page() {
     setLoadingDetail(true);
 
     try {
-      const res = await api.get(requests.fetchTransactionDetail, {
-        params: { transactionId: t.id },
-      });
+      const res = await api.get(requests.fetchTransactionDetail(t.id));
 
       setDetail(res.data[0]);
     } finally {

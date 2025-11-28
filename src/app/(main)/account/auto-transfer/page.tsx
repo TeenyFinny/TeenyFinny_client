@@ -1,5 +1,4 @@
 "use client";
-
 import { RatioSlider } from "@/components/custom/account/RatioSlider";
 import { BottomSheetPassword } from "@/components/ui/bottom-sheet/BottomSheetPassword";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
@@ -19,7 +18,7 @@ import { Edit } from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
+import { useSelectedChildStore } from "@/store/selectedChildStore";
 /**
  * URL 파라미터로 전달되는 동적 세그먼트 타입
  *
@@ -29,7 +28,6 @@ type Params = {
   /** 자동이체를 설정할 자녀(또는 사용자)의 ID */
   id: string;
 };
-
 /**
  * 자동이체 정보 응답 타입
  *
@@ -38,22 +36,19 @@ type Params = {
 type AutoTransfer = {
   /** 최초 설정 여부 */
   isInit: boolean;
-  /** 사용자 ID */
-  userId: string;
   /** 자동이체 식별자 */
-  transferId: string;
-  /** 매월 이체 금액 (문자열 포맷) */
+  transferId: number | null;
+  /** 매월 이체 금액*/
   transferAmount: string;
   /** 이체 일자 (1~31일 등 문자열) */
-  transferDate: string;
+  transferDate: number;
   /** 투자 비율 (0~100) */
   ratio: number;
 };
-
 /**
  * 자동이체 설정 페이지
  *
- * - URL: /account/auto-transfer/[id]
+ * - URL: /account/auto-transfer/
  * - 기능:
  *   - 최초 자동이체 설정 생성
  *   - 기존 자동이체 수정
@@ -61,11 +56,11 @@ type AutoTransfer = {
  */
 export default function Page() {
   /** 이체 금액 입력값 (콤마 포함 문자열) */
-  const [amount, setAmount] = useState<string | null>(null);
+  const [amount, setAmount] = useState<number>(0);
   /** 이체 일자 입력값 (1~31일 등) */
-  const [date, setDate] = useState<string | null>(null);
+  const [date, setDate] = useState<number>(1);
   /** 투자 비율 (슬라이더 값, 0~100) */
-  const [investmentRatio, setInvestmentRatio] = useState<number>(50);
+  const [investmentRatio, setInvestmentRatio] = useState<number>(0);
   /** 수정 모드 여부 (true: 수정 중, false: 조회/삭제 모드) */
   const [isEdit, setIsEdit] = useState<boolean>(false);
   /** 최초 설정 모드 여부 (true: 최초 설정, false: 기존 설정 존재) */
@@ -73,17 +68,28 @@ export default function Page() {
   /** 삭제 버튼 노출 여부 */
   const [deleteButtonFlag, setDeleteButtonFlag] = useState<boolean>(false);
   /** 자동이체 식별자 (수정/삭제 시 사용) */
-  const [autoTransferId, setAutoTransferId] = useState<number>(-1);
+  const [autoTransferId, setAutoTransferId] = useState<number | null>(null);
   /** 삭제 비밀번호 바텀시트 여부 */
   const [isDeletePasswordOpen, setIsDeletePasswordOpen] =
     useState<boolean>(false);
   /** 삭제 완료 모달 여부 */
   const [isDeleteDoneOpen, setIsDeleteDoneOpen] = useState<boolean>(false);
-
   /** URL 동적 세그먼트에서 가져온 자녀/사용자 ID */
-  const { id } = useParams<Params>();
   const router = useRouter();
-
+  const { hasInvestAccount, selectedChildName, selectedChildId } = useSelectedChildStore();
+  
+  /** 금액 입력 */
+  const handleAmountChange = (value: string) => {
+    const numeric = Number(value.replace(/,/g, ""));
+    if (!isNaN(numeric)) {
+      setAmount(numeric);
+    }
+  };
+  /** 금액 콤마 문자열로 변환 */
+  const formatComma = (value: number) => value.toLocaleString("ko-KR");
+  // 슬라이더에서 쓰던 것과 동일한 계산식
+  const investmentAmount = Math.round((amount * investmentRatio) / 100);
+  const allowanceAmount = amount - investmentAmount;
   /**
    * 자동이체 저장(생성/수정) 핸들러
    *
@@ -92,48 +98,24 @@ export default function Page() {
    * - 요청 성공 후 /account 페이지로 이동
    */
   const updateSubmitHandler = async () => {
-    const totalAmount = Number(amount ?? 0);
-
-    //공백일 경우 placeholder에 해당하는 1일로 변경
-    const realDate = !date || date === "0" ? "1" : date;
-    //NULL일 경우 0원으로 설정하며, 숫자를 ,로 끊어서 처리해서 보냄.
-    const realAmount = Number(amount ?? 0).toLocaleString("ko-KR");
-
-    // 슬라이더에서 쓰던 것과 동일한 계산식
-    const investmentAmount = Math.round((totalAmount * investmentRatio) / 100);
-    const allowanceAmount = totalAmount - investmentAmount;
-
     try {
       if (isInit) {
-        // 최초 자동이체 설정 생성
-        await api.post(requests.fetchAutoTransfer, {
-          data: {
-            userId: id,
-            transferAmount: realAmount,
-            transferDate: realDate,
-            ratio: investmentRatio,
-          },
+        await api.post(requests.fetchAutoTransfer(Number(selectedChildId)), {
+          totalAmount: amount,
+          transferDate: date,
+          ratio: investmentRatio,
         });
       } else {
-        // 기존 자동이체 설정 수정
-        await api.put(requests.fetchAutoTransfer, {
-          data: {
-            autoTransferId: autoTransferId,
-            transferAmount: realAmount,
-            transferDate: realDate,
+        await api.put(
+          requests.fetchAutoTransferById(Number(selectedChildId), autoTransferId!),
+          {
+            totalAmount: amount,
+            transferDate: date,
             ratio: investmentRatio,
-          },
-        });
+          }
+        );
       }
-
-      console.log(
-        `이체 금액: ${totalAmount}원, ` +
-          `투자 금액: ${investmentAmount}원, ` +
-          `용돈 금액: ${allowanceAmount}원, ` +
-          `이체 일자: ${date ?? ""}일, ` +
-          `투자 계좌 입금 비율: ${investmentRatio}% 제출됨`
-      );
-      router.push(`/account`);
+      router.push("/account");
     } catch (e) {
       if (e instanceof HttpError) {
         // 권한이 없다면 온보딩 화면으로 라우팅
@@ -148,7 +130,6 @@ export default function Page() {
       }
     }
   };
-
   /**
    * 수정 버튼 클릭 핸들러
    *
@@ -159,25 +140,21 @@ export default function Page() {
     if (isEdit) setIsEdit(false);
     else setIsEdit(true);
   };
-
   const deleteConfirmHandler = () => {
     setIsDeletePasswordOpen(true);
   };
-
   const deletePasswordHandler = () => {
     setIsDeletePasswordOpen(false);
     setIsDeleteDoneOpen(true);
   };
-
+console.log("hasInvestAccount : " + hasInvestAccount)
+console.log("아이디",selectedChildId)
   const deleteDoneHandler = async () => {
     try {
-      await api.delete(requests.fetchAutoTransfer, {
-        data: { autoTransferId: autoTransferId },
-      });
-
-      console.log(`${autoTransferId} 삭제 요청 완료`);
-
-      router.push(`/account`);
+      await api.delete(
+        requests.fetchAutoTransferById(Number(selectedChildId), autoTransferId!)
+      );
+      router.push("/account");
     } catch (e) {
       if (e instanceof HttpError) {
         if (e.statusCode === 403) {
@@ -190,7 +167,6 @@ export default function Page() {
       }
     }
   };
-
   /**
    * 페이지 진입 시 자동이체 설정 조회
    *
@@ -201,34 +177,27 @@ export default function Page() {
    */
   useEffect(() => {
     const controller = new AbortController();
-
     (async () => {
       try {
         // 인터셉터가 res.data를 반환하므로 res가 응답 바디
         const res = await api.get<ApiResponse<AutoTransfer>>(
-          requests.fetchAutoTransfer,
-          {
-            signal: controller.signal,
-            params: { userId: id },
-          }
+          requests.fetchAutoTransfer(Number(selectedChildId)),
+          { signal: controller.signal }
         );
-
         if (controller.signal.aborted) return;
-
-        const data = res.data as AutoTransfer | undefined;
-
-        if (data) {
-          const init = data.isInit === true;
-
-          setIsInit(init);
-
-          // 기존 자동이체 설정이 존재하는 경우, 화면에 값 세팅
-          if (!init) {
-            setDate(data.transferDate ?? null);
-            setAmount(data.transferAmount ?? null);
-            setInvestmentRatio(Number(data.ratio ?? -1));
-            setAutoTransferId(Number(data.transferId ?? -1));
-          }
+        const data = res.data as AutoTransfer;
+        console.log(data);
+        const init = data.isInit === true;
+        console.log(init);
+        setIsInit(init);
+        // 기존 자동이체 설정이 존재하는 경우, 화면에 값 세팅
+        if (!data.isInit) {
+          // 문자열 "120,000" → 숫자 변환
+          const numericAmount = Number(data.transferAmount.replace(/,/g, ""));
+          setAmount(numericAmount);
+          setDate(Number(data.transferDate));
+          setInvestmentRatio(data.ratio);
+          setAutoTransferId(data.transferId);
         }
       } catch (e) {
         if (e instanceof HttpError) {
@@ -242,12 +211,10 @@ export default function Page() {
         }
       }
     })();
-
     return () => {
       controller.abort();
     };
-  }, [id]);
-
+  }, [selectedChildId]);
   /**
    * 버튼 노출 상태 관리 이펙트
    *
@@ -260,11 +227,10 @@ export default function Page() {
     else if (isEdit) setDeleteButtonFlag(false);
     else setDeleteButtonFlag(true);
   }, [isEdit, isInit]);
-
   return (
     <div className="max-h-screen px-[17px] mt-[6px] flex flex-col items-center">
       <div className="w-full">
-        <div className="text-head-03 text-neutral-2 ">김티니의</div>
+        <div className="text-head-03 text-neutral-2 ">{selectedChildName}의</div>
         <div className="text-head-01 mb-[39px] flex flex-row">
           자동이체 설정
           {isInit ? null : (
@@ -280,23 +246,20 @@ export default function Page() {
           )}
         </div>
       </div>
-
       <div className="w-[320px]">
         {deleteButtonFlag ? (
           <DisabledInputField
             label="이체 금액"
-            content={amount ? amount : "0"}
+            content={formatComma(amount)}
             isRight={true}
             unit="원"
           />
         ) : (
           <NormalInput
             label="이체 금액"
-            value={amount ?? ""}
+            value={formatComma(amount)}
             //onChange={amountHandler}
-            onChange={(val2) => {
-              setAmount(clampNumberInRange(val2, 0, 500000000));
-            }}
+            onChange={handleAmountChange}
             placeholder="0"
             unit="원"
             isRight={true}
@@ -304,21 +267,19 @@ export default function Page() {
           />
         )}
       </div>
-
       <div className="h-[57px]" />
       <RatioSlider
         totalAmount={Number(amount)}
         investmentRatio={investmentRatio}
         onChange={setInvestmentRatio}
-        disabled={deleteButtonFlag}
+        disabled={deleteButtonFlag || !hasInvestAccount}
       />
-
       <div className="h-[57px] w-[88px]" />
       <div className="w-[320px]">
         {deleteButtonFlag ? (
           <DisabledInputField
             label="이체 일시"
-            content={date ? date : ""}
+            content={date.toString()}
             isRight={true}
             unit="일"
           />
@@ -329,9 +290,10 @@ export default function Page() {
             </div>
             <NormalInput2
               label="매달"
-              value={date ? date : ""}
-              onChange={(val) => {
-                setDate(clampNumberInRange(val, 1, 28));
+              value={date.toString()}
+              onChange={(v) => {
+                const n = Number(v.replace(/,/g, ""));
+                if (!isNaN(n) && n >= 1 && n <= 28) setDate(n);
               }}
               placeholder="1"
               unit="일"
@@ -339,7 +301,6 @@ export default function Page() {
             />
           </div>
         )}
-
         <div className="h-[57px]" />
         {deleteButtonFlag ? (
           <DeleteConfirmDialog
@@ -357,7 +318,6 @@ export default function Page() {
           <BigButtonActivated onClick={updateSubmitHandler} label="저장하기" />
         )}
       </div>
-
       <div>
         {isDeletePasswordOpen ? (
           <BottomSheetPassword
