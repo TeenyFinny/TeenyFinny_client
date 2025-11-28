@@ -102,6 +102,8 @@ export const useChildOtp = (enabled: boolean) => {
       const res = await api.post(requests.verifyFamilyOtp, body);
 
       /** 검증 성공 */
+      // 가족 등록 완료 시 hasFamily 플래그 제거
+      sessionStorage.removeItem("hasFamily");
       setMessage("가족 등록에 성공했습니다.");
       router.push("/home");
     } catch (err: any) {
