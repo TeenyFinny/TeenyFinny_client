@@ -42,7 +42,7 @@ const requests = {
   fetchChildCard: (childId?: number) => childId ? `/account/${childId}/card` : `/account/card`,
   fetchTotalAccount: (childId?: number) => childId ? `/account/${childId}/summary` : `/account/summary`,
   fetchAutoTransfer: (childId?: number) => `/account/${childId}/auto-transfer`,
-  fetchAutoTransferById: (childId: number, autoTransferId: number) =>  `/account/${childId}/auto-transfer/${autoTransferId}`,
+  fetchAutoTransferById: (childId: number) =>  `/account/${childId}/auto-transfer`,
 
   verifyPhoneNumber: `/auth/identity`,
   submitChildInfo: `/allowance/accounts`,
