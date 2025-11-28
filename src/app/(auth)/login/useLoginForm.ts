@@ -137,9 +137,15 @@ export function useLoginForm() {
         Array.isArray(user.children) && user.children.length > 0
       );
 
-      // 자녀이면서 가족 연결이 없는 경우 hasFamily 플래그 설정
-      if (role === "child" && !user.familyId) {
-        sessionStorage.setItem("hasFamily", "false");
+      // 자녀의 가족 연결 상태에 따른 hasFamily 플래그 관리
+      if (role === "child") {
+        if (user.familyId) {
+          // 가족 연결됨 -> 플래그 제거
+          sessionStorage.removeItem("hasFamily");
+        } else {
+          // 가족 연결 안 됨 -> 플래그 설정
+          sessionStorage.setItem("hasFamily", "false");
+        }
       }
 
       // 로그인 성공 후 홈으로 이동
