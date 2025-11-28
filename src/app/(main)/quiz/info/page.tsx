@@ -49,7 +49,6 @@ useEffect(() => {
         const TOTAL_QUIZ = 30;
         do {
           quizId = Math.floor(Math.random() * TOTAL_QUIZ) + 1; // 1~30
-          console.log(quizId + "번 문제" + firstQuizIdToday);
         } while (todaySolved === 1 && quizId === firstQuizIdToday);
       }
 

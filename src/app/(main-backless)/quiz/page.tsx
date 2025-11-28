@@ -39,13 +39,10 @@ useEffect(() => {
     try {
       // 1) 기존 progress 불러오기
       const res = await api.get(requests.fetchProgress);
-      console.log(res);
       const data = res.data;
 
       if (res && isMounted) {
         setQuizData(data);
-        console.log(data);
-        console.log("데이터저장");
         return;
       }
 
