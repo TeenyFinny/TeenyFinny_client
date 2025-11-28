@@ -8,6 +8,7 @@ import { useUserStore } from "@/store/userStore";
 import { StateBadge } from "@/components/ui/badge/StateBadge";
 import { BottomSheetDetail } from "@/components/custom/account/BottomSheetDetail";
 import { useSelectedChildStore } from "@/store/selectedChildStore";
+import { useSearchParams } from "next/navigation";
 
 interface Transaction {
   transactionId: string;
@@ -30,6 +31,8 @@ interface DetailData {
 
 export default function Page() {
   const { userType } = useUserStore();
+  const searchParams = useSearchParams();
+  const type = searchParams.get("accountType");
 
   /** Zustand 전역 State (완전 stateful) */
   const {
