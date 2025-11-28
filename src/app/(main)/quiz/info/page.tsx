@@ -20,14 +20,14 @@ export default function Page() {
     const router = useRouter()
     const {
         setQuizData,
-        quiz_date,
-        streak_days,
-        course_completed,
-        monthly_reward,
-        today_solved,
+        quizDate,
+        streakDays,
+        courseCompleted,
+        monthlyReward,
+        todaySolved,
         title,
         info,
-        first_quiz_id_today,
+        firstQuizIdToday,
     } = useQuizStore()
 
     // 퀴즈 페이지에서 useEffect 예시
@@ -36,22 +36,23 @@ useEffect(() => {
     try {
       let quizId: number;
 
-      if (!course_completed) {
+      if (!courseCompleted) {
         // 교육과정 문제: quiz_id 계산
-        quizId = quiz_date * 2 + today_solved;
+        quizId = quizDate * 2 + todaySolved+1;
       } else {
-        // 랜덤 문제: 총 40문제 가정
-        const TOTAL_QUIZ = 3;
+        // 랜덤 문제: 총 30문제 가정
+        const TOTAL_QUIZ = 30;
         do {
-          quizId = Math.floor(Math.random() * TOTAL_QUIZ) + 1; // 1~40
-          console.log(quizId+"번 문제"+first_quiz_id_today);
-        } while (today_solved === 1 && quizId === first_quiz_id_today); 
+          quizId = Math.floor(Math.random() * TOTAL_QUIZ) + 1; // 1~30
+          console.log(quizId+"번 문제"+firstQuizIdToday);
+        } while (todaySolved === 1 && quizId === firstQuizIdToday); 
         // 오늘 두 번째 문제일 때 첫 번째 문제와 겹치지 않게
       }
 
       // today_solved === 0이면 오늘 첫 문제 ID 저장
-      if (today_solved === 0) {
-        setQuizData({ first_quiz_id_today: quizId });
+      if (todaySolved === 0) {
+        const res1 = await api.patch(requests.fetchProgress, { firstQuizIdToday: quizId })
+        setQuizData({ firstQuizIdToday: quizId });
       }
 
       // 퀴즈 정보 API 호출
@@ -68,7 +69,7 @@ useEffect(() => {
       }
     }
   })();
-}, [course_completed, today_solved, first_quiz_id_today, quiz_date, setQuizData]);
+}, [courseCompleted, todaySolved, firstQuizIdToday, quizDate, setQuizData]);
 
 
   
@@ -78,11 +79,11 @@ useEffect(() => {
     // ---------------------------
     // 배지 텍스트
     // ---------------------------
-    const leftBadgeText = monthly_reward
+    const leftBadgeText = monthlyReward
         ? "이번 달 도전 완료"
-        : `${streak_days}일 연속 도전!`
+        : `${streakDays+1}일 연속 도전!`
 
-    const rightBadgeText = `${today_solved + 1} / 2 문제`
+    const rightBadgeText = `${todaySolved + 1} / 2 문제`
 
     return (
         <main

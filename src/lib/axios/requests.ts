@@ -16,7 +16,6 @@ const requests = {
   verifyFamilyOtp: `/auth/otp`, // OTP 검증
   fetchGoal: `/goal`,
   fetchProgress: "/quiz/progresses",
-  updateProgress: (user_id: number) => `/quiz/progresses/${user_id}`,
   fetchQuiz: "/quiz/info",
   investmentsSummary: `/investments/summary`,
   fetchGoalConfirm: `/goal/account/create`,

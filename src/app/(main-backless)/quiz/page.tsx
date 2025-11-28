@@ -21,19 +21,21 @@ export default function Page() {
   const router = useRouter()
   const {
     setQuizData,
-    streak_days,        //연속 풀이 일수
-    course_completed,   //교육과정 완료 여부
-    monthly_reward,     //용돈조르기권 획즉 여부
-    today_solved,       //오늘 푼 문제 수
-    quiz_date,          //교육과정진행일자
-    progress_id,        //퀴즈 진행도 id
+    streakDays,        //연속 풀이 일수
+    courseCompleted,   //교육과정 완료 여부
+    monthlyReward,     //용돈조르기권 획즉 여부
+    todaySolved,       //오늘 푼 문제 수
+    quizDate,          //교육과정진행일자
+    progressId,        //퀴즈 진행도 id
   } = useQuizStore()
+
+  
 
   // ✅ useEffect로 API 요청
   useEffect(() => {
     (async () => {
       // 이미 progress_id가 저장돼 있다면 API 호출 안 함
-      if (progress_id !== 0) return;
+      //if (progressId !== 0) return;
 
       try {
         // 1) 기존 progress 불러오기
@@ -42,13 +44,14 @@ export default function Page() {
         const data = res.data        // 2) data가 존재하면 그대로 저장
         if (res) {
           setQuizData(data);
+          console.log(data)
           console.log("데이터저장")
           return;
         }
 
-        // 3) progress가 없으면 신규 생성
-        const created = await api.post(requests.fetchProgress);
-        setQuizData(created.data.data);
+        // // 3) progress가 없으면 신규 생성
+        // const created = await api.post(requests.fetchProgress);
+        // setQuizData(created.data.data);
 
       } catch (e) {
         const err = e as HttpError;
@@ -71,20 +74,20 @@ export default function Page() {
         console.error(err);
       }
     })();
-  }, [progress_id, setQuizData]);
+  }, [progressId, setQuizData]);
 
   //퀴즈 가능 여부 확인
-  const quizActive = (!course_completed || !monthly_reward) && today_solved < 2;
+  const quizActive = (!courseCompleted || !monthlyReward) && todaySolved < 2;
 
 
   // ---------------------------
   // 배지 텍스트
   // ---------------------------
-  const leftBadgeText = monthly_reward
+  const leftBadgeText = monthlyReward
     ? "이번 달 도전 완료"
-    : `${streak_days}일 연속 도전!`
+    : `${streakDays+1}일 연속 도전!`
 
-  const rightBadgeText = course_completed ? "랜덤" : `${quiz_date}일차`
+  const rightBadgeText = courseCompleted ? "랜덤" : `${quizDate+1}일차`
 
   return (
     <main
@@ -106,7 +109,7 @@ export default function Page() {
         </div>
 
         {/* 상단 설명 텍스트 (course_completed가 false일 때만 표시) */}
-        {!course_completed && (
+        {!courseCompleted && (
           <p className="absolute top-[85px] left-[48px] text-center text-head-04 font-bold text-[var(--color-neutral-1)] w-[231px] mb-8 leading-relaxed">
             15일간의 퀴즈 교육 과정을 전부 마치면<br />
             <span className="text-[var(--color-primary-1)] font-bold">
@@ -129,7 +132,7 @@ export default function Page() {
 
         {/* 하단 설명 텍스트 */}
         <p className="absolute top-[407px] left-[45px] text-center text-head-04 font-bold text-[var(--color-neutral-1)] w-[237px] mb-8 leading-relaxed">
-          {monthly_reward ? (
+          {monthlyReward ? (
             <>
               이번 달의{" "}
               <span className="text-[var(--color-primary-1)] font-bold">
