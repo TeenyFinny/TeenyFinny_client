@@ -8,6 +8,7 @@ import api from "@/lib/axios/axios"
 import requests from "@/lib/axios/requests"
 import { useQuizStore } from "@/store/quizStore"
 import { HttpError } from "@/types/axios/httpError.t"
+import LoadingScreenSkeletonQuiz from "@/components/ui/LoadingScreenSkeletonQuiz"
 
 /**
  * QuizInfoPage
@@ -29,6 +30,8 @@ export default function Page() {
         info,
         firstQuizIdToday,
     } = useQuizStore()
+
+    const [loading, setLoading] = React.useState(true);
 
     // 퀴즈 페이지에서 useEffect 예시
 useEffect(() => {
@@ -68,11 +71,17 @@ useEffect(() => {
         console.error(err);
       }
     }
+    finally {
+        setLoading(false); // 로딩 종료
+      }
   })();
 }, [courseCompleted, todaySolved, firstQuizIdToday, quizDate, setQuizData]);
 
 
-  
+  // 로딩 중이면 스켈레톤 UI
+  if (loading) {
+    return <LoadingScreenSkeletonQuiz />;
+  }
 
 
 
