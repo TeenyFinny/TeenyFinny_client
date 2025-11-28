@@ -101,14 +101,16 @@ export default function Page() {
     try {
       if (isInit) {
         await api.post(requests.fetchAutoTransfer(Number(selectedChildId)), {
+          type: "ALLOWANCE",
           totalAmount: amount,
           transferDate: date,
           ratio: investmentRatio,
         });
       } else {
         await api.put(
-          requests.fetchAutoTransferById(Number(selectedChildId), autoTransferId!),
+          requests.fetchAutoTransferById(Number(selectedChildId)),
           {
+            type: "ALLOWANCE",
             totalAmount: amount,
             transferDate: date,
             ratio: investmentRatio,
@@ -147,13 +149,16 @@ export default function Page() {
     setIsDeletePasswordOpen(false);
     setIsDeleteDoneOpen(true);
   };
-console.log("hasInvestAccount : " + hasInvestAccount)
-console.log("아이디",selectedChildId)
   const deleteDoneHandler = async () => {
     try {
       await api.delete(
-        requests.fetchAutoTransferById(Number(selectedChildId), autoTransferId!)
-      );
+      requests.fetchAutoTransferById(Number(selectedChildId)),
+      {
+        data: {
+          autoTransferId: Number(autoTransferId)
+        }
+      }
+    );
       router.push("/account");
     } catch (e) {
       if (e instanceof HttpError) {
