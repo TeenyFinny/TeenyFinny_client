@@ -74,7 +74,6 @@ export default function GoalSettingPage() {
 
             console.log("✅ 수정 완료:", res.data)
 
-            alert(`납입일이 ${payDay}일로 수정되었습니다!`)
             router.push(`/goal/${goalId}`)
         } catch (error) {
             console.error("❌ 수정 실패:", error)
