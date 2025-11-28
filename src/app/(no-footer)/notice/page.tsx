@@ -15,7 +15,10 @@ interface Notification {
   isRead: boolean
 }
 
+import { useRouter } from "next/navigation"
+
 export default function NotificationsPage() {
+  const router = useRouter()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [modalContent, setModalContent] = useState({ title: "", description: "" })
@@ -75,6 +78,12 @@ export default function NotificationsPage() {
           setIsDialogOpen(true)
         }
       }
+
+      // 목표 달성 완료 알림 클릭 시 라우팅
+      if (notification.type === "GOAL" && notification.title === "목표 달성 완료!") {
+        router.push("/goal/achieve")
+      }
+
     } catch (error) {
       console.error("읽음 처리 실패:", error)
     }
