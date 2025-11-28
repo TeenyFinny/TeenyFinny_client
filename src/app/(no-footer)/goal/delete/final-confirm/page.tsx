@@ -6,8 +6,11 @@ import { SmallButtonActivated } from "@/components/ui/button/SmallButtonActivate
 import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog"
 import { SmallButtonDisabled } from "@/components/ui/button/SmallButtonDisabled"
 import { useSearchParams } from "next/navigation"
+import { TitleOnlyDialog } from "@/components/ui/modal/TitleOnlyDialog"
 import api from "@/lib/axios/axios"
 import requests from "@/lib/axios/requests"
+
+import { HttpError } from "@/types/axios/httpError.t"
 
 export default function DeleteReconfirmationPage() {
     const router = useRouter()
@@ -15,6 +18,12 @@ export default function DeleteReconfirmationPage() {
     const goalId = searchParams.get("goalId")
     console.log("Final Confirm Page - goalId:", goalId)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [isTitleOnlyDialogOpen, setIsTitleOnlyDialogOpen] = useState(false)
+    const [modalContent, setModalContent] = useState({
+        title: "",
+        description: "",
+        confirmText: "확인"
+    })
 
     // ✅ 버튼 클릭 핸들러
     const handleConfirmClick = async () => {
@@ -22,10 +31,33 @@ export default function DeleteReconfirmationPage() {
 
         try {
             await api.post(requests.requestCancel(goalId))
+            setModalContent({
+                title: "부모님께 목표 삭제 요청을 보냈어요!",
+                description: "가까운 영업점에 방문하여 해지하세요",
+                confirmText: "확인"
+            })
             setIsDialogOpen(true)
         } catch (error) {
             console.error("목표 취소 요청 실패:", error)
-            alert("목표 취소 요청에 실패했습니다.")
+            const err = error as HttpError
+
+            if (err.statusCode === 409) {
+                setModalContent({
+                    title: "이미 부모님께 요청을 보냈어요!",
+                    description: "",
+                    confirmText: "확인"
+                })
+                setIsTitleOnlyDialogOpen(true)
+            } else if (err.statusCode === 400 && err.message === "이미 달성한 목표예요!") {
+                setModalContent({
+                    title: "이미 달성한 목표예요!",
+                    description: "",
+                    confirmText: "확인"
+                })
+                setIsTitleOnlyDialogOpen(true)
+            } else {
+                alert("목표 취소 요청에 실패했습니다.")
+            }
         }
     }
     const handleConfirm = () => router.push(`/goal/${goalId}`)
@@ -56,13 +88,22 @@ export default function DeleteReconfirmationPage() {
                 </div>
             </main>
 
-            {/* ✅ 모달 */}
+            {/* ✅ 성공 모달 (ConfirmationDialog) */}
             <ConfirmationDialog
                 open={isDialogOpen}
                 onOpenChange={setIsDialogOpen}
-                title={`부모님께 목표 삭제 요청을 보냈어요!`}
-                description="가까운 영업점에 방문하여 해지하세요"
-                confirmText="확인"
+                title={modalContent.title}
+                description={modalContent.description}
+                confirmText={modalContent.confirmText}
+                onConfirm={handleConfirm}
+            />
+
+            {/* ✅ 중복 요청 모달 (TitleOnlyDialog) */}
+            <TitleOnlyDialog
+                open={isTitleOnlyDialogOpen}
+                onOpenChange={setIsTitleOnlyDialogOpen}
+                title={modalContent.title}
+                confirmText={modalContent.confirmText}
                 onConfirm={handleConfirm}
             />
         </div>
