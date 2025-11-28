@@ -1,20 +1,22 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { SmallButtonActivated } from "@/components/ui/button/SmallButtonActivated"
 import { SmallButtonDisabled } from "@/components/ui/button/SmallButtonDisabled"
 
 export default function DeleteConfirmationPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const goalId = searchParams.get("goalId")
 
   // ✅ "네" 클릭 → 재확인 페이지로 이동
   const handleConfirm = () => {
-    router.push("/saving/delete/reconfirm")
+    router.push(`/goal/delete/reconfirm?goalId=${goalId}`)
   }
 
   // ✅ "아니요" 클릭 → 적금 상세 페이지로 복귀
   const handleCancel = () => {
-    router.push("/saving/detail")
+    router.push(`/goal/${goalId}`)
   }
 
   return (
@@ -45,7 +47,7 @@ export default function DeleteConfirmationPage() {
         {/* Buttons */}
         <div className="absolute bottom-14 flex gap-2.5">
           {/* "네" → 재확인 페이지 */}
-          <SmallButtonDisabled label="네" onClick={handleConfirm} />
+          <SmallButtonDisabled label="네" onClick={handleConfirm} activated={true} />
           {/* "아니요" → 상세 페이지로 복귀 */}
           <SmallButtonActivated label="아니요" onClick={handleCancel} />
         </div>

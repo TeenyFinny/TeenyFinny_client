@@ -31,6 +31,7 @@ const requests = {
 
   updateGoal: (goalId: number | string) => `/goal/${goalId}`,
   fetchGoalForUpdate: (goalId: number | string) => `/goal/${goalId}/edit`,
+  requestCancel: (goalId: number | string) => `/goal/${goalId}/request-cancel`,
   sellStock: `/investments/sellStock`,
   tradeBuy: `/investments/trade/buy`,
   tradeSell: `/investments/trade/sell`,
