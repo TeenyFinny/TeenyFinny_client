@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation";
 import api from "@/lib/axios/axios";
 import { TradeHistory } from "@/components/ui/tx-history-ui/TradeHistory";
-import { AxiosError } from "axios";
 
 export default function Page() {
   const router = useRouter();

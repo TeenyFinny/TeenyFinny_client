@@ -33,7 +33,6 @@ export default function DeleteReconfirmationPage() {
     // 2️⃣ 버튼 클릭 핸들러
     const handleConfirmClick = () => {
         if (courseCompleted) {
-            setCourseCompleted(courseCompleted)
             router.push("/quiz/credit") // 이미 완료했다면 바로 이동
         } else {
             setIsDialogOpen(true) // 미완료라면 모달 열기

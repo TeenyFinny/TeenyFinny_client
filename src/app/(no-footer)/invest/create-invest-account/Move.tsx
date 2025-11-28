@@ -24,6 +24,7 @@ export default function Move({
       } catch (err) {
         console.error(err);
         alert("계좌 생성 중 오류가 발생했습니다.");
+        window.history.back();
       }
     };
 
