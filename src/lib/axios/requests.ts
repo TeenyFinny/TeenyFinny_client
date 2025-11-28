@@ -39,6 +39,8 @@ const requests = {
   portfolio: `/investments/portfolio`,
 
   fetchNotice: `/notice`,
+  fetchNotices: `/notices`,
+  markAsRead: (id: number | string) => `/notices/${id}/read`,
 
   stocks: `/investments/stocks`,
   stockDetail: (code: string) => `/investments/stocks/${code}`,

@@ -6,9 +6,10 @@ import api from "@/lib/axios/axios"
 import requests from "@/lib/axios/requests"
 
 interface Notification {
-  id: number                // ✅ id 추가
+  id: number
   title: string
-  created_at: string
+  content: string
+  time: string
   isRead: boolean
 }
 
@@ -19,9 +20,8 @@ export default function NotificationsPage() {
     const controller = new AbortController()
     const fetchData = async () => {
       try {
-        const res = await api.get(requests.fetchNotice, { signal: controller.signal })
-        // ✅ id 포함된 mock 데이터 사용
-        setNotifications(res.data.notifications)
+        const res = await api.get(requests.fetchNotices, { signal: controller.signal })
+        setNotifications(res.data)
       } catch (error) {
         console.error("알림 데이터를 불러오지 못했습니다:", error)
       }
@@ -32,12 +32,17 @@ export default function NotificationsPage() {
   }, [])
 
   // ✅ 클릭 시 읽음 처리 (id 기준)
-  const handleRead = (id: number) => {
-    setNotifications(prev =>
-      prev.map(n =>
-        n.id === id ? { ...n, isRead: true } : n
+  const handleRead = async (id: number) => {
+    try {
+      await api.patch(requests.markAsRead(id))
+      setNotifications(prev =>
+        prev.map(n =>
+          n.id === id ? { ...n, isRead: true } : n
+        )
       )
-    )
+    } catch (error) {
+      console.error("읽음 처리 실패:", error)
+    }
   }
 
   return (
@@ -53,13 +58,13 @@ export default function NotificationsPage() {
           <div
             key={n.id} // ✅ id로 key 지정
             onClick={() => handleRead(n.id)} // ✅ id로 클릭 처리
-            className={`cursor-pointer transition-colors ${
-              n.isRead ? "bg-transparent" : "bg-[rgba(0,103,172,0.15)]"
-            }`}
+            className={`cursor-pointer transition-colors ${n.isRead ? "bg-transparent" : "bg-[rgba(0,103,172,0.15)]"
+              }`}
           >
             <NotificationItem
               message={n.title}
-              time={n.created_at}
+              content={n.content}
+              time={n.time}
               isRead={n.isRead}
             />
           </div>
