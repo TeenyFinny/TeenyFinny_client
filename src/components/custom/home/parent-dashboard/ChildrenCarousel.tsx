@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect, useCallback } from "react";
 import { ChevronRight, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { ChildSummary } from "@/types/user";
+import type { ChildDto } from "@/types/home";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 import { BottomSheetPassword } from "@/components/ui/bottom-sheet/BottomSheetPassword";
@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 
 interface ChildrenCarouselProps {
   /** 표시할 자녀 계좌 목록 */
-  readonly childAccounts: ChildSummary[];
+  readonly childAccounts: ChildDto[];
 }
 
 /**
@@ -31,6 +31,7 @@ export default function ChildrenCarousel({
   childAccounts,
 }: ChildrenCarouselProps) {
   const router = useRouter();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   /**
    * 🔹 캐러셀 슬라이드 목록 구성
@@ -47,8 +48,9 @@ export default function ChildrenCarousel({
   }, [childAccounts]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  // touchStart, touchEnd를 ref로 변경하여 렌더링 및 effect 재실행 방지
+  const touchStartRef = useRef<number | null>(null);
+  const touchEndRef = useRef<number | null>(null);
   const [offsetX, setOffsetX] = useState(0);
 
   const minSwipeDistance = 50;
@@ -67,7 +69,7 @@ export default function ChildrenCarousel({
   const handlePasswordComplete = async (simplePassword: string) => {
     try {
       const res = await api.post(requests.simplePassword, {
-        simplePassword,
+        password: simplePassword,
       });
 
       if (res.data?.matched === true) {
@@ -83,65 +85,86 @@ export default function ChildrenCarousel({
   };
 
   /**
-   * 🔹 터치 시작 이벤트
-   */
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStart(e.targetTouches[0].clientX);
-    setTouchEnd(null);
-  };
-
-  /**
-   * 🔹 터치 이동 이벤트
-   * - 이동 거리(diff)를 offsetX로 적용해 자연스러운 슬라이드 이동 효과 제공
-   */
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (touchStart === null) return;
-    const currentTouch = e.targetTouches[0].clientX;
-    const diff = currentTouch - touchStart;
-    setOffsetX(diff);
-    setTouchEnd(currentTouch);
-  };
-
-  /**
-   * 🔹 터치 종료 이벤트 (스와이프 판정)
-   */
-  const handleTouchEnd = () => {
-    if (touchStart === null || touchEnd === null) return reset();
-
-    const distance = touchStart - touchEnd;
-
-    // 오른쪽으로 스와이프 → 다음 슬라이드
-    if (distance > minSwipeDistance && currentIndex < lastIndex) {
-      setCurrentIndex((i) => Math.min(i + 1, lastIndex));
-    }
-    // 왼쪽으로 스와이프 → 이전 슬라이드
-    else if (distance < -minSwipeDistance && currentIndex > 0) {
-      setCurrentIndex((i) => Math.max(i - 1, 0));
-    }
-
-    reset();
-  };
-
-  /**
    * 🔹 터치 상태 초기화
    */
-  const reset = () => {
+  const reset = useCallback(() => {
     setOffsetX(0);
-    setTouchStart(null);
-    setTouchEnd(null);
-  };
+    touchStartRef.current = null;
+    touchEndRef.current = null;
+  }, []);
+
+  /**
+   * 🔹 Non-passive 터치 이벤트 리스너 등록
+   * - passive: false로 설정하여 preventDefault() 호출 가능하게 함
+   * - touchStart/End를 ref로 관리하여 의존성 제거
+   */
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartRef.current = e.touches[0].clientX;
+      touchEndRef.current = null;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (touchStartRef.current === null) return;
+      const currentTouch = e.touches[0].clientX;
+      const diff = currentTouch - touchStartRef.current;
+
+      // 수평 스와이프가 감지되면 스크롤 방지
+      if (Math.abs(diff) > 10 && e.cancelable) {
+        e.preventDefault();
+      }
+
+      setOffsetX(diff);
+      touchEndRef.current = currentTouch;
+    };
+
+    const handleTouchEnd = () => {
+      if (touchStartRef.current === null || touchEndRef.current === null) {
+        return reset();
+      }
+
+      const distance = touchStartRef.current - touchEndRef.current;
+
+      // 오른쪽으로 스와이프 → 다음 슬라이드
+      if (distance > minSwipeDistance && currentIndex < lastIndex) {
+        setCurrentIndex((i) => Math.min(i + 1, lastIndex));
+      }
+      // 왼쪽으로 스와이프 → 이전 슬라이드
+      else if (distance < -minSwipeDistance && currentIndex > 0) {
+        setCurrentIndex((i) => Math.max(i - 1, 0));
+      }
+
+      reset();
+    };
+
+    // passive: false로 이벤트 리스너 등록
+    container.addEventListener("touchstart", handleTouchStart, {
+      passive: false,
+    });
+    container.addEventListener("touchmove", handleTouchMove, {
+      passive: false,
+    });
+    container.addEventListener("touchend", handleTouchEnd);
+
+    return () => {
+      container.removeEventListener("touchstart", handleTouchStart);
+      container.removeEventListener("touchmove", handleTouchMove);
+      container.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [currentIndex, lastIndex, reset]);
 
   return (
     <div className="flex flex-col gap-3 overflow-hidden">
       {/* 슬라이드 래퍼 */}
       <div
+        ref={containerRef}
         className="h-[217px] flex transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
         style={{
           transform: `translateX(calc(${offsetX}px - ${currentIndex * 100}%))`,
         }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
       >
         {extendedSlides.map((item, idx) => {
           /**
@@ -190,7 +213,7 @@ export default function ChildrenCarousel({
               </div>
 
               <div className="text-head-00 text-neutral-1">
-                {item.balance.toLocaleString("ko-KR")} 원
+                {Number(item.balance).toLocaleString("ko-KR")} 원
               </div>
 
               <div className="absolute right-8 top-12 flex h-24 w-24 items-center justify-center rounded-full bg-primary-4 overflow-hidden">

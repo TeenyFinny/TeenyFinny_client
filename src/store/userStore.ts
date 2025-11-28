@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { ChildSummary } from "@/types/user";
+import { ChildDto } from "@/types/home";
 import { clearAuthToken } from "@/lib/auth/token";
 
 /**
@@ -17,8 +17,8 @@ import { clearAuthToken } from "@/lib/auth/token";
  *   - admin  : 관리자 계정
  *   - null   : 로그인 전 상태 (로그인 기능 연동 전)
  * @property {boolean} hasChildren - 부모 계정일 경우 자녀 연결 여부
- * @property {ChildSummary[]} children - 자녀 목록
- * @property {(userName: string, userType: "parent" | "child" | null, userId?: number, hasChildren?: boolean, children?: ChildSummary[]) => void} setUser - 사용자 정보를 설정합니다.
+ * @property {ChildDto[]} children - 자녀 목록
+ * @property {(userName: string, userType: "parent" | "child" | null, userId?: number, hasChildren?: boolean, children?: ChildDto[]) => void} setUser - 사용자 정보를 설정합니다.
  * @property {(value: boolean) => void} setHasChildren - 부모의 자녀 연결 여부만 개별적으로 수정합니다.
  * @property {() => void} clearUser - 사용자 정보를 초기화(로그아웃)합니다.
  */
@@ -27,13 +27,13 @@ interface UserState {
   userId: number | null;
   userType: "parent" | "child" | null;
   hasChildren: boolean;
-  children: ChildSummary[];
+  children: ChildDto[];
   setUser: (
     userName: string,
     userType: "parent" | "child" | null,
     userId?: number,
     hasChildren?: boolean,
-    children?: ChildSummary[]
+    children?: ChildDto[]
   ) => void;
   updateUser: (userName: string) => void;
   setHasChildren: (value: boolean) => void;

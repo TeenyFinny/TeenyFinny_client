@@ -7,7 +7,7 @@ import { HttpError } from "@/types/axios/httpError.t";
 import ParentDashboard from "@/components/custom/home/parent-dashboard/ParentDashboard";
 import requests from "@/lib/axios/requests";
 import api from "@/lib/axios/axios";
-import type { ChildSummary } from "@/types/user";
+import type { HomeRes, ChildDto } from "@/types/home";
 import ChildDashboard from "@/components/custom/home/child-dashboard/ChildDashboard";
 import { useNotificationStore } from "@/store/notificationStore";
 import { PushNotification } from "@/components/ui/notice/PushNotification";
@@ -15,18 +15,7 @@ import LoadingScreenSkeletonDashboard from "@/components/ui/LoadingScreenSkeleto
 
 interface ParentDashboardState {
   balance: string;
-  children: ChildSummary[];
-}
-
-interface HomeApiResponse {
-  user: {
-    userId: number;
-    name: string;
-    role: string;
-    email: string;
-    balance?: string;
-    children?: ChildSummary[];
-  };
+  children: ChildDto[];
 }
 
 /**
@@ -44,7 +33,7 @@ export default function Page() {
   const [parentData, setParentData] = useState<ParentDashboardState | null>(
     null
   );
-  const [childData, setChildData] = useState<HomeApiResponse["user"] | null>(
+  const [childData, setChildData] = useState<HomeRes["user"] | null>(
     null
   );
   const [isLoading, setIsLoading] = useState(true);
@@ -65,8 +54,8 @@ export default function Page() {
 
     const loadUser = async () => {
       try {
-        // 명시적 타입 지정 (HomeApiResponse)
-        const res = await api.get<HomeApiResponse>(requests.fetchHome, {
+        // 명시적 타입 지정 (HomeRes)
+        const res = await api.get<HomeRes>(requests.fetchHome, {
           signal: controller.signal,
         });
         const userPayload = res.data?.user ?? {};
@@ -77,10 +66,10 @@ export default function Page() {
           rawRole === "parent" || rawRole === "child" ? rawRole : null;
 
         // 자녀 목록 추출
-        const children: ChildSummary[] = Array.isArray(userPayload.children)
+        const children: ChildDto[] = Array.isArray(userPayload.children)
           ? userPayload.children.map((child) => ({
               userId: Number(child.userId ?? 0),
-              name: child.name,
+              name: child.name ?? "",
               balance: String(child.balance ?? "0"),
               gender: Number(child.gender ?? 1),
             }))
@@ -93,7 +82,8 @@ export default function Page() {
             userPayload.name ?? "",
             normalizedRole,
             (userPayload as any).userId,
-            children.length > 0
+            children.length > 0,
+            children
           );
 
         if (normalizedRole === "parent") {
