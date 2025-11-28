@@ -22,7 +22,7 @@ const requests = {
   myStocks: `/investments/my-stocks`,
   myStocksTop3: `/investments/my-stocks/top3`,
   stockDetail: `/investments/stockDetail`,
-  investAccount: `/investments/check-account`,
+  investAccount: `/investments/account`,
 
   updateGoal: `/goal/update`,
   sellStock: `/investments/sellStock`,
