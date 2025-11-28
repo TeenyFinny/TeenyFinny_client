@@ -16,8 +16,8 @@ import { Skeleton } from "@/components/ui/skeleton";
  */
 export default function LoadingScreenSkeletonQuiz(): JSX.Element {
   return (
-    <div className="w-full h-full flex items-center justify-center animate-in fade-in-50">
-      <div className="flex flex-col items-center justify-between w-[300px] h-[400px] gap-4 p-8 border rounded-xl">
+    <div className="w-full h-full flex flex-col items-center justify-start animate-in fade-in-50">
+      <div className="flex flex-col items-center justify-between w-[300px] h-[500px] gap-4 p-8 border rounded-xl">
         {/* 상단 텍스트 */}
         <Skeleton className="h-6 w-[80%]" />
 
