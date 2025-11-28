@@ -10,7 +10,7 @@ import { BottomSheetDetail } from "@/components/custom/account/BottomSheetDetail
 import { useSelectedChildStore } from "@/store/selectedChildStore";
 
 interface Transaction {
-  id: string;
+  transactionId: string;
   type: "deposit" | "withdrawal";
   merchant: string;
   amount: string;
@@ -106,12 +106,12 @@ export default function Page() {
    *  상세 클릭 → API
    * ---------------------------- */
   const handleTransactionClick = async (t: Transaction) => {
-    setSelectedId(t.id);
+    setSelectedId(t.transactionId);
     setSheetOpen(true);
     setLoadingDetail(true);
 
     try {
-      const res = await api.get(requests.fetchTransactionDetail(t.id));
+      const res = await api.get(requests.fetchTransactionDetail(t.transactionId));
 
       setDetail(res.data[0]);
     } finally {
@@ -181,7 +181,7 @@ export default function Page() {
         {transactions.length > 0 ? (
           transactions.map((t) => (
             <div
-              key={t.id}
+              key={t.transactionId}
               onClick={() => handleTransactionClick(t)}
               className="flex h-[76px] items-center justify-between border-b border-monochrome-gray cursor-pointer"
             >
