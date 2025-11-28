@@ -11,9 +11,10 @@ import type { ChildSummary } from "@/types/user";
 import ChildDashboard from "@/components/custom/home/child-dashboard/ChildDashboard";
 import { useNotificationStore } from "@/store/notificationStore";
 import { PushNotification } from "@/components/ui/notice/PushNotification";
+import LoadingScreenSkeletonDashboard from "@/components/ui/LoadingScreenSkeletonDashboard";
 
 interface ParentDashboardState {
-  balance: number;
+  balance: string;
   children: ChildSummary[];
 }
 
@@ -23,7 +24,7 @@ interface HomeApiResponse {
     name: string;
     role: string;
     email: string;
-    balance?: number;
+    balance?: string;
     children?: ChildSummary[];
   };
 }
@@ -80,7 +81,7 @@ export default function Page() {
           ? userPayload.children.map((child) => ({
               userId: Number(child.userId ?? 0),
               name: child.name,
-              balance: Number(child.balance ?? 0),
+              balance: String(child.balance ?? "0"),
               gender: Number(child.gender ?? 1),
             }))
           : [];
@@ -97,7 +98,7 @@ export default function Page() {
 
         if (normalizedRole === "parent") {
           setParentData({
-            balance: Number(userPayload.balance ?? 0),
+            balance: String(userPayload.balance ?? "0"),
             children,
           });
           setChildData(null);
@@ -136,8 +137,10 @@ export default function Page() {
   // === 상태별 렌더링 분기 ===
   if (isLoading) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-primary-4">
-        <p className="text-body-01 text-color-neutral-2">불러오는 중...</p>
+      <div className="w-full bg-primary-4">
+        <div className="mx-auto w-full max-w-[375px]">
+          <LoadingScreenSkeletonDashboard />
+        </div>
       </div>
     );
   }
@@ -172,20 +175,7 @@ export default function Page() {
         </div>
       ) : userType === "child" && childData ? (
         <div className="flex h-full w-full items-center justify-center">
-          <ChildDashboard
-            data={{
-              user: {
-                userId: Number(childData.userId ?? 0),
-                name: childData.name ?? "",
-                role: childData.role ?? "CHILD",
-                email: childData.email ?? "",
-                totalBalance: Number(childData.balance ?? 0),
-                depositBalance: 0,
-                investmentBalance: 0,
-                savingBalance: 0,
-              },
-            }}
-          />
+          <ChildDashboard />
         </div>
       ) : (
         <div className="flex h-full w-full items-center justify-center">

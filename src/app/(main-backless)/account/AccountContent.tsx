@@ -20,10 +20,10 @@ type Child = {
 };
 
 type Accounts = {
-  total: number | null;
-  allowance: number | null;
-  invest: number | null;
-  saving: number | null;
+  total: string | null;
+  allowance: string | null;
+  invest: string | null;
+  saving: string | null;
   card: { hasCard: boolean };
 };
 
@@ -40,10 +40,10 @@ function AccountContentInner() {
   const [accountData, setAccountData] = useState<Accounts | null>(null);
   const [currentChild, setCurrentChild] = useState<number>(0);
 
-  const [total, setTotal] = useState<number | null>(null);
-  const [allowance, setAllowance] = useState<number | null>(null);
-  const [invest, setInvest] = useState<number | null>(null);
-  const [saving, setSaving] = useState<number | null>(null);
+  const [total, setTotal] = useState<string | null>(null);
+  const [allowance, setAllowance] = useState<string | null>(null);
+  const [invest, setInvest] = useState<string | null>(null);
+  const [saving, setSaving] = useState<string | null>(null);
 
   const [isInvestOpen, setIsInvestOpen] = useState<boolean>(false);
   const [isSavingOpen, setIsSavingOpen] = useState<boolean>(false);
@@ -75,7 +75,7 @@ function AccountContentInner() {
     };
     const typeCode = typeMap[accountType];
 
-    const balanceMap: Record<string, number | null> = {
+    const balanceMap: Record<string, string | null> = {
       "용돈 계좌": allowance,
       "투자 계좌": invest,
       "목표 적금": saving,
@@ -90,7 +90,7 @@ function AccountContentInner() {
       selectedChildName: childName,
       accountName: accountType,
       accountType: typeCode,
-      balance: balance ?? 0,
+      balance: balance ?? "0",
       year: now.getFullYear(),
       month: now.getMonth() + 1,
     });

@@ -17,6 +17,7 @@ type UserRole = RegisterForm["role"];
 function SignupCompleteContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const setUser = useUserStore((state) => state.setUser);
 
   // useState로 이메일, 비밀번호, 역할 관리
   const [email, setEmail] = useState<string>("");
@@ -36,9 +37,6 @@ function SignupCompleteContent() {
       setEmail(emailParam);
       setPassword(passwordParam);
       setRole(roleParam);
-
-      // 페이지 진입 시 자동으로 로그인 API 호출
-      handleLoginAndNavigate(emailParam, passwordParam, roleParam);
       return;
     }
 
@@ -54,14 +52,6 @@ function SignupCompleteContent() {
     setRole(savedRole);
     globalThis.window.sessionStorage.removeItem("signup-complete-role");
     globalThis.window.sessionStorage.removeItem("register-form-storage");
-
-    // 카카오 회원가입인 경우 이미 토큰이 있으므로 바로 이동
-    if (savedRole === "PARENT") {
-      router.push("/home");
-    } else {
-      router.push("/family/info");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   /** 로그인 API 호출 및 페이지 이동 */
@@ -91,6 +81,7 @@ function SignupCompleteContent() {
         password: finalPassword.trim(),
       });
 
+      // 로그인 API 응답 처리 (useLoginForm과 동일한 형식)
       const payload = res.data;
       const { user, tokenType, accessToken } = payload ?? {};
 
@@ -120,14 +111,13 @@ function SignupCompleteContent() {
         });
       }
 
-      useUserStore
-        .getState()
-        .setUser(
-          user.name,
-          userRole as "parent" | "child",
-          user.userId,
-          Array.isArray(user.children) && user.children.length > 0
-        );
+      // userStore에 사용자 정보 저장
+      setUser(
+        user.name,
+        userRole as "parent" | "child",
+        user.userId,
+        Array.isArray(user.children) && user.children.length > 0
+      );
 
       // 역할에 따라 페이지 이동
       if (finalRole === "PARENT") {
@@ -188,10 +178,15 @@ function SignupCompleteContent() {
           <BigButtonActivated
             label={isLoading ? "처리 중..." : "내 계좌 불러오기"}
             onClick={() => {
-              if (!isLoading) {
-                if (role === "PARENT") {
-                  router.push("/home");
-                }
+              if (isLoading) return;
+
+              // 카카오 회원가입인 경우 (이메일/비밀번호 없음)
+              if (!email || !password) {
+                // 이미 토큰이 있으므로 바로 이동
+                router.push("/home");
+              } else {
+                // 일반 회원가입인 경우 로그인 API 호출
+                handleLoginAndNavigate();
               }
             }}
           />
@@ -200,10 +195,15 @@ function SignupCompleteContent() {
           <BigButtonActivated
             label={isLoading ? "처리 중..." : "가족 등록하기"}
             onClick={() => {
-              if (!isLoading) {
-                if (role === "CHILD") {
-                  router.push("/family/info");
-                }
+              if (isLoading) return;
+
+              // 카카오 회원가입인 경우 (이메일/비밀번호 없음)
+              if (!email || !password) {
+                // 이미 토큰이 있으므로 바로 이동
+                router.push("/family/info");
+              } else {
+                // 일반 회원가입인 경우 로그인 API 호출
+                handleLoginAndNavigate();
               }
             }}
           />
