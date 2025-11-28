@@ -1,4 +1,5 @@
 "use client";
+
 import { AccountCard } from "@/components/custom/account/AccountCard";
 import { AccountCardDisabled } from "@/components/custom/account/AccountCardDisabled";
 import { CardDetail } from "@/components/custom/allowance/card/CardDetail";
@@ -12,12 +13,7 @@ import { ApiResponse } from "@/types/axios/apiRes.t";
 import { HttpError } from "@/types/axios/httpError.t";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
-
-type Child = {
-  name: string;
-  childId: number;
-  gender: number;
-};
+import { ChildDto } from "@/types/home";
 
 type Accounts = {
   total: string | null;
@@ -28,18 +24,22 @@ type Accounts = {
 };
 
 type CardInfo = {
-  cardName: string;
+  name: string;
   cardNumber: string;
-  expiry: string;
+  expiredAt: string;
   cvc: string;
 };
 
 function AccountContentInner() {
   const router = useRouter();
-  const [data, setData] = useState<Child[] | null>(null);
-  const [accountData, setAccountData] = useState<Accounts | null>(null);
+  const { children, userType, userId } = useUserStore();
+  const { setHistoryData, setInvestAccountExists } = useSelectedChildStore();
+  const searchParams = useSearchParams();
+
+  const [data, setData] = useState<ChildDto[] | null>(children ?? null);
   const [currentChild, setCurrentChild] = useState<number>(0);
 
+  const [accountData, setAccountData] = useState<Accounts | null>(null);
   const [total, setTotal] = useState<string | null>(null);
   const [allowance, setAllowance] = useState<string | null>(null);
   const [invest, setInvest] = useState<string | null>(null);
@@ -48,82 +48,35 @@ function AccountContentInner() {
   const [isInvestOpen, setIsInvestOpen] = useState<boolean>(false);
   const [isSavingOpen, setIsSavingOpen] = useState<boolean>(false);
 
-  // 카드 정보 상태
   const [cardOpen, setCardOpen] = useState(false);
   const [cardInfo, setCardInfo] = useState<CardInfo | null>(null);
 
-  const { userType, userId } = useUserStore();
-  const { setHistoryData } = useSelectedChildStore();
-
-  // URL 파라미터에서 childId 가져오기
-  const searchParams = useSearchParams();
+  // URL 파라미터에서 childId(userId) 가져오기
   const rawChildId = searchParams.get("childId");
-
-  // 쿼리가 있을 때만 number로 변환
   const presetChildId =
     rawChildId !== null && rawChildId !== "" ? Number(rawChildId) : null;
 
-  /* 상세 내용 보기 클릭 이벤트 */
-  const handleViewDetails = (accountType: string) => {
-    const child = data?.find((child) => child.childId === currentChild);
-    const childName = child?.name ?? "";
+  const childHandler = (id: number) => setCurrentChild(id);
 
-    const typeMap: Record<string, string> = {
-      "용돈 계좌": "allowance",
-      "투자 계좌": "invest",
-      "목표 적금": "saving",
-    };
-    const typeCode = typeMap[accountType];
+  const autoTransHandler = () => router.push(`/account/auto-transfer/${currentChild}`);
 
-    const balanceMap: Record<string, string | null> = {
-      "용돈 계좌": allowance,
-      "투자 계좌": invest,
-      "목표 적금": saving,
-    };
-    const balance = balanceMap[accountType];
-
-    const now = new Date();
-
-    // 🔥 Zustand에 완전 저장하여 stateful 라우팅
-    setHistoryData({
-      selectedChildId: currentChild,
-      selectedChildName: childName,
-      accountName: accountType,
-      accountType: typeCode,
-      balance: balance ?? "0",
-      year: now.getFullYear(),
-      month: now.getMonth() + 1,
-    });
-
-    // 쿼리 없이 이동!
-    router.push("/account/history");
-  };
-
-  const childHandler = (id: number) => {
-    setCurrentChild(id);
-  };
-
-  const autoTransHandler = () => {
-    router.push(`/account/auto-transfer/${currentChild}`);
-  };
-
-  /* 카드 버튼 클릭 이벤트 */
   const handleViewCard = async () => {
     if (!accountData) return;
+    console.log(accountData);
 
-    if (!accountData?.card?.hasCard) {
+    if (!accountData.card.hasCard) {
       router.push(`/allowance/card/create`);
       return;
     }
 
     try {
-      const res = await api.get<ApiResponse<CardInfo>>(
-        requests.fetchChildCard,
-        {
-          params: { childId: currentChild },
-        }
-      );
+      const endpoint =
+        userType === "child"
+          ? requests.fetchChildCard() // 자녀 본인 → /account/card
+          : requests.fetchChildCard(currentChild); // 부모 → /account/{childId}/card
 
+      const res = await api.get<ApiResponse<CardInfo>>(endpoint);
+      console.log(res);
       setCardInfo(res.data as CardInfo);
       setCardOpen(true);
     } catch (e) {
@@ -131,104 +84,106 @@ function AccountContentInner() {
     }
   };
 
-  /* 자녀 조회 */
+  const handleViewDetails = (accountType: string) => {
+    const child = data?.find((c) => c.userId === currentChild);
+    const childName = child?.name ?? "";
+
+    const typeMap: Record<string, string> = {
+      "용돈 계좌": "allowance",
+      "투자 계좌": "invest",
+      "목표 적금": "saving",
+    };
+    const balanceMap: Record<string, string | null> = {
+      "용돈 계좌": allowance,
+      "투자 계좌": invest,
+      "목표 적금": saving,
+    };
+
+    setHistoryData({
+      selectedChildId: currentChild,
+      selectedChildName: childName,
+      accountName: accountType,
+      accountType: typeMap[accountType],
+      balance: balanceMap[accountType] ?? "0",
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+    });
+
+    router.push("/account/history");
+  };
+
+  /* 자녀 조회: useUserStore에서 가져온 children으로 초기 세팅 */
   useEffect(() => {
-    const controller = new AbortController();
+    if (children && children.length > 0) setData(children);
+  }, [children]);
 
-    (async () => {
-      try {
-        const res = await api.get<ApiResponse<Child[]>>(requests.fetchChild, {
-          signal: controller.signal,
-          params: { id: userId },
-        });
-
-        if (controller.signal.aborted) return;
-        setData(res.data as Child[]);
-      } catch (e) {
-        if (e instanceof HttpError && e.statusCode === 403) {
-          router.push("/");
-        }
-      }
-    })();
-
-    return () => controller.abort();
-  }, [userId, router]);
-
-  /* 계좌 조회 */
+// 4. 선택된 자녀의 계좌 정보 조회
   useEffect(() => {
     if (!currentChild) return;
 
     (async () => {
       try {
-        const res = await api.get<ApiResponse<Accounts>>(
-          requests.fetchTotalAccount,
-          { params: { id: currentChild } }
-        );
-
-        setAccountData(res.data as Accounts);
+        const endpoint =
+          userType === "child"
+            ? requests.fetchTotalAccount() // 자기 계좌
+            : requests.fetchTotalAccount(currentChild); // 부모일 경우 자녀 계좌
+        const res = await api.get<ApiResponse<Accounts>>(endpoint);
+        const accounts = res.data as Accounts;
+        setAccountData(accounts);
+        setInvestAccountExists(accounts.invest !== null);
+        console.log("accountData?.invest : " + accountData?.invest)
       } catch (e) {
         if (e instanceof HttpError && e.statusCode === 403) {
           router.push("/");
         }
       }
     })();
-  }, [currentChild]);
+  }, [currentChild, router]);
 
-  /** URL로 전달된 childId 우선 선택 → 없으면 첫 번째 아이 선택 */
+  /** URL childId 우선 선택 → 없으면 첫 번째 아이 fallback */
   useEffect(() => {
-    if (!data || data.length === 0) {
-      return; // 자녀 데이터가 없으면 아무것도 하지 않음
-    }
+    if (!data || data.length === 0) return;
 
-    // URL의 childId가 유효한 자녀 목록에 있는지 확인
     const isValidPreset =
       presetChildId !== null &&
       !Number.isNaN(presetChildId) &&
-      data.some((child) => Number(child.childId) === presetChildId);
+      data.some((c) => c.userId === presetChildId);
 
-    if (isValidPreset) {
-      setCurrentChild(presetChildId as number);
-    } else {
-      // 유효하지 않으면 첫 번째 자녀로 fallback
-      setCurrentChild(Number(data[0].childId));
-    }
+    if (isValidPreset) setCurrentChild(presetChildId);
+    else setCurrentChild(data[0].userId);
   }, [presetChildId, data]);
 
   /* balance 적용 */
   useEffect(() => {
-    if (accountData) {
-      setTotal(accountData.total);
-      setAllowance(accountData.allowance);
-      setInvest(accountData.invest);
-      setSaving(accountData.saving);
-    }
+    if (!accountData) return;
+    setTotal(accountData.total);
+    setAllowance(accountData.allowance);
+    setInvest(accountData.invest);
+    setSaving(accountData.saving);
   }, [accountData]);
 
   return (
     <div className="max-h-screen px-[17px]">
       <div className="max-w-md mx-auto space-y-4">
         {/* 자녀 선택 */}
-        <div className="flex justify-start">
-          <div className="flex justify-evenly gap-[13px]">
-            {data ? (
-              data.map((child) => (
-                <ChildrenBadge
-                  key={child.childId}
-                  name={child.name}
-                  gender={child.gender}
-                  childId={Number(child.childId)}
-                  currentChild={currentChild}
-                  setCurrentChild={() => childHandler(Number(child.childId))}
-                />
-              ))
-            ) : (
-              <span className="text-body-04 text-neutral-3">
-                아이의 데이터를 불러오고 있어요!
-              </span>
-            )}
-          </div>
+        <div className="flex justify-start gap-[13px]">
+          {data ? (
+            data.map((child) => (
+              <ChildrenBadge
+                key={child.userId}
+                name={child.name}
+                gender={child.gender}
+                childId={child.userId}
+                currentChild={currentChild}
+                setCurrentChild={() => childHandler(child.userId)}
+              />
+            ))
+          ) : (
+            <span className="text-body-04 text-neutral-3">아이의 데이터를 불러오고 있어요!</span>
+          )}
         </div>
 
+        {/* 총 잔액 */}
         <div className="h-[21px] flex justify-between items-center">
           <p className="text-head-03 text-neutral-3">총 잔액</p>
           {userType === "parent" && (
@@ -240,11 +195,10 @@ function AccountContentInner() {
             </button>
           )}
         </div>
-
         <div className="text-head-00 text-neutral-1 mb-4">{total} 원</div>
 
-        {/* 용돈 계좌 */}
-        {allowance != null ? (
+        {/* 계좌 카드 */}
+        {allowance ? (
           <AccountCard
             accountName="용돈 계좌"
             balance={allowance}
@@ -255,24 +209,20 @@ function AccountContentInner() {
         ) : (
           <AccountCardDisabled
             accountName="용돈 계좌"
-            onCardClick={() => {
-              router.push(`/allowance/account/create`);
-            }}
+            onCardClick={() => router.push(`/allowance/account/create`)}
           />
         )}
 
-        {/* 카드 상세 */}
         <CardDetail
           open={cardOpen}
           setOpen={setCardOpen}
-          cardName={cardInfo?.cardName ?? ""}
+          cardName={cardInfo?.name ?? ""}
           cardNumber={cardInfo?.cardNumber ?? ""}
-          expiry={cardInfo?.expiry ?? ""}
+          expiry={cardInfo?.expiredAt ?? ""}
           cvc={cardInfo?.cvc ?? ""}
         />
 
-        {/* 투자 계좌 */}
-        {invest != null && invest != undefined ? (
+        {invest ? (
           <AccountCard
             accountName="투자 계좌"
             balance={invest}
@@ -280,16 +230,10 @@ function AccountContentInner() {
             onCardClick={() => null}
           />
         ) : (
-          <AccountCardDisabled
-            accountName="투자 계좌"
-            onCardClick={() => {
-              setIsInvestOpen(true);
-            }}
-          />
+          <AccountCardDisabled accountName="투자 계좌" onCardClick={() => setIsInvestOpen(true)} />
         )}
 
-        {/* 목표 적금 */}
-        {saving != null && saving != undefined ? (
+        {saving ? (
           <AccountCard
             accountName="목표 적금"
             balance={saving}
@@ -297,10 +241,7 @@ function AccountContentInner() {
             onCardClick={() => null}
           />
         ) : (
-          <AccountCardDisabled
-            accountName="목표 계좌"
-            onCardClick={() => setIsSavingOpen(true)}
-          />
+          <AccountCardDisabled accountName="목표 계좌" onCardClick={() => setIsSavingOpen(true)} />
         )}
 
         <button className="flex justify-start w-[335px] h-[48px] border border-monochrome-gray bg-neutral-7 rounded-4xl text-body-04 items-center mt-0">
@@ -321,7 +262,6 @@ function AccountContentInner() {
         description={`아이가 계좌 개설을 요청할 때까지 기다려주세요!`}
         confirmText="확인"
       />
-
       <ConfirmationDialog
         open={isSavingOpen}
         onOpenChange={() => setIsSavingOpen(false)}
@@ -335,15 +275,14 @@ function AccountContentInner() {
 
 export default function AccountContent() {
   return (
-    <Suspense fallback={
-      <div className="max-h-screen px-[17px] flex justify-center items-center">
-        <span className="text-body-04 text-neutral-3">
-          로딩중...
-        </span>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="max-h-screen px-[17px] flex justify-center items-center">
+          <span className="text-body-04 text-neutral-3">로딩중...</span>
+        </div>
+      }
+    >
       <AccountContentInner />
     </Suspense>
   );
 }
-

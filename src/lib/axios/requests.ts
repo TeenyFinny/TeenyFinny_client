@@ -28,8 +28,6 @@ const requests = {
   sellStock: `/investments/sellStock`,
   tradeOrder: `/investments/tradeOrder`,
   fetchChild: `/account/children`,
-  fetchTotalAccount: `/account/total-accounts`,
-  fetchAutoTransfer: `/account/auto-transfers`,
   portfolio: `/investments/my-stocks/portfolio`,
 
   fetchNotice: `/notice`,
@@ -37,17 +35,20 @@ const requests = {
   koreainvestmentStockList: `/uapi/domestic-stock/v1/quotations/intstock-multprice`,
   koreainvestmentStockDetail: `/uapi/domestic-stock/v1/quotations/inquire-price`,
 
-  fetchAccountHistory: `/account/history`,
-  fetchTransactionDetail: `/account/history/detail`,
-  fetchChildCard: `/account/card`,
+  fetchReport: (childId: number) => childId ? `/allowance/${childId}/report` : `/allowacne/report`,
+  fetchMyHistory: "/account/history",
+  fetchChildHistory: (childId: number) => `/account/${childId}/history`,
+  fetchTransactionDetail: (transactionId: string) => `/account/history/${transactionId}`,
+  fetchChildCard: (childId?: number) => childId ? `/account/${childId}/card` : `/account/card`,
+  fetchTotalAccount: (childId?: number) => childId ? `/account/${childId}/summary` : `/account/summary`,
+  fetchAutoTransfer: (childId?: number) => `/account/${childId}/auto-transfer`,
+  fetchAutoTransferById: (childId: number, autoTransferId: number) =>  `/account/${childId}/auto-transfer/${autoTransferId}`,
 
   verifyPhoneNumber: `/auth/identity`,
   submitChildInfo: `/allowance/accounts`,
   submitCardInfo: `/allowance/cards`,
 
   fetchProfile: `/profile`,
-
-  fetchReport: `allowance/report`,
 
   // Kakao OAuth
   kakaoLogin: `/auth/oauth/kakao/login`,
