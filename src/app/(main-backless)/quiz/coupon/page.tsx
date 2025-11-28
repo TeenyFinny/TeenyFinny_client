@@ -48,12 +48,12 @@ export default function Page() {
   return (
     <main
       aria-label="용돈조르기권 획득 페이지"
-      className="relative w-full max-w-[375px] mx-auto h-full max-h-[800px] bg-[var(--color-primary-4)] font-[var(--font-sans)] flex flex-col items-center overflow-hidden"
+      className="relative w-full max-w-[375px] mx-auto h-full max-h-[800px] bg-primary-4 font-sans flex flex-col items-center overflow-hidden"
     >
       {/* ===============================
           카드 영역 (중앙 콘텐츠)
          =============================== */}
-      <div className="relative w-[327px] h-[490px] mx-auto bg-[var(--color-neutral-7)] rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col items-center pt-[160px] pb-[80px] mb-[32px]">
+      <div className="relative w-[327px] h-[490px] mx-auto bg-neutral-7 rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col items-center pt-[160px] pb-[80px] mb-[32px]">
         {/* 좌측 배지 */}
         <div className="absolute top-[20px] left-[16px]">
           <StateBadge enabled={true} label={leftBadgeText} onClick={() => { }} />
@@ -76,7 +76,7 @@ export default function Page() {
         </div>
 
         {/* 하단 설명 텍스트 */}
-        <p className="absolute top-[407px] left-[45px] text-center text-head-04 font-bold text-[var(--color-neutral-1)] w-[237px] mb-8 leading-relaxed">
+        <p className="absolute top-[407px] left-[45px] text-center text-head-04 font-bold text-neutral-1 w-[237px] mb-8 leading-relaxed">
           <>용돈조르기권 획득!
           </>
         </p>
