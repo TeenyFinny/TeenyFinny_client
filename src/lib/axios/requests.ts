@@ -22,7 +22,13 @@ const requests = {
   updatePush: `/profile/push`,
   simplePassword: `/auth/simple-password`,
   verifyFamilyOtp: `/auth/otp`, // OTP 검증
-  fetchGoal: `/goal`,
+  fetchGoal: (goalId: number | string) => `/goal/${goalId}`,
+  createGoal: `/goal`,
+  fetchGoalForUpdate: (goalId: number | string) => `/goal/${goalId}/edit`,
+  updateGoal: (goalId: number | string) => `/goal/${goalId}`,
+  requestCancel: (goalId: number | string) => `/goal/${goalId}/request-cancel`,
+  requestComplete: (goalId: number | string) => `/goal/${goalId}/request-complete`,
+
   fetchProgress: "/quiz/progresses",
   fetchQuiz: "/quiz/info",
   investmentsSummary: `/investments/summary`,
@@ -32,7 +38,6 @@ const requests = {
   investDashboard: `/investments/dashboard`,
   investAccount: `/investments/account/check-account`,
 
-  updateGoal: `/goal/update`,
   sellStock: `/investments/sellStock`,
   tradeBuy: `/investments/trade/buy`,
   tradeSell: `/investments/trade/sell`,
