@@ -15,14 +15,14 @@ import { useQuizStore } from "@/store/quizStore"
  */
 export default function Page() {
   const router = useRouter()
-  const { course_completed, request_completed } = useQuizStore()
+  const { courseCompleted, requestCompleted } = useQuizStore()
 
   useEffect(() => {
-    if (!course_completed) {
+    if (!courseCompleted) {
       alert("주식 크레딧이 없습니다. 퀴즈를 먼저 풀어주세요.")
       router.replace("/quiz")
     }
-  }, [course_completed, router])
+  }, [courseCompleted, router])
 
   return (
     <main
@@ -58,7 +58,7 @@ export default function Page() {
 
       {/* 계좌 생성 버튼 */}
       <div className="w-[327px]">
-        {request_completed ? (
+        {requestCompleted ? (
           <BigButtonDisabled label="계좌 생성 요청 완료" onClick={() => { }} />
         ) : (
           <BigButtonActivated label="계좌 생성하기" onClick={()=> router.push("/quiz/credit/request")} />

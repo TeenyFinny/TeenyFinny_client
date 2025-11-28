@@ -28,7 +28,7 @@ export default function Page() {
   /**
    * O / X 클릭 시 실행되는 함수
    */
-  const handleAnswerClick = async (selected: "o" | "x") => {
+  const handleAnswerClick = async (selected: "O" | "X") => {
     if (selected === answer) {
       router.push("/quiz/answer")
     } else {
@@ -74,8 +74,8 @@ export default function Page() {
           O / X 버튼 영역
          =============================== */}
       <div className="flex gap-[19px]">
-        <SmallButtonActivated label="O" onClick={() => handleAnswerClick("o")} />
-        <RedSmallButtonActivated label="X" onClick={() => handleAnswerClick("x")} />
+        <SmallButtonActivated label="O" onClick={() => handleAnswerClick("O")} />
+        <RedSmallButtonActivated label="X" onClick={() => handleAnswerClick("X")} />
       </div>
     </main>
   )

@@ -86,12 +86,12 @@ export default function StockTerms() {
     const handleConfirm = async () => {
         try {
             // 1️⃣ PATCH 요청: request_completed 업데이트
-            await api.patch(requests.updateProgress(user_id), {
-                request_completed: true,
+            await api.patch(requests.fetchProgress, {
+                requestCompleted: true,
             });
 
             // 2️⃣ 전역 상태 반영
-            setQuizData({ request_completed: true });
+            setQuizData({ requestCompleted: true });
 
             // // 3️⃣ (선택) 부모님 푸시 알림 보내기
             // await api.post(requests.sendParentNotification(user_id), {

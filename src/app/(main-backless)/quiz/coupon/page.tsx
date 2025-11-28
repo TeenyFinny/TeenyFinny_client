@@ -17,9 +17,9 @@ export default function Page() {
   const router = useRouter()
   const {
     setQuizData,
-    course_completed,
-    quiz_date,
-    request_completed,
+    courseCompleted,
+    quizDate,
+    requestCompleted,
   } = useQuizStore()
 
 
@@ -31,7 +31,7 @@ export default function Page() {
  * - 그 외 경우에는 일반 퀴즈 페이지(`/quiz`)로 이동합니다.
  */
   const handleConfirmClick = () => {
-    if (course_completed && !request_completed) {
+    if (courseCompleted && !requestCompleted) {
       router.push("/quiz/credit");
     } else {
       router.push("/quiz");
@@ -43,7 +43,7 @@ export default function Page() {
   // ---------------------------
   const leftBadgeText = "이번 달 도전 완료"
 
-  const rightBadgeText = course_completed ? "랜덤" : `${quiz_date}일차`
+  const rightBadgeText = courseCompleted ? "랜덤" : `${quizDate}일차`
 
   return (
     <main
