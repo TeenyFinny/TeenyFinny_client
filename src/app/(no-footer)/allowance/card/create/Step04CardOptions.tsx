@@ -80,25 +80,32 @@ export default function Step04CardOptions({
     !nameError;
 
   /** 비밀번호 입력 완료 시 API 호출 */
-  const handlePasswordComplete = async (password: string) => {
-    setIsPasswordSheetOpen(false);
+const handlePasswordComplete = async (password: string) => {
+  setIsPasswordSheetOpen(false);
 
     try {
       const res = await api.post(requests.submitCardInfo, {
-        childId: childId,
+        childId,
         cardType: selectedCard,
-        englishName: englishName,
+        englishName,
         transit: useTransitCard === "yes",
-        password: password,
+        password,
       });
 
-      if (res.data.isSuccess) {
-        onNext();
-      } else {
-        throw new Error(res.data.message || "카드 발급 요청 실패");
+      const cardData = res.data?.data; // 👉 변경된 응답 적용
+
+      if (!cardData) {
+        throw new Error("카드 발급 요청 실패");
       }
+
+      // 카드 발급 성공 → 다음 단계로 이동
+      onNext();
+
     } catch (err) {
-      throw err; // BottomSheetPassword의 에러 UI 트리거
+      if (err instanceof HttpError) {
+        console.error("카드 발급 실패:", err.message);
+      }
+      throw err; // BottomSheetPassword에서 실패 UI 처리
     }
   };
 
