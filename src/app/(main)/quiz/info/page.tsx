@@ -39,10 +39,9 @@ useEffect(() => {
       if (!courseCompleted) {
         // 교육과정 문제: quiz_id 계산
         quizId = quizDate * 2 + todaySolved+1;
-        console.log("quizid:",quizId);
       } else {
         // 랜덤 문제: 총 30문제 가정
-        const TOTAL_QUIZ = 4;
+        const TOTAL_QUIZ = 30;
         do {
           quizId = Math.floor(Math.random() * TOTAL_QUIZ) + 1; // 1~30
           console.log(quizId+"번 문제"+firstQuizIdToday);
@@ -52,7 +51,7 @@ useEffect(() => {
 
       // today_solved === 0이면 오늘 첫 문제 ID 저장
       if (todaySolved === 0) {
-        const res1 = await api.patch(requests.fetchProgress, { firstQuizIdToday: firstQuizIdToday })
+        const res1 = await api.patch(requests.fetchProgress, { firstQuizIdToday: quizId })
         setQuizData({ firstQuizIdToday: quizId });
       }
 
