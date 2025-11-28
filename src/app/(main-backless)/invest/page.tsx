@@ -17,12 +17,9 @@ export default function Page() {
 
     (async () => {
       try {
-        const res = await api.get(`${requests.investAccount}?user_id=${userId}`);
-      
-        if (!res.data.hasAccount) {
-          router.push("/invest/no-account");//계좌가 없다면 안내페이지로
-          return;
-        }
+        const res = await api.get(requests.investAccount);
+
+
 
         const [stockRes] = await Promise.all([
           api.post(requests.myStocksTop3),
@@ -32,7 +29,10 @@ export default function Page() {
       } catch (e) {
         // 커스텀 에러관리
         const err = e as HttpError;
-
+        if (err.statusCode === 404) {
+          router.push("/invest/no-account");//계좌가 없다면 안내페이지로
+          return;
+        }
         // 403일 경우 에러메시지를 반환하고 홈으로 라우팅
         if (err.statusCode === 403) {
           alert(err.message);
@@ -156,9 +156,9 @@ export default function Page() {
 
         {/* Current Amount */}
         <div>
-          <p className="text-landing-01 text-neutral-1 leading-none tracking-tight">
+          {/* <p className="text-landing-01 text-neutral-1 leading-none tracking-tight">
             {investSummary.sctsEvluAmt} <span className="text-body-06">원</span>
-          </p>
+          </p> */}
         </div>
 
         {/* Profit Amount */}
@@ -172,7 +172,7 @@ export default function Page() {
           <a
             href="/invest/my-stock-account"
             className="flex items-center text-body-06 text-neutral-2 hover:text-neutral-1 transition-colors"
-            >
+          >
             내 계좌 보기
             <img src="/icons/arrow-right.png" alt="arrow-right icon" className="w-6 h-6" />
           </a>
