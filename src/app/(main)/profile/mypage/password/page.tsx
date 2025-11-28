@@ -48,7 +48,8 @@ export default function ChangePasswordPage() {
     return confirmPw === newPw && isValidPassword(confirmPw);
   }, [confirmPw, newPw, submitted]);
 
-  const allValid = currentPwValid && newPwValid && confirmPwValid;
+  const allValid = currentPwValid && newPwValid && confirmPwValid && currentPw !== newPw;
+
 
   /** 제출 */
   const handleSubmit = async () => {
@@ -62,12 +63,10 @@ export default function ChangePasswordPage() {
         newPassword: newPw,
       };
 
-      const res = await api.patch(requests.passwordRequest, payload);
+      await api.patch(requests.passwordRequest, payload);
 
-      if (res.data?.isSuccess) {
-        setMessage("비밀번호가 변경되었습니다.");
-        router.push("/profile");
-      }
+      setMessage("비밀번호가 변경되었습니다.");
+      router.push("/profile");
             
     } catch (error: any) {
       setErrorMessage(error?.response?.data?.message || "비밀번호 변경에 실패했습니다.");
