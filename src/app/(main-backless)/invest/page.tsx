@@ -47,6 +47,7 @@ export default function Page() {
 
         // 2) 대시보드 기본 데이터
         const res = await api.get<InvestDashboardRes>(requests.investDashboard);
+        console.log("Dashboard data:", res.data);
         setDashboardData(res.data);
       } catch (e) {
         const err = e as HttpError;
@@ -96,13 +97,13 @@ export default function Page() {
       <div className="w-[340px] pl-3">
         <div className="">
           <h2 className="text-body-04 text-neutral-1">{"민트"}의</h2>
-          <p className="text-body-06 text-neutral-1">총 투자 현황입니다.</p>
+          <p className="text-body-06 text-neutral-1">총 투자 계좌 자산</p>
         </div>
 
         {/* Current Amount */}
         <div>
           <p className="text-landing-01 text-neutral-1 leading-none tracking-tight">
-            {parseInt(dashboardData.totEvluAmt).toLocaleString()} <span className="text-body-06">원</span>
+            {dashboardData.totEvluAmt} <span className="text-body-06">원</span>
           </p>
         </div>
 
@@ -115,7 +116,7 @@ export default function Page() {
     }`}
   >
     {isPositive ? "↑" : "↓"}{" "}
-    {parseInt(dashboardData.totalProfitAmount).toLocaleString()}원 (
+    {dashboardData.totalProfitAmount}원 (
     {dashboardData.totalProfitRate}%)
   </p>
 
