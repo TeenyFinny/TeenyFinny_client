@@ -9,15 +9,16 @@ import { BottomSheetBuyStock } from "@/components/ui/bottom-sheet/BottomSheetBuy
 import { BottomSheetSellStock } from "@/components/ui/bottom-sheet/BottomSheetSellStock";
 import { createTradeOrder } from "@/lib/api/tradeOrder";
 
+import { PushNotification } from "@/components/ui/notice/PushNotification";
+
 interface StockDetail {
-  inter_shrn_iscd: string // 종목코드
-  inter_kor_isnm: string, // 종목명
-  inter2_prpr: string, // 현재가
-  inter2_prdy_vrss: string, // 전일 대비 가격
-  prdy_ctrt: string, // 전일 대비 등락률(%)
-  acml_vol: string, // 누적 거래량
-  availableStocks: number // 실제 api 데이터에는 없으나, 매수/매도 바텀시트에 필요하여 추가
-  maxQuantity: number // 실제 api 데이터에는 없으나, 매수/매도 바텀시트에 필요하여 추가
+  productCode: string;
+  productName: string;
+  currentPrice: number;
+  prevRate: string;
+  accumulatedVolume: string;
+  depositAmount: number;
+  maxBuyQuantity: number;
 }
 
 function StockDetailsContentInner() {
@@ -30,16 +31,24 @@ function StockDetailsContentInner() {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
 
+  // PushNotification state
+  const [notiOpen, setNotiOpen] = useState(false);
+  const [notiMessage, setNotiMessage] = useState("");
+
   useEffect(() => {
     if (!stck_shrn_iscd) return;
     (async () => {
       try {
         const res = await api.get(requests.stockDetail(stck_shrn_iscd));
-        const stockData = (res.data as any).output[0];
+        const stockData = res.data;
         setStock({
-          ...stockData,
-          availableStocks: 10, // TODO: 실제 보유량 연동 필요
-          maxQuantity: 100, // TODO: 최대 주문 가능 수량 연동 필요
+          productCode: stockData.productCode,
+          productName: stockData.productName,
+          currentPrice: stockData.currentPrice,
+          prevRate: stockData.prevRate,
+          accumulatedVolume: stockData.accumulatedVolume,
+          depositAmount: stockData.depositAmount,
+          maxBuyQuantity: stockData.maxBuyQuantity,
         });
       } catch (e) {
         // 커스텀 에러관리
@@ -79,29 +88,33 @@ function StockDetailsContentInner() {
     if (!stock) return
 
     const type = mode === "buy" ? "BUY" : "SELL";
-    const price = stock.inter2_prpr;
+    const price = String(stock.currentPrice);
 
     try {
       const res = await createTradeOrder(
-        stock.inter_shrn_iscd,
-        stock.inter_kor_isnm,
+        stock.productCode,
+        stock.productName,
         price,
         quantity,
         type
       )
 
-      alert(`${stock.inter_kor_isnm} ${quantity}주 ${mode === "buy" ? "매수" : "매도"} 완료!`)
+      // alert(`${stock.productName} ${quantity}주 ${mode === "buy" ? "매수" : "매도"} 완료!`)
+      setNotiMessage(`${res.data.productName} ${res.data.quantity}주 ${mode === "buy" ? "매수" : "매도"} 완료!`);
+      setNotiOpen(true);
       console.log(`${type} 주문 결과:`, res)
     } catch (e) {
       console.error(`${mode} 주문 실패:`, e)
-      alert("주문 실패")
+      // alert("주문 실패")
+      setNotiMessage("주문 실패");
+      setNotiOpen(true);
     } finally {
       setOpen(false)
     }
   }
 
-  const isPositive = parseFloat(stock.inter2_prdy_vrss.replace(/,/g, "")) > 0;
-  const isZero = parseFloat(stock.inter2_prdy_vrss.replace(/,/g, "")) === 0;
+  const isPositive = parseFloat(stock.prevRate.replace(/,/g, "")) > 0;
+  const isZero = parseFloat(stock.prevRate.replace(/,/g, "")) === 0;
   const colorClass = isPositive ? "text-error" : isZero ? "text-neutral-1" : "text-primary-1";
   const arrowIcon = isPositive ? "icon_invest_up.png" : "icon_invest_down.png";
 
@@ -112,16 +125,15 @@ function StockDetailsContentInner() {
         {/* Category and Refresh */}
         <div className="flex items-center justify-center gap-2 mb-17">
           <span className={`${colorClass} text-head-06`}>국내주식</span>
-          <img src="/icons/refresh.png" alt="새로고침 아이콘" className="w-5 h-5" />
         </div>
 
         {/* Stock Name */}
-        <h1 className="text-center text-landing-01 text-neutral-1 mb-2">{stock.inter_kor_isnm}</h1>
+        <h1 className="text-center text-landing-01 text-neutral-1 mb-2">{stock.productName}</h1>
 
         {/* Price and Change */}
         <div className="text-center mb-5">
-          <span className={`${colorClass} text-head-06 mr-2`}>{stock.inter2_prpr}원</span>
-          <span className={`${colorClass} text-head-06`}>{stock.prdy_ctrt}%</span>
+          <span className={`${colorClass} text-head-06 mr-2`}>{Number(stock.currentPrice).toLocaleString()}원</span>
+          <span className={`${colorClass} text-head-06`}>{stock.prevRate}%</span>
         </div>
 
         {/* Arrow Icon */}
@@ -135,19 +147,13 @@ function StockDetailsContentInner() {
         <div className="text-center">
           <p className="text-body-06 text-neutral-1 mb-2">
             {"어제보다 "}
-            <span className={`${colorClass} text-head-03`}>{stock.inter2_prdy_vrss}원</span>
             {isPositive ? " 올랐어요!" : isZero ? " 변동이 없어요." : " 내렸어요."}
           </p>
-          <p className="text-body-06 text-neutral-1">지금까지 {stock.acml_vol}만큼 이 주식을 사고 팔았어요!</p>
-        </div>
-
-        {/* Info Box */}
-        <div className="rounded-[10px] px-6 py-4 mt-18">
-          <p className="text-body-08 text-neutral-4 text-center">새로고침 시 변동 가격이 반영됩니다.</p>
+          <p className="text-body-06 text-neutral-1">지금까지 {stock.accumulatedVolume} 주 만큼 이 주식을 사고 팔았어요!</p>
         </div>
 
         {/* Buy Button */}
-        <div className="mt-1">
+        <div className="fixed bottom-[142px] w-full max-w-[327px]">
           <BigButtonActivated label={mode === "buy" ? "주식 사기" : "주식 팔기"} onClick={() => setOpen(true)} />
         </div>
       </main>
@@ -157,8 +163,8 @@ function StockDetailsContentInner() {
         <BottomSheetSellStock
           open={open}
           setOpen={setOpen}
-          stck_prpr={Number(String(stock.inter2_prpr).replace(/,/g, ""))}
-          maxQuantity={stock.maxQuantity}
+          stck_prpr={Number(String(stock.currentPrice).replace(/,/g, ""))}
+          maxQuantity={stock.maxBuyQuantity}
           onConfirm={handleTradeOrder}
           onCancel={() => setOpen(false)}
         />
@@ -169,13 +175,19 @@ function StockDetailsContentInner() {
         <BottomSheetBuyStock
           open={open}
           setOpen={setOpen}
-          stck_prpr={Number(String(stock.inter2_prpr).replace(/,/g, ""))}
-          availableStocks={Number(String(stock.availableStocks).replace(/,/g, ""))}
-          maxQuantity={stock.maxQuantity}
+          stck_prpr={Number(String(stock.currentPrice).replace(/,/g, ""))}
+          availableStocks={stock.depositAmount}
+          maxQuantity={stock.maxBuyQuantity}
           onConfirm={handleTradeOrder}
           onCancel={() => setOpen(false)}
         />
       )}
+
+      <PushNotification
+        open={notiOpen}
+        setOpen={setNotiOpen}
+        message={notiMessage}
+      />
     </div>
   )
 }

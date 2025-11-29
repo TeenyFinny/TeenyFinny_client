@@ -33,7 +33,7 @@ const requests = {
   fetchNotice: `/notice`,
 
   stocks: `/investments/stocks`,
-  stockDetail: (code: string) => `/investments/stocks/${code}`,
+  stockDetail: (code: string) => `/investments/stocks/detail/${code}`,
 
   fetchReport: (childId: number) =>
     childId ? `/allowance/${childId}/report` : `/allowance/report`,

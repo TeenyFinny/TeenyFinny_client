@@ -9,6 +9,8 @@ import { BottomSheetBuyStock } from "@/components/ui/bottom-sheet/BottomSheetBuy
 import { BottomSheetSellStock } from "@/components/ui/bottom-sheet/BottomSheetSellStock";
 import { createTradeOrder } from "@/lib/api/tradeOrder";
 
+import { PushNotification } from "@/components/ui/notice/PushNotification";
+
 interface Stock {
   inter_shrn_iscd: string // 종목코드
   inter_kor_isnm: string, // 종목명
@@ -19,11 +21,11 @@ interface Stock {
 }
 
 interface StockDetail {
-  inter_shrn_iscd: string
-  inter_kor_isnm: string
-  inter2_prpr: string
-  availableStocks: number
-  maxQuantity: number
+  productCode: string
+  productName: string
+  currentPrice: string
+  depositAmount: number
+  maxBuyQuantity: number
 }
 
 function AllStocksContentInner() {
@@ -37,6 +39,10 @@ function AllStocksContentInner() {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState<StockDetail | null>(null);
+
+  // PushNotification state
+  const [notiOpen, setNotiOpen] = useState(false);
+  const [notiMessage, setNotiMessage] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -76,11 +82,11 @@ function AllStocksContentInner() {
       const res = await api.get(requests.stockDetail(code))
       const stock = (res.data as any).output[0]
       setSelectedStock({
-        inter_shrn_iscd: stock.inter_shrn_iscd,
-        inter_kor_isnm: stock.inter_kor_isnm,
-        inter2_prpr: stock.inter2_prpr,
-        availableStocks: 10, // TODO: 실제 보유량 연동 필요
-        maxQuantity: 100, // TODO: 최대 주문 가능 수량 연동 필요
+        productCode: stock.productCode,
+        productName: stock.productName,
+        currentPrice: stock.currentPrice,
+        depositAmount: stock.depositAmount,
+        maxBuyQuantity: stock.maxBuyQuantity,
       })
       console.log(stock);
       setOpen(true)
@@ -95,22 +101,20 @@ function AllStocksContentInner() {
     if (!selectedStock) return
 
     const type = mode === "buy" ? "BUY" : "SELL";
-    const price = selectedStock.inter2_prpr;
 
     try {
       const res = await createTradeOrder(
-        selectedStock.inter_shrn_iscd,
-        selectedStock.inter_kor_isnm,
-        price,
+        selectedStock.productCode,
+        selectedStock.productName,
+        selectedStock.currentPrice,
         quantity,
         type
       )
-
-      alert(`${selectedStock.inter_kor_isnm} ${quantity}주 ${mode === "buy" ? "매수" : "매도"} 완료!`)
-      console.log(`${type} 주문 결과:`, res)
+      setNotiMessage(`${res.data.productName} ${res.data.quantity}주 ${mode === "buy" ? "매수" : "매도"} 완료!`);
+      setNotiOpen(true);
     } catch (e) {
-      console.error(`${mode} 주문 실패:`, e)
-      alert("주문 실패")
+      setNotiMessage("주문 실패");
+      setNotiOpen(true);
     } finally {
       setOpen(false)
     }
@@ -120,7 +124,6 @@ function AllStocksContentInner() {
     <div className="w-full bg-primary-4 pb-20">
       <div className="flex justify-center items-center gap-2 pt-4 pb-7">
         <h2 className="text-head-06 text-neutral-1">전체 주식 목록</h2>
-        <img src="/icons/refresh.png" alt="새로고침" className="w-5 h-5" />
       </div>
       <StockList stocks={stocks}
         onClickBtn={handleStockDetail}
@@ -135,8 +138,8 @@ function AllStocksContentInner() {
         <BottomSheetSellStock
           open={open}
           setOpen={setOpen}
-          stck_prpr={Number(String(selectedStock.inter2_prpr).replace(/,/g, ""))}
-          maxQuantity={selectedStock.maxQuantity}
+          stck_prpr={Number(String(selectedStock.currentPrice).replace(/,/g, ""))}
+          maxQuantity={selectedStock.maxBuyQuantity}
           onConfirm={handleTradeOrder}
           onCancel={() => setOpen(false)}
         />
@@ -147,13 +150,19 @@ function AllStocksContentInner() {
         <BottomSheetBuyStock
           open={open}
           setOpen={setOpen}
-          stck_prpr={Number(String(selectedStock.inter2_prpr).replace(/,/g, ""))}
-          availableStocks={Number(String(selectedStock.availableStocks).replace(/,/g, ""))}
-          maxQuantity={selectedStock.maxQuantity}
+          stck_prpr={Number(String(selectedStock.currentPrice).replace(/,/g, ""))}
+          availableStocks={selectedStock.depositAmount}
+          maxQuantity={selectedStock.maxBuyQuantity}
           onConfirm={handleTradeOrder}
           onCancel={() => setOpen(false)}
         />
       )}
+
+      <PushNotification
+        open={notiOpen}
+        setOpen={setNotiOpen}
+        message={notiMessage}
+      />
     </div>
   )
 }
