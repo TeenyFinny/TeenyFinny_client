@@ -121,31 +121,28 @@ const autoTransHandler = () => {
   }, [children]);
 
 // 4. 선택된 자녀의 계좌 정보 조회
-/* balance 적용 */
 useEffect(() => {
-  if (!data) return;
+  if (!currentChild) return;
 
-  // 현재 선택된 자녀 정보
-  const selectedChild = data.find(c => c.userId === currentChild);
+  // console.log("🔍 Fetching account for childId:", currentChild);
 
-  if (selectedChild) {
-    setTotal(selectedChild.balance ?? "0"); // Home 데이터 기반
-  }
-
-  // 계좌별 잔액은 서버에서 조회 (기존 유지)
+  // 계좌별 잔액은 서버에서 조회
   (async () => {
     try {
       const endpoint = requests.fetchTotalAccount(currentChild);
+      // console.log("📡 API Endpoint:", endpoint);
       const res = await api.get<ApiResponse<Accounts>>(endpoint);
       const accounts = res.data as Accounts;
+      // console.log("✅ Account data received:", accounts);
       
       setAccountData(accounts);
       setInvestAccountExists(accounts.invest !== null);
     } catch (e) {
-      console.error(e);
+      console.error("❌ Error fetching account:", e);
     }
   })();
-}, [currentChild, data]);
+}, [currentChild]);
+
   /** URL childId 우선 선택 → 없으면 첫 번째 아이 fallback */
   useEffect(() => {
     if (!data || data.length === 0) return;
