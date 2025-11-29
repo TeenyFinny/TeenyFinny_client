@@ -31,7 +31,7 @@ export default function SimplePasswordRegisterPage() {
     return password === confirm;
   }, [password, confirm, submitted]);
 
-  const isValid = /^\d{6}$/.test(password) && password === confirm;
+  const isValid = passwordValid && confirmValid;
 
   const handleSubmit = async () => {
     setSubmitted(true);

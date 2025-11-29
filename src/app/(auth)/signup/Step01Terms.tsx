@@ -56,16 +56,21 @@ export default function Step1Terms({
 
   /** 약관 HTML 로드 */
   useEffect(() => {
-    if (!openModalId) {
-      setModalHtmlContent("");
-      return;
-    }
+    const controller = new AbortController();
 
     const fetchHtml = async () => {
       setModalLoading(true);
       try {
-        const response = await fetch(`/terms/terms_${openModalId}.html`);
+        const response = await fetch(`/terms/terms_${openModalId}.html`, {
+          signal: controller.signal,
+        });
+
+        if (controller.signal.aborted) return;
+
         const html = await response.text();
+
+        if (controller.signal.aborted) return;
+
         // style 태그 내용 추출
         const styleMatch = html.match(/<style[^>]*>([\s\S]*)<\/style>/i);
         let styleContent = styleMatch ? styleMatch[1] : "";
@@ -78,16 +83,27 @@ export default function Step1Terms({
         const fullContent = styleContent
           ? `<style>${styleContent}</style><div class="terms-content">${bodyContent}</div>`
           : `<div class="terms-content">${bodyContent}</div>`;
-        setModalHtmlContent(fullContent);
-      } catch (error) {
-        console.error("약관 HTML 로드 실패:", error);
-        setModalHtmlContent("<p>약관을 불러올 수 없습니다.</p>");
+
+        if (!controller.signal.aborted) {
+          setModalHtmlContent(fullContent);
+        }
+      } catch (error: any) {
+        if (error?.name !== "AbortError") {
+          console.error("약관 HTML 로드 실패:", error);
+          setModalHtmlContent("<p>약관을 불러올 수 없습니다.</p>");
+        }
       } finally {
-        setModalLoading(false);
+        if (!controller.signal.aborted) {
+          setModalLoading(false);
+        }
       }
     };
 
     fetchHtml();
+
+    return () => {
+      controller.abort();
+    };
   }, [openModalId]);
 
   /** 약관 목록 데이터 */

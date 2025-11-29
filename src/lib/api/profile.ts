@@ -13,8 +13,13 @@ export interface ProfileInfoRes {
 
 /**
  * 내 정보 조회
+ * @param signal - AbortController signal (optional)
  */
-export const getProfileInfo = async (): Promise<ProfileInfoRes> => {
-  const response = await api.get<ProfileInfoRes>(requests.fetchProfileInfo);
+export const getProfileInfo = async (
+  signal?: AbortSignal
+): Promise<ProfileInfoRes> => {
+  const response = await api.get<ProfileInfoRes>(requests.fetchProfileInfo, {
+    signal,
+  });
   return response.data as ProfileInfoRes;
 };

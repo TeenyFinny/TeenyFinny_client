@@ -38,7 +38,7 @@ export default function PushSettingPage() {
         const res = await api.get<{
           pushEnabled: boolean;
           nightPushEnabled: boolean;
-        }>(requests.fatchPushSettings, {
+        }>(requests.fetchPushSettings, {
           signal: controller.signal,
         });
         const data = res.data as {

@@ -6,18 +6,7 @@ import { useEffect, useState } from "react";
 import { useUserStore } from "@/store/userStore";
 import { NormalInput2 } from "@/components/ui/input/NormalInput2";
 import { useRouter } from "next/navigation";
-import api from "@/lib/axios/axios";
-import requests from "@/lib/axios/requests";
-
-interface UserProfile {
-  name: string;
-  email: string;
-  phoneNumber: string;
-}
-
-interface ProfileInfoRes {
-  user: UserProfile;
-}
+import { getProfileInfo, type ProfileInfoRes } from "@/lib/api/profile";
 
 /**
  * MyPage
@@ -49,14 +38,11 @@ export default function MyPage() {
       try {
         if (!userId) throw new Error("사용자 ID가 없습니다.");
 
-        const res = await api.get<ProfileInfoRes>(requests.fetchProfileInfo, {
-          signal: controller.signal,
-        });
+        const data = await getProfileInfo(controller.signal);
 
         if (controller.signal.aborted) return;
 
-        const data = res.data as ProfileInfoRes | null;
-        setProfileInfo(data ?? null);
+        setProfileInfo(data);
       } catch (err: any) {
         if (controller.signal.aborted || err?.name === "CanceledError") return;
 

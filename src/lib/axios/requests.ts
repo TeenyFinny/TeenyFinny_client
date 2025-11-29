@@ -9,7 +9,7 @@ const requests = {
   passwordRequest: `/auth/password`,
   authEmail: `/auth/email`,
   refresh: `/auth/refresh`,
-  fatchPushSettings: `/profile/push`,
+  fetchPushSettings: `/profile/push`,
   updatePush: `/profile/push`,
   simplePassword: `/auth/simple-password`,
   verifyFamilyOtp: `/auth/otp`, // OTP 검증
