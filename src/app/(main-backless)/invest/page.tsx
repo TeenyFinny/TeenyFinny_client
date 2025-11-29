@@ -96,6 +96,7 @@ export default function Page() {
       {/* Investment Status */}
       <div className="w-[340px] pl-3">
         <div className="">
+          {/* 추후 userstore로 변경 */}
           <h2 className="text-body-04 text-neutral-1">{"민트"}의</h2>
           <p className="text-body-06 text-neutral-1">총 투자 계좌 자산</p>
         </div>
