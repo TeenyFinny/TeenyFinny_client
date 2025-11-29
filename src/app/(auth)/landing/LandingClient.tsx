@@ -27,7 +27,7 @@ function renderStep(step: number) {
 
 export function LandingClient() {
   const router = useRouter();
-  const { step, nextStep } = useLandingStep();
+  const { step, nextStep, goToStep } = useLandingStep();
   const totalSteps = 4;
 
   const handleNext = () => {
@@ -56,6 +56,16 @@ export function LandingClient() {
             <GrayBigButtonActivated label="다음" onClick={handleNext} />
           )}
         </div>
+
+        {step < 4 && (
+          <button
+            onClick={() => goToStep(4)}
+            className="absolute bottom-[25px] text-neutral-2 text-body-06 underline"
+          >
+            SKIP  
+          </button>
+        )}
+
       </div>
     </main>
   );
