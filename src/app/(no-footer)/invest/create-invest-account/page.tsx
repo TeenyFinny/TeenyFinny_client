@@ -14,7 +14,7 @@ export default function Page() {
       {page === 3 && <Complete />} */}
 
       {page === 'intro' && <Intro onNext={() => setPage('move')} />}
-      {page === 'move' && <Move onNext={() => setPage('complete')} />}
+      {page === 'move' && <Move onNext={() => setPage('complete')} childId = {1} />}
       {page === 'complete' && <Complete />}
     </>
   );

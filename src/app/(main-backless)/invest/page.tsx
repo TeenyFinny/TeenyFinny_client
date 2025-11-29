@@ -37,13 +37,9 @@ export default function Page() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1) 계좌 존재 여부 체크
-        const accountRes = await api.get(requests.investAccount);
+        const res = await api.get(requests.investAccount);
 
-        if (!accountRes.data) {
-          router.push("/invest/no-account");
-          return;
-        }
+
 
         // 2) 대시보드 기본 데이터
         const res = await api.get<InvestDashboardRes>(requests.investDashboard);
@@ -51,6 +47,11 @@ export default function Page() {
         setDashboardData(res.data);
       } catch (e) {
         const err = e as HttpError;
+        if (err.statusCode === 404) {
+          router.push("/invest/no-account");//계좌가 없다면 안내페이지로
+          return;
+        }
+        // 403일 경우 에러메시지를 반환하고 홈으로 라우팅
         if (err.statusCode === 403) {
           alert(err.message);
           router.push("/");

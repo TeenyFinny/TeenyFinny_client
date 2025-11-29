@@ -1,14 +1,36 @@
+import api from "@/lib/axios/axios";
+import requests from "@/lib/axios/requests";
 import { useEffect } from "react";
 
-export default function Move({ onNext }: { onNext: () => void }) {
+export default function Move({
+  onNext,
+  childId,
+}: {
+  onNext: () => void;
+  childId: number;   // 부모가 선택한 childId 전달받도록 추가
+}) {
 
   const MOVE_PAGE_DELAY = 2500;
 
   useEffect(() => {
-    const t = setTimeout(onNext, MOVE_PAGE_DELAY);
-    return () => clearTimeout(t);
-  }, []);
+    const createAccount = async () => {
+      try {
+        // childId를 body에 담아서 POST
+        await api.post(requests.investAccount, { childId });
 
+        // 계좌 생성 성공 → 다음 화면으로 이동
+        onNext();
+
+      } catch (err) {
+        console.error(err);
+        alert("계좌 생성 중 오류가 발생했습니다.");
+        window.history.back();
+      }
+    };
+
+    const t = setTimeout(createAccount, MOVE_PAGE_DELAY);
+    return () => clearTimeout(t);
+  }, [childId, onNext]);
 
   return (
     <div className="flex flex-col items-center px-6 pt-13">
@@ -54,5 +76,5 @@ export default function Move({ onNext }: { onNext: () => void }) {
         </li>
       </ul>
     </div>
-  )
+  );
 }
