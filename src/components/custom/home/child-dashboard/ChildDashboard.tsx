@@ -6,7 +6,19 @@ import { AccountCard } from "@/components/custom/account/AccountCard";
 import { getHomeData } from "@/lib/api/home";
 import { UserDto } from "@/types/home";
 import LoadingScreenSkeletonDashboard from "@/components/ui/LoadingScreenSkeletonDashboard";
+import requests from "@/lib/axios/requests";
+import { ApiResponse } from "@/types/axios/apiRes.t";
+import api from "@/lib/axios/axios";
+import { useRouter } from "next/navigation";
+import { CardDetail } from "../../allowance/card/CardDetail";
 
+type CardInfo = {
+  hasCard: boolean;
+  name: string;
+  cardNumber: string;
+  expiredAt: string;
+  cvc: string;
+};
 /**
  * 자녀 대시보드 컴포넌트
  *
@@ -14,8 +26,12 @@ import LoadingScreenSkeletonDashboard from "@/components/ui/LoadingScreenSkeleto
  * API를 호출하여 실시간 데이터를 표시합니다.
  */
 export default function ChildDashboard() {
+  const router = useRouter();
   const [user, setUser] = useState<UserDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [cardOpen, setCardOpen] = useState(false);
+  const [cardInfo, setCardInfo] = useState<CardInfo | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,24 +61,37 @@ export default function ChildDashboard() {
   /**
    * 상세 내역 보기 클릭 이벤트
    *
-   * @param {string} accountName - 클릭한 계좌 이름
+   * @param {string} accountType - 클릭한 계좌 타입
    */
-  const handleViewDetails = (accountName: string) => {
-    console.log(`(id=${userId})인 아이의 ${accountName} 상세 내역 보기`);
+  const handleViewDetails = (accountType: string) => {
+    router.push(`/account/history?accountType=${accountType}`);
   };
 
   /**
    * 카드 뱃지 클릭 이벤트
    */
   const handleViewCard = () => {
-    console.log(`(id=${userId})인 아이의 카드 바텀시트 리다이렉트`);
+    (async () => {
+    try {
+      const endpoint = requests.fetchChildCard() // 자녀 본인 → /account/card
+      const res = await api.get<ApiResponse<CardInfo>>(endpoint);
+      const card = res.data as CardInfo;
+      if (card.hasCard) {
+        setCardInfo(card);
+        setCardOpen(true);
+      } else {
+        router.push(`/allowance/card/create`);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  })();
   };
-
   /**
    * 리포트 페이지 이동 이벤트
    */
   const reportHandler = () => {
-    console.log(`(id=${userId})인 아이의 리포트 페이지와 리다이렉트`);
+    router.push(`/allowance/report`)
   };
 
   return (
@@ -93,6 +122,15 @@ export default function ChildDashboard() {
           onViewDetails={() => handleViewDetails("용돈 계좌")}
           onCardClick={() => handleViewCard()}
         />
+
+          <CardDetail
+            open={cardOpen}
+            setOpen={setCardOpen}
+            cardName={cardInfo?.name ?? ""}
+            cardNumber={cardInfo?.cardNumber ?? ""}
+            expiry={cardInfo?.expiredAt ?? ""}
+            cvc={cardInfo?.cvc ?? ""}
+          />
 
         {/* 계좌 카드: 투자 계좌 */}
         <AccountCard

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Image from "next/image";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
@@ -8,9 +8,10 @@ import { useUserStore } from "@/store/userStore";
 import { StateBadge } from "@/components/ui/badge/StateBadge";
 import { BottomSheetDetail } from "@/components/custom/account/BottomSheetDetail";
 import { useSelectedChildStore } from "@/store/selectedChildStore";
+import { useSearchParams } from "next/navigation";
 
 interface Transaction {
-  id: string;
+  transactionId: string;
   type: "deposit" | "withdrawal";
   merchant: string;
   amount: string;
@@ -28,8 +29,10 @@ interface DetailData {
   balanceAfter: string;
 }
 
-export default function Page() {
+function HistoryPageContent() {
   const { userType } = useUserStore();
+  const searchParams = useSearchParams();
+  const type = searchParams.get("accountType");
 
   /** Zustand 전역 State (완전 stateful) */
   const {
@@ -106,14 +109,14 @@ export default function Page() {
    *  상세 클릭 → API
    * ---------------------------- */
   const handleTransactionClick = async (t: Transaction) => {
-    setSelectedId(t.id);
+    setSelectedId(t.transactionId);
     setSheetOpen(true);
     setLoadingDetail(true);
 
     try {
-      const res = await api.get(requests.fetchTransactionDetail(t.id));
-
-      setDetail(res.data[0]);
+      const res = await api.get(requests.fetchTransactionDetail(t.transactionId));
+      console.log(res.data);
+      setDetail(res.data);
     } finally {
       setLoadingDetail(false);
     }
@@ -181,7 +184,7 @@ export default function Page() {
         {transactions.length > 0 ? (
           transactions.map((t) => (
             <div
-              key={t.id}
+              key={t.transactionId}
               onClick={() => handleTransactionClick(t)}
               className="flex h-[76px] items-center justify-between border-b border-monochrome-gray cursor-pointer"
             >
@@ -222,5 +225,13 @@ export default function Page() {
         />
       )}
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center h-full">로딩중...</div>}>
+      <HistoryPageContent />
+    </Suspense>
   );
 }

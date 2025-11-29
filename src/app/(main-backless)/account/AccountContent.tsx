@@ -24,6 +24,7 @@ type Accounts = {
 };
 
 type CardInfo = {
+  hasCard: boolean;
   name: string;
   cardNumber: string;
   expiredAt: string;
@@ -65,30 +66,25 @@ const autoTransHandler = () => {
 
   // store에 저장
   setChildBaseInfo(currentChildObj.userId, currentChildObj.name);
-  router.push(`/account/auto-transfer`)};
+  router.push(`/account/auto-transfer`)
+};
 
-  const handleViewCard = async () => {
-    if (!accountData) return;
-    console.log(accountData);
-
-    if (!accountData.card.hasCard) {
-      router.push(`/allowance/card/create`);
-      return;
-    }
-
+  const handleViewCard = () => {
+    (async () => {
     try {
-      const endpoint =
-        userType === "child"
-          ? requests.fetchChildCard() // 자녀 본인 → /account/card
-          : requests.fetchChildCard(currentChild); // 부모 → /account/{childId}/card
-      console.log(endpoint)
+      const endpoint = requests.fetchChildCard(currentChild) // 자녀 본인 → /account/card
       const res = await api.get<ApiResponse<CardInfo>>(endpoint);
-      console.log(res);
-      setCardInfo(res.data as CardInfo);
-      setCardOpen(true);
+      const card = res.data as CardInfo;
+      if (card.hasCard) {
+        setCardInfo(card);
+        setCardOpen(true);
+      } else {
+        router.push(`/allowance/card/create`);
+      }
     } catch (e) {
       console.error(e);
     }
+  })();
   };
 
   const handleViewDetails = (accountType: string) => {
@@ -125,27 +121,27 @@ const autoTransHandler = () => {
   }, [children]);
 
 // 4. 선택된 자녀의 계좌 정보 조회
-  useEffect(() => {
-    if (!currentChild) return;
+useEffect(() => {
+  if (!currentChild) return;
 
-    (async () => {
-      try {
-        const endpoint =
-          userType === "child"
-            ? requests.fetchTotalAccount() // 자기 계좌
-            : requests.fetchTotalAccount(currentChild); // 부모일 경우 자녀 계좌
-        const res = await api.get<ApiResponse<Accounts>>(endpoint);
-        const accounts = res.data as Accounts;
-        setAccountData(accounts);
-        setInvestAccountExists(accounts.invest !== null);
-        console.log("accountData?.invest : " + accountData?.invest)
-      } catch (e) {
-        if (e instanceof HttpError && e.statusCode === 403) {
-          router.push("/");
-        }
-      }
-    })();
-  }, [currentChild, router]);
+  // console.log("🔍 Fetching account for childId:", currentChild);
+
+  // 계좌별 잔액은 서버에서 조회
+  (async () => {
+    try {
+      const endpoint = requests.fetchTotalAccount(currentChild);
+      // console.log("📡 API Endpoint:", endpoint);
+      const res = await api.get<ApiResponse<Accounts>>(endpoint);
+      const accounts = res.data as Accounts;
+      // console.log("✅ Account data received:", accounts);
+      
+      setAccountData(accounts);
+      setInvestAccountExists(accounts.invest !== null);
+    } catch (e) {
+      console.error("❌ Error fetching account:", e);
+    }
+  })();
+}, [currentChild]);
 
   /** URL childId 우선 선택 → 없으면 첫 번째 아이 fallback */
   useEffect(() => {
