@@ -28,7 +28,7 @@ const requests = {
   tradeBuy: `/investments/trade/buy`,
   tradeSell: `/investments/trade/sell`,
   fetchChild: `/account/children`,
-  portfolio: `/investments/my-stocks/portfolio`,
+  portfolio: `/investments/portfolio`,
 
   fetchNotice: `/notice`,
 

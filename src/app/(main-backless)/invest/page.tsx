@@ -33,29 +33,21 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const isMounted = useRef(true);
 
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
+  // 최초 데이터 로드
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1. 계좌 존재 여부 확인
+        // 1) 계좌 존재 여부 체크
         const accountRes = await api.get(requests.investAccount);
-        if (!accountRes) {
+
+        if (!accountRes.data) {
           router.push("/invest/no-account");
           return;
         }
-        
-        // 2. 초기 데이터 로드
+
+        // 2) 대시보드 기본 데이터
         const res = await api.get<InvestDashboardRes>(requests.investDashboard);
-        console.log("Fetched dashboard data:", res.data);
-        if (isMounted.current) {
-          setDashboardData(res.data);
-          setLoading(false);
-        }
+        setDashboardData(res.data);
       } catch (e) {
         const err = e as HttpError;
         if (err.statusCode === 403) {
@@ -64,26 +56,27 @@ export default function Page() {
         } else {
           console.error(err);
         }
-        if (isMounted.current) setLoading(false);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
+  }, [router]);
 
-    // 3. 3초마다 폴링
-    const intervalId = setInterval(async () => {
+  // 폴링 (데이터만 업데이트)
+  useEffect(() => {
+    const interval = setInterval(async () => {
       try {
         const res = await api.get<InvestDashboardRes>(requests.investDashboard);
-        if (isMounted.current) {
-          setDashboardData(res.data);
-        }
+        setDashboardData(res.data);
       } catch (e) {
         console.error("Polling error:", e);
       }
-    }, 1000);
+    }, 3000);
 
-    return () => clearInterval(intervalId);
-  }, [router]);
+    return () => clearInterval(interval);
+  }, []);
 
   if (loading) {
     return (
@@ -114,21 +107,27 @@ export default function Page() {
         </div>
 
         {/* Profit Amount */}
-        <div className="mb-8 flex items-center justify-between pr-26">
-          <p className={`text-body-06 ${isPositive ? "text-error" : "text-primary-1"}`}>
-            {isPositive ? "↑" : "↓"} {parseInt(dashboardData.totalProfitAmount).toLocaleString()}원 (
-            {dashboardData.totalProfitRate}%)
-          </p>
+        <div className="relative mb-8 pr-26">
+  {/* Profit Amount */}
+  <p
+    className={`text-body-06 ${
+      isPositive ? "text-error" : "text-primary-1"
+    }`}
+  >
+    {isPositive ? "↑" : "↓"}{" "}
+    {parseInt(dashboardData.totalProfitAmount).toLocaleString()}원 (
+    {dashboardData.totalProfitRate}%)
+  </p>
 
-          {/* Account Link */}
-          <a
-            href="/invest/my-stock-account"
-            className="flex items-center text-body-06 text-neutral-2 hover:text-neutral-1 transition-colors"
-          >
-            내 계좌 보기
-            <img src="/icons/arrow-right.png" alt="arrow-right icon" className="w-6 h-6" />
-          </a>
-        </div>
+  {/* Right-aligned link */}
+  <a
+    href="/invest/my-stock-account"
+    className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center text-body-06 text-neutral-2 hover:text-neutral-1 transition-colors"
+  >
+    내 계좌 보기
+    <img src="/icons/arrow-right.png" alt="arrow-right icon" className="w-6 h-6" />
+  </a>
+</div>
       </div>
 
 
