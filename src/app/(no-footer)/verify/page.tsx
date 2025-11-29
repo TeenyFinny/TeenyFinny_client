@@ -98,14 +98,10 @@ export default function VerifyPage() {
         return;
       }
 
-      const res = await api.patch(requests.fetchProfileInfo, req);
+      await api.patch(requests.fetchProfileInfo, req);
 
-      if (res.data?.isSuccess) {
-        setSuccess(true);
-        useUserStore.getState().updateUser(name);
-      } else {
-        setSuccess(false);
-      }
+      setSuccess(true);
+      useUserStore.getState().updateUser(name);
     } catch (err) {
       console.error(err);
       setSuccess(false);
