@@ -48,7 +48,8 @@ export default function ChangePasswordPage() {
     return confirmPw === newPw && isValidPassword(confirmPw);
   }, [confirmPw, newPw, submitted]);
 
-  const allValid = currentPwValid && newPwValid && confirmPwValid;
+  const allValid =
+    currentPwValid && newPwValid && confirmPwValid && currentPw !== newPw;
 
   /** 제출 */
   const handleSubmit = async () => {
@@ -62,18 +63,16 @@ export default function ChangePasswordPage() {
         newPassword: newPw,
       };
 
-      const res = await api.patch(requests.passwordRequest, payload);
+      await api.patch(requests.passwordRequest, payload);
 
-      if (res.data?.isSuccess) {
-        setMessage("비밀번호가 변경되었습니다.");
-        router.push("/profile");
-      }
-            
+      setMessage("비밀번호가 변경되었습니다.");
+      router.push("/profile");
     } catch (error: any) {
-      setErrorMessage(error?.response?.data?.message || "비밀번호 변경에 실패했습니다.");
+      setErrorMessage(
+        error?.response?.data?.message || "비밀번호 변경에 실패했습니다."
+      );
     }
   };
-
 
   return (
     <main className="flex flex-col px-[27px]">
@@ -86,7 +85,7 @@ export default function ChangePasswordPage() {
       </section>
 
       {/* 입력 */}
-      <section className="flex flex-col gap-[24px] pt-[42px]"> 
+      <section className="flex flex-col gap-[24px] pt-[42px]">
         <div className="flex flex-col">
           <PasswordInput
             label="현재 비밀번호"
@@ -109,9 +108,9 @@ export default function ChangePasswordPage() {
             placeholder="8자리 이상 + 특수문자 포함"
           />
           {!newPwValid && (
-          <p className="text-error text-body-03 pl-4 pt-1">
-            8자리 이상이며 특수문자를 1개 이상 포함해야 합니다.
-          </p>
+            <p className="text-error text-body-03 pl-4 pt-1">
+              8자리 이상이며 특수문자를 1개 이상 포함해야 합니다.
+            </p>
           )}
         </div>
 

@@ -62,3 +62,9 @@ export function getAuthorizationHeader(): string | null {
   return `${prefix} ${token.accessToken}`;
 }
 
+/**
+ * 토큰이 존재하는지 확인
+ */
+export function hasAuthToken(): boolean {
+  return loadAuthToken() !== null;
+}

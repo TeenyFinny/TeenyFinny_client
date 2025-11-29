@@ -3,12 +3,21 @@
 
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { useEffect, useState } from "react";
-import api from "@/lib/axios/axios";
-import requests from "@/lib/axios/requests";
-import { HttpError } from "@/types/axios/httpError.t";
 import { useUserStore } from "@/store/userStore";
 import { NormalInput2 } from "@/components/ui/input/NormalInput2";
 import { useRouter } from "next/navigation";
+import api from "@/lib/axios/axios";
+import requests from "@/lib/axios/requests";
+
+interface UserProfile {
+  name: string;
+  email: string;
+  phoneNumber: string;
+}
+
+interface ProfileInfoRes {
+  user: UserProfile;
+}
 
 /**
  * MyPage
@@ -28,16 +37,8 @@ import { useRouter } from "next/navigation";
  * - BigButtonActivated: 비밀번호 변경 버튼
  * - 탈퇴하기 버튼: 하단 고정
  */
-interface ProfileInfo {
-  user: {
-    name: string;
-    email: string;
-    phoneNumber: string;
-  };
-}
-
 export default function MyPage() {
-  const [profileInfo, setProfileInfo] = useState<ProfileInfo | null>(null);
+  const [profileInfo, setProfileInfo] = useState<ProfileInfoRes | null>(null);
   const userId = useUserStore((state) => state.userId);
   const router = useRouter();
 
@@ -47,33 +48,29 @@ export default function MyPage() {
     const loadUser = async () => {
       try {
         if (!userId) throw new Error("사용자 ID가 없습니다.");
-        // 명시적 타입 지정 (ProfileInfo)
-        const res = await api.get<ProfileInfo>(
-          requests.fetchProfileInfo,
-          {
-            signal: controller.signal,
-          }
-        );
-        const profileInfo = res.data ?? {};
-        setProfileInfo(profileInfo);
-      } catch (err) {
+
+        const res = await api.get<ProfileInfoRes>(requests.fetchProfileInfo, {
+          signal: controller.signal,
+        });
+
         if (controller.signal.aborted) return;
 
+        const data = res.data as ProfileInfoRes | null;
+        setProfileInfo(data ?? null);
+      } catch (err: any) {
+        if (controller.signal.aborted || err?.name === "CanceledError") return;
+
         if (process.env.NODE_ENV === "development") {
-          if (err instanceof HttpError) {
-            console.error(
-              `[PROFILE/INFO] 요청 실패 - ${err.statusCode} ${err.message}`,
-              err
-            );
-          } else {
-            console.error("사용자 정보를 불러오지 못했습니다.", err);
-          }
+          console.error("사용자 정보를 불러오지 못했습니다.", err);
         }
       }
     };
 
     loadUser();
-    return () => controller.abort();
+
+    return () => {
+      controller.abort();
+    };
   }, [userId]);
 
   const handleChangeInfo = () => {
@@ -120,7 +117,10 @@ export default function MyPage() {
 
       {/* 비밀번호 변경 */}
       <div className="mt-6">
-        <BigButtonActivated label="비밀번호 변경하기" onClick={() => router.push("/profile/mypage/password")} />
+        <BigButtonActivated
+          label="비밀번호 변경하기"
+          onClick={() => router.push("/profile/mypage/password")}
+        />
       </div>
 
       {/* 탈퇴 */}

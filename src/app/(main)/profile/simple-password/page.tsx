@@ -8,19 +8,21 @@ import { useRouter } from "next/navigation";
 import { useNotificationStore } from "@/store/notificationStore";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
+import { TitleOnlyDialog } from "@/components/ui/modal/TitleOnlyDialog";
 
 export default function SimplePasswordRegisterPage() {
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { setMessage } = useNotificationStore();
 
   /** 6자리 숫자 검증 */
   const passwordValid = useMemo(() => {
     if (!submitted && !password) return true;
-    return /^[0-9]{6}$/.test(password);
+    return /^\d{6}$/.test(password);
   }, [password, submitted]);
 
   /** 일치 검증 */
@@ -29,7 +31,7 @@ export default function SimplePasswordRegisterPage() {
     return password === confirm;
   }, [password, confirm, submitted]);
 
-  const isValid = /^[0-9]{6}$/.test(password) && password === confirm;
+  const isValid = /^\d{6}$/.test(password) && password === confirm;
 
   const handleSubmit = async () => {
     setSubmitted(true);
@@ -37,19 +39,18 @@ export default function SimplePasswordRegisterPage() {
 
     try {
       const payload = {
-        simplePassword: password,
+        password: password,
       };
 
-      const res = await api.patch(requests.simplePassword, payload);
+      await api.patch(requests.simplePassword, payload);
 
-      if (res.data?.isSuccess) {
-        setMessage("간편 비밀번호가\n변경되었습니다.");
-        router.push("/profile");
-      }
+      setMessage("간편 비밀번호가\n변경되었습니다.");
+      router.push("/profile");
     } catch (error: any) {
-      setErrorMessage(
-        error?.response?.data?.message || "비밀번호 변경에 실패했습니다."
-      );
+      const errorMsg =
+        error?.response?.data?.message || "비밀번호 변경에 실패했습니다.";
+      setErrorMessage(errorMsg);
+      setErrorModalOpen(true);
     }
   };
 
@@ -67,7 +68,7 @@ export default function SimplePasswordRegisterPage() {
 
       {/* 입력 */}
       <section className="flex flex-col gap-[24px] pt-[42px]">
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-1">
           <PasswordInput
             label="간편 비밀번호"
             value={password}
@@ -75,12 +76,12 @@ export default function SimplePasswordRegisterPage() {
             placeholder="6자리 숫자"
           />
           {submitted && !passwordValid && (
-            <p className="text-error text-body-03 pl-4 pt-1">
+            <p className="text-error text-body-08 px-1">
               6자리 숫자를 입력해주세요.
             </p>
           )}
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-1">
           <PasswordInput
             label="간편 비밀번호 확인"
             value={confirm}
@@ -88,7 +89,7 @@ export default function SimplePasswordRegisterPage() {
             placeholder="6자리 숫자"
           />
           {submitted && !confirmValid && (
-            <p className="text-error text-body-03 pl-4 pt-1">
+            <p className="text-error text-body-08 px-1">
               비밀번호가 일치하지 않습니다.
             </p>
           )}
@@ -103,6 +104,15 @@ export default function SimplePasswordRegisterPage() {
           <BigButtonDisabled label="확인" onClick={handleSubmit} />
         )}
       </section>
+
+      {/* 에러 모달 */}
+      <TitleOnlyDialog
+        open={errorModalOpen}
+        onOpenChange={setErrorModalOpen}
+        title={errorMessage}
+        confirmText="확인"
+        onConfirm={() => setErrorModalOpen(false)}
+      />
     </main>
   );
 }
