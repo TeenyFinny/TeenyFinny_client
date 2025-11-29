@@ -19,9 +19,11 @@ const requests = {
   fetchQuiz: "/quiz/info",
   investmentsSummary: `/investments/summary`,
   fetchGoalConfirm: `/goal/account/create`,
+
   investMyAccount: `/investments/account`,
   investDashboard: `/investments/dashboard`,
   investAccount: `/investments/account/check-account`,
+
 
   updateGoal: `/goal/update`,
   sellStock: `/investments/sellStock`,
