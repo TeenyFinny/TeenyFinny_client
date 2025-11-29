@@ -142,7 +142,7 @@ export default function Page() {
 
       {/* My Stocks Section */}
       <h2 className="text-head-06 text-neutral-2 px-3 self-start">내가 산 주식</h2>
-      <div className="mb-5 mt-2 w-[340px] bg-white rounded-[16px] shadow-lg">
+      <div className="mb-5 mt-2 w-[340px] min-h-[232px] bg-white rounded-[16px] shadow-lg">
         <div className="flex items-center justify-between px-6">
           <span className="text-body-07 text-neutral-2 mt-3">종목명</span>
           <span className="text-body-07 text-neutral-2 mt-3">평균단가</span>

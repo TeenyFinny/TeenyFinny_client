@@ -131,8 +131,8 @@ export default function Page() {
 
 
       {/* My Stocks Section */}
-      <div className="mb-5 w-[340px] mt-12 bg-white rounded-[16px] shadow-lg">
-        <h2 className="text-head-06 text-neutral-2 px-5 pt-4">내가 산 주식</h2>
+      <h2 className="text-head-06 text-neutral-2 px-5 pt-4 mt-12">내가 산 주식</h2>
+      <div className="mb-5 mt-2 w-[340px] bg-white rounded-[16px] shadow-lg">
         {holdings.map((stock, index) => (
           <div key={stock.productName}>
             <TradeHistory
