@@ -3,7 +3,9 @@
 
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { useEffect, useState } from "react";
-import { getProfileInfo, ProfileInfoRes } from "@/lib/api/profile";
+import api from "@/lib/axios/axios";
+import requests from "@/lib/axios/requests";
+import { HttpError } from "@/types/axios/httpError.t";
 import { useUserStore } from "@/store/userStore";
 import { NormalInput2 } from "@/components/ui/input/NormalInput2";
 import { useRouter } from "next/navigation";
@@ -26,26 +28,52 @@ import { useRouter } from "next/navigation";
  * - BigButtonActivated: 비밀번호 변경 버튼
  * - 탈퇴하기 버튼: 하단 고정
  */
+interface ProfileInfo {
+  user: {
+    name: string;
+    email: string;
+    phoneNumber: string;
+  };
+}
+
 export default function MyPage() {
-  const [profileInfo, setProfileInfo] = useState<ProfileInfoRes | null>(null);
+  const [profileInfo, setProfileInfo] = useState<ProfileInfo | null>(null);
   const userId = useUserStore((state) => state.userId);
   const router = useRouter();
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const loadUser = async () => {
       try {
         if (!userId) throw new Error("사용자 ID가 없습니다.");
-        
-        const data = await getProfileInfo();
-        setProfileInfo(data);
+        // 명시적 타입 지정 (ProfileInfo)
+        const res = await api.get<ProfileInfo>(
+          requests.fetchProfileInfo,
+          {
+            signal: controller.signal,
+          }
+        );
+        const profileInfo = res.data ?? {};
+        setProfileInfo(profileInfo);
       } catch (err) {
+        if (controller.signal.aborted) return;
+
         if (process.env.NODE_ENV === "development") {
-          console.error("사용자 정보를 불러오지 못했습니다.", err);
+          if (err instanceof HttpError) {
+            console.error(
+              `[PROFILE/INFO] 요청 실패 - ${err.statusCode} ${err.message}`,
+              err
+            );
+          } else {
+            console.error("사용자 정보를 불러오지 못했습니다.", err);
+          }
         }
       }
     };
 
     loadUser();
+    return () => controller.abort();
   }, [userId]);
 
   const handleChangeInfo = () => {
