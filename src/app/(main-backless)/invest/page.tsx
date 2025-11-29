@@ -37,9 +37,12 @@ export default function Page() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await api.get(requests.investAccount);
+        const accountRes = await api.get(requests.investAccount);
 
-
+        if (!accountRes.data) {
+          router.push("/invest/no-account");
+          return;
+        }
 
         // 2) 대시보드 기본 데이터
         const res = await api.get<InvestDashboardRes>(requests.investDashboard);
