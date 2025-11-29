@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import api from "@/lib/axios/axios";
 import { TradeHistory } from "@/components/ui/tx-history-ui/TradeHistory";
 
+import { useUserStore } from "@/store/userStore";
+
 interface HoldingItem {
   productCode: string;
   productName: string;
@@ -32,6 +34,7 @@ export default function Page() {
   const [dashboardData, setDashboardData] = useState<InvestDashboardRes | null>(null);
   const [loading, setLoading] = useState(true);
   const isMounted = useRef(true);
+  const userName = useUserStore((state) => state.userName);
 
   // 최초 데이터 로드
   useEffect(() => {
@@ -101,7 +104,7 @@ export default function Page() {
       <div className="w-[340px] pl-3">
         <div className="">
           {/* 추후 userstore로 변경 */}
-          <h2 className="text-body-04 text-neutral-1">{"민트"}의</h2>
+          <h2 className="text-body-04 text-neutral-1">{userName}의</h2>
           <p className="text-body-06 text-neutral-1">총 투자 계좌 자산</p>
         </div>
 
@@ -114,26 +117,25 @@ export default function Page() {
 
         {/* Profit Amount */}
         <div className="relative mb-8 pr-26">
-  {/* Profit Amount */}
-  <p
-    className={`text-body-06 ${
-      isPositive ? "text-error" : "text-primary-1"
-    }`}
-  >
-    {isPositive ? "↑" : "↓"}{" "}
-    {dashboardData.totalProfitAmount}원 (
-    {dashboardData.totalProfitRate}%)
-  </p>
+          {/* Profit Amount */}
+          <p
+            className={`text-body-06 ${isPositive ? "text-error" : "text-primary-1"
+              }`}
+          >
+            {isPositive ? "↑" : "↓"}{" "}
+            {dashboardData.totalProfitAmount}원 (
+            {dashboardData.totalProfitRate}%)
+          </p>
 
-  {/* Right-aligned link */}
-  <a
-    href="/invest/my-stock-account"
-    className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center text-body-06 text-neutral-2 hover:text-neutral-1 transition-colors"
-  >
-    내 계좌 보기
-    <img src="/icons/arrow-right.png" alt="arrow-right icon" className="w-6 h-6" />
-  </a>
-</div>
+          {/* Right-aligned link */}
+          <a
+            href="/invest/my-stock-account"
+            className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center text-body-06 text-neutral-2 hover:text-neutral-1 transition-colors"
+          >
+            내 계좌 보기
+            <img src="/icons/arrow-right.png" alt="arrow-right icon" className="w-6 h-6" />
+          </a>
+        </div>
       </div>
 
 

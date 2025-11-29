@@ -10,6 +10,8 @@ import { TradeHistory } from "@/components/ui/tx-history-ui/TradeHistory";
 import { DonutChart } from "@/components/ui/invest/DonutChart";
 
 
+import { useUserStore } from "@/store/userStore";
+
 interface PortfolioRes {
   userId: number;
   depositAmount: string; // 예수금
@@ -42,6 +44,7 @@ export default function Page() {
   const router = useRouter();
   const [portfolio, setPortfolio] = useState<PortfolioRes | null>(null);
   const [loading, setLoading] = useState(true);
+  const userName = useUserStore((state) => state.userName);
 
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
@@ -51,7 +54,7 @@ export default function Page() {
     (async () => {
       try {
         console.log(`Fetching portfolio for ${year}-${month}`);
-        const res = await api.get( `${requests.portfolio}?year=${year}&month=${month}`);
+        const res = await api.get(`${requests.portfolio}?year=${year}&month=${month}`);
         const data = res.data;
         if (!data) throw new Error("No portfolio data found");
 
@@ -88,7 +91,7 @@ export default function Page() {
   const isPositive = parseFloat(totalProfitRate) >= 0;
 
   const investSummary = {
-    userName: "민트",
+    userName: userName,
     currentAmount: totEvluAmt,
     profitAmount: totalProfitAmount,
     profitRate: totalProfitRate,
@@ -99,30 +102,30 @@ export default function Page() {
   return (
     <div className="px-[18px]">
       <div className="flex gap-3 items-center mt-6 mb-6">
-          <select
-            className="border rounded-lg p-2"
-            value={year}
-            onChange={(e) => setYear(Number(e.target.value))}
-          >
-            {[2023, 2024, 2025, 2026].map((y) => (
-              <option key={y} value={y}>
-                {y}년
-              </option>
-            ))}
-          </select>
+        <select
+          className="border rounded-lg p-2"
+          value={year}
+          onChange={(e) => setYear(Number(e.target.value))}
+        >
+          {[2023, 2024, 2025, 2026].map((y) => (
+            <option key={y} value={y}>
+              {y}년
+            </option>
+          ))}
+        </select>
 
-          <select
-            className="border rounded-lg p-2"
-            value={month}
-            onChange={(e) => setMonth(Number(e.target.value))}
-          >
-            {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-              <option key={m} value={m}>
-                {m}월
-              </option>
-            ))}
-          </select>
-        </div>
+        <select
+          className="border rounded-lg p-2"
+          value={month}
+          onChange={(e) => setMonth(Number(e.target.value))}
+        >
+          {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+            <option key={m} value={m}>
+              {m}월
+            </option>
+          ))}
+        </select>
+      </div>
       {/* Summary Section */}
       <InvestStatusWithChart {...investSummary} holdings={topHoldings.map(h => ({ name: h.productName, percentage: h.weight }))} />
 
