@@ -40,10 +40,12 @@ export default function SimplePasswordRegisterPage() {
         simplePassword: password,
       };
 
-      await api.patch(requests.simplePassword, payload);
+      const res = await api.patch(requests.simplePassword, payload);
 
-      setMessage("간편 비밀번호가\n변경되었습니다.");
-      router.push("/profile");
+      if (res.data?.isSuccess) {
+        setMessage("간편 비밀번호가\n변경되었습니다.");
+        router.push("/profile");
+      }
     } catch (error: any) {
       setErrorMessage(
         error?.response?.data?.message || "비밀번호 변경에 실패했습니다."
