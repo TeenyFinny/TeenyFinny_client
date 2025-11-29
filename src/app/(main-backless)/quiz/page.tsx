@@ -132,28 +132,7 @@ if (loading) {
             height={262}
             priority
           />
-        </div>
-
-        {/* 하단 설명 텍스트 */}
-        <p className="absolute top-[407px] left-[45px] text-center text-head-04 font-bold text-neutral-1 w-[237px] mb-8 leading-relaxed">
-          {monthlyReward ? (
-            <>
-              이번 달의{" "}
-              <span className="text-primary-1 font-bold">
-                용돈조르기권
-              </span>
-              을 <br />이미 받아갔어요!
-            </>
-          ) : (
-            <>
-              3일 연속으로 퀴즈를 풀면 한 달에 한 번, <br />
-              <span className="text-primary-1 font-bold">
-                용돈조르기권
-              </span>
-              을 얻을 수 있어요!
-            </>
-          )}
-        </p>
+        </div>       
       </div>
 
       {/* 시작 버튼 */}
