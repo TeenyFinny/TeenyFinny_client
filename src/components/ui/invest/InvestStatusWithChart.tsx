@@ -32,7 +32,7 @@ export default function InvestStatusWithChart({
     <div>
       {/* Top Summary Card */}
       <div className="bg-white rounded-3xl mt-6 p-6 shadow-lg">
-        <div className="flex items-start">
+        <div className="flex items-center">
           {/* Left: Investment Summary */}
           <div className="flex-1 w-[45%]">
             <p className="text-body-06 text-neutral-1 mb-2">
@@ -49,18 +49,10 @@ export default function InvestStatusWithChart({
                 {profitRate}%)
               </p>
             </div>
-
-            <div className="mt-8 pt-6 border-t border-monochrome-gray">
-              <p className="text-body-06 text-neutral-1 mb-1">투자 가능한 금액</p>
-              <div>
-                <span className="text-landing-01 text-neutral-1">{availableAmount}</span>
-                <span className="text-body-06 text-neutral-1 ml-1">원</span>
-              </div>
-            </div>
           </div>
 
           {/* Right: Donut Chart */}
-          <div className="flex-shrink-0 w-[55%] translate-y-[10%]">
+          <div className="flex-shrink-0 w-[55%]">
             <DonutChart data={holdings} size={176} innerRadius={20} outerRadius={75} />
           </div>
         </div>

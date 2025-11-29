@@ -1,160 +1,145 @@
-"use client"
+"use client";
+
 import { InvestStatus } from "@/components/ui/invest/InvestStatus";
 import { HttpError } from "@/types/axios/httpError.t";
 import api from "@/lib/axios/axios";
+import requests from "@/lib/axios/requests";
 
-import requests from "@/lib/axios/requests"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { TradeHistory } from "@/components/ui/tx-history-ui/TradeHistory";
 
+// =========================
+//  타입 정의 (백엔드 기준)
+// =========================
 
-interface Stock {
-  // stck_shrn_iscd: string // 종목코드
-  // hts_kor_isnm: string, // 종목명
-  // stck_prpr: string, // 현재가
-  // prdy_vrss: string, // 전일 대비 가격
-  // prdy_ctrt: string, // 전일 대비 등락률(%)
-  // acml_vol: string, // 누적 거래량
-  // prdy_vrss_sign: string, // 등락 구분 (1: 상승, 2: 상한, 3: 보합, 4: 하한, 5: 하락)
-  pdno:string
-  prdtName: string,
-  hldgQty: string,
-  pchsAvgPric: string,
-  profitRate: string,
-  isPositive: boolean
+interface Holding {
+  productCode: string;
+  productName: string;
+  quantity: number;
+  avgPrice: number;
+  evaluationAmount: number;
+  profitAmount: number;
+  profitRate: number;
+  weight: number;
 }
-
 
 interface InvestSummary {
-  sctsEvluAmt: string;
-  profitAmount: string;
-  profitRate: string;
-  dncaTotAmt: string;
-  isPositive: boolean;
+  depositAmount: string;
+  totEvluAmt: string;
+  totalProfitAmount: string;
+  totalProfitRate: number;
 }
 
+// =========================
+//  InvestStatus props 변환
+// =========================
+const mapToInvestStatusProps = (summary: InvestSummary) => ({
+  userName: "효징징징이",
+  currentAmount: summary.totEvluAmt,
+  profitAmount: summary.totalProfitAmount,
+  profitRate: String(summary.totalProfitRate),
+  availableAmount: summary.depositAmount,
+  isPositive: summary.totalProfitRate >= 0,
+});
 
 export default function Page() {
   const router = useRouter();
-  const [stocks, setStocks] = useState<Stock[]>([]);
+  const [stocks, setStocks] = useState<Holding[]>([]);
   const [investSummary, setInvestSummary] = useState<InvestSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const isMounted = useRef(true);
 
+  // unmount 감지
   useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
-    (async () => {
+  // =====================================
+  //  1) 초기 로드 + 폴링 주기 3초 설정
+  // =====================================
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    const fetchData = async () => {
+      if (!isMounted.current) return;
+
       try {
-        const [stockRes] = await Promise.all([
-          api.post(requests.myStocks),
-        ]);
-        // const res = await api.get(requests.stockList);
-        setStocks(stockRes.data.myStocks ?? []);
-        setInvestSummary(stockRes.data.summary ?? null);
+        const res = await api.get(requests.investMyAccount);
+        const data = res.data;
+
+        // ===== holdings 부분 비교 후 업데이트 =====
+        setStocks((prev) => {
+          if (!prev || prev.length !== data.holdings.length) {
+            return data.holdings;
+          }
+
+          const changed = data.holdings.some((item: Holding, i: number) => {
+            const p = prev[i];
+            return (
+              p.productCode !== item.productCode ||
+              p.quantity !== item.quantity ||
+              p.avgPrice !== item.avgPrice ||
+              p.profitRate !== item.profitRate
+            );
+          });
+
+          return changed ? data.holdings : prev;
+        });
+
+        // ===== summary 부분 비교 후 업데이트 =====
+        setInvestSummary((prev) => {
+          if (!prev) {
+            return {
+              depositAmount: data.depositAmount,
+              totEvluAmt: data.totEvluAmt,
+              totalProfitAmount: data.totalProfitAmount,
+              totalProfitRate: data.totalProfitRate,
+            };
+          }
+
+          const changed =
+            prev.depositAmount !== data.depositAmount ||
+            prev.totEvluAmt !== data.totEvluAmt ||
+            prev.totalProfitAmount !== data.totalProfitAmount ||
+            prev.totalProfitRate !== data.totalProfitRate;
+
+          return changed
+            ? {
+                depositAmount: data.depositAmount,
+                totEvluAmt: data.totEvluAmt,
+                totalProfitAmount: data.totalProfitAmount,
+                totalProfitRate: data.totalProfitRate,
+              }
+            : prev;
+        });
+
+        setLoading(false);
       } catch (e) {
-	      // 커스텀 에러관리
         const err = e as HttpError;
-        
-        // 403일 경우 에러메시지를 반환하고 홈으로 라우팅
+
         if (err.statusCode === 403) {
           alert(err.message);
           router.push("/");
         } else {
-          // 필요 시 다른 에러 처리
           console.error(err);
         }
-      } finally {
-        setLoading(false);
       }
-    })();
+    };
+
+    // 처음 1회 즉시 실행
+    fetchData();
+
+    // 3초마다 실행
+    interval = setInterval(fetchData, 3000);
+
+    return () => clearInterval(interval);
   }, [router]);
 
-
-
-  if (loading) {
-    return (
-      <main className="min-h-screen flex justify-center items-center">
-        로딩중...
-      </main>
-    );
-  }
-
-  // const isMounted = useRef(true);
-
-  // useEffect(() => {
-  //   return () => {
-  //     isMounted.current = false;
-  //   };
-  // }, []);
-
-  
-  
-  // 폴링 방식
-//   useEffect(() => {
-//   let timer: NodeJS.Timeout;
-
-//   const poll = async () => {
-//     if (!isMounted.current) return;
-
-//     try {
-//       const res = await api.post(requests.myStocks);
-
-//       const newStocks = res.data.myStocks ?? [];
-//       const newSummary = res.data.summary ?? null;
-
-//       // 1) Stocks 비교
-//       setStocks((prev) => {
-//         if (!prev || prev.length !== newStocks.length) {
-//           return newStocks;
-//         }
-
-//         // 항목별로 비교 → 변경된 데이터가 하나라도 있으면 업데이트
-//         const changed = newStocks.some((item: Stock, idx: number) => {
-//           const p = prev[idx];
-//           return (
-//             p.pdno !== item.pdno ||
-//             p.hldgQty !== item.hldgQty ||
-//             p.pchsAvgPric !== item.pchsAvgPric ||
-//             p.profitRate !== item.profitRate
-//           );
-//         });
-
-//         return changed ? newStocks : prev;
-//       });
-
-//       // 2) Summary 비교
-//       setInvestSummary((prev) => {
-//         if (!prev) return newSummary;
-
-//         const changed =
-//           prev.sctsEvluAmt !== newSummary.sctsEvluAmt ||
-//           prev.profitAmount !== newSummary.profitAmount ||
-//           prev.profitRate !== newSummary.profitRate ||
-//           prev.dncaTotAmt !== newSummary.dncaTotAmt;
-
-//         return changed ? newSummary : prev;
-//       });
-
-//       setLoading(false);
-//     } catch (e) {
-//       const err = e as HttpError;
-//       if (err.statusCode === 403) {
-//         alert(err.message);
-//         router.push("/");
-//       } else {
-//         console.error(err);
-//       }
-//     }
-
-//     timer = setTimeout(poll, 7000);
-//   };
-
-//   poll();
-
-//   return () => clearTimeout(timer);
-// }, [router]);
-
+  // 로딩 상태 처리
   if (loading || !investSummary) {
     return (
       <main className="min-h-screen flex justify-center items-center">
@@ -163,37 +148,44 @@ export default function Page() {
     );
   }
 
+  // =====================================
+  //  렌더링
+  // =====================================
   return (
-    <main className="">
+    <main>
       <div className="flex flex-col items-center pt-6">
-        {investSummary && <InvestStatus
-            userName={"효징징징이"}
-            currentAmount={investSummary.sctsEvluAmt}
-            profitAmount={investSummary.profitAmount}
-            profitRate={investSummary.profitRate}
-            availableAmount={investSummary.dncaTotAmt}
-            isPositive={investSummary.isPositive}
-            />
-        }
-        {/* My Stocks Section */}
-        <h2 className="text-head-06 text-neutral-2 px-4 pt-12 self-start">내가 산 주식</h2>
+
+        {/* 투자 요약 카드 */}
+        <InvestStatus {...mapToInvestStatusProps(investSummary)} />
+
+        <h2 className="text-head-06 text-neutral-2 px-4 pt-12 self-start">
+          내가 산 주식
+        </h2>
+
         <div className="mb-5 mt-2 w-[376px] flex flex-col">
           <div className="flex items-center justify-between px-6">
             <span className="text-body-07 text-neutral-2 mt-3">종목명</span>
             <span className="text-body-07 text-neutral-2 mt-3">평균단가</span>
           </div>
+
           <div className="mx-5 h-[1px] mt-[10px] bg-monochrome-gray" />
+
           {stocks.map((stock, index) => (
-            <div key={stock.pdno} onClick={() => {
-                    router.push(`/invest/stock-details?stck_shrn_iscd=${stock.pdno}&mode=buy`);
-                  }}>
+            <div
+              key={stock.productCode}
+              onClick={() =>
+                router.push(
+                  `/invest/stock-details?stck_shrn_iscd=${stock.productCode}&mode=buy`
+                )
+              }
+            >
               <TradeHistory
-                stockName={stock.prdtName}
-                stockCode={`보유 수량 ${stock.hldgQty}주`}
-                currentPrice={`${stock.pchsAvgPric.toLocaleString()} 원`}
-                changeRate={Number(stock.profitRate)}
+                stockName={stock.productName}
+                stockCode={`보유 ${stock.quantity}주`}
+                currentPrice={`${stock.avgPrice.toLocaleString()} 원`}
+                changeRate={stock.profitRate}
               />
-              {/* 항목 사이 구분선 (마지막 요소 제외) */}
+
               {index < stocks.length - 1 && (
                 <div className="mx-5 h-[1px] bg-monochrome-gray" />
               )}
@@ -201,7 +193,6 @@ export default function Page() {
           ))}
         </div>
       </div>
-      
     </main>
-  )
+  );
 }
