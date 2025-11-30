@@ -90,7 +90,7 @@ export default function Page() {
       {/* ===============================
     카드 영역 (중앙 콘텐츠 - 출석 스탬프)
    =============================== */}
-      <div className="relative w-[327px] mx-auto bg-neutral-7 rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col items-center justify-center pt-[40px] pb-[40px] mb-[32px]">
+      <div className="relative w-[327px] mx-auto bg-neutral-7 rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col items-center justify-center pt-[40px] pb-[51px] mb-[32px]">
         {/* <CHANGE> 상단 텍스트를 연속 도전 일수로 변경 */}
         <p className="text-center text-head-02 font-bold text-neutral-1 w-[231px] mb-18">
           퀴즈 4일차 도전 중!
@@ -138,9 +138,8 @@ export default function Page() {
           ))}
         </div>
 
-        <p className="whitespace-normal break-words text-center text-head-04 font-bold text-neutral-1 w-[270px] mt-15 mb-3">
-          투자 계좌를 만들기 위해서는 15일간의 퀴즈를 모두 풀어야해요!<br />
-          모두 풀면 실제로 사용할 수 있는 주식 크레딧도 드려요! 
+        <p className="whitespace-normal break-words text-center text-body-01 font-bold text-neutral-1 w-[270px] mt-16 mb-6">
+          15일간의 퀴즈를 모두 풀면 주식 크레딧을<br /> 받고 투자 계좌를 만들 수 있어요!
         </p>
       </div>
 
