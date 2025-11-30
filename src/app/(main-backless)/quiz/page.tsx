@@ -91,12 +91,10 @@ export default function Page() {
     카드 영역 (중앙 콘텐츠 - 출석 스탬프)
    =============================== */}
       <div className="relative w-[327px] mx-auto bg-neutral-7 rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col items-center justify-center pt-[40px] pb-[51px] mb-[32px]">
-        {/* <CHANGE> 상단 텍스트를 연속 도전 일수로 변경 */}
-        <p className="text-center text-head-02 font-bold text-neutral-1 w-[231px] mb-18">
+        <p className="text-center text-primary-1 text-head-02 font-bold text-neutral-1 w-[231px] mt-5 mb-13">
           퀴즈 {streakDays + 1}일차 도전 중!
         </p>
 
-        {/* <CHANGE> 중앙 이미지를 5x3 출석 스탬프 그리드로 변경 */}
         <div className="flex flex-col gap-4 justify-center items-center">
           {Array.from({ length: 3 }).map((_, rowIndex) => (
             <div key={rowIndex} className="flex gap-4">
@@ -113,14 +111,13 @@ export default function Page() {
                     {/* 도장 박스 */}
                     <div
                       className={`w-[48px] h-[48px] rounded-[8px] flex items-center justify-center border-2 transition-all ${isStamped
-                          ? 'bg-white border-primary-1 shadow-[0_4px_12px_rgba(0,0,0,0.1)]'
-                          : 'bg-white border-neutral-5'
+                        ? 'bg-white border-primary-1 shadow-[0_4px_12px_rgba(0,0,0,0.1)]'
+                        : 'bg-white border-neutral-5'
                         }`}
                     >
                       {isStamped ? (
                         <div className="relative w-full h-full">
                           <Image
-                            //src="/images/invest/icon_invest_check.png"
                             src="/images/saving/illust_saving_2.png"
                             alt={`도장 ${stampIndex + 1}`}
                             fill
@@ -128,8 +125,16 @@ export default function Page() {
                           />
                         </div>
                       ) : (
-                        <div className="text-neutral-4 text-xs font-light">-</div>
+                        <div className="relative w-full h-full">
+                          <Image
+                            src="/images/saving/illust_saving_2.png"
+                            alt={`도장 ${stampIndex + 1}`}
+                            fill
+                            className="object-cover rounded-[6px] grayscale"
+                          />
+                        </div>
                       )}
+
                     </div>
                   </div>
                 )
@@ -138,8 +143,10 @@ export default function Page() {
           ))}
         </div>
 
-        <p className="whitespace-normal break-words text-center text-body-01 font-bold text-neutral-1 w-[270px] mt-16 mb-6">
-          15일간의 퀴즈를 모두 풀면 주식 크레딧을<br /> 받고 투자 계좌를 만들 수 있어요!
+        <p className="whitespace-normal break-words text-center text-body-02 text-neutral-1 w-[270px] mt-16 mb-6">
+          15일간의 퀴즈를 모두 풀면{" "}
+          <span className="text-primary-1 text-body-01 font-bold">주식 크레딧</span>
+          을<br /> 받고 투자 계좌를 만들 수 있어요!
         </p>
       </div>
 
