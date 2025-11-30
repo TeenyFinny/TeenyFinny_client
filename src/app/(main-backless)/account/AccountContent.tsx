@@ -33,7 +33,7 @@ type CardInfo = {
 
 function AccountContentInner() {
   const router = useRouter();
-  const { children, userType, userId } = useUserStore();
+  const { children, userType } = useUserStore();
   const { setHistoryData, setInvestAccountExists, setChildBaseInfo } = useSelectedChildStore();
   const searchParams = useSearchParams();
 
@@ -72,7 +72,6 @@ function AccountContentInner() {
     }
 
     try {
-      console.log(`Fetching account data for childId: ${childId}, showLoading: ${showLoading}`);
       const endpoint = requests.fetchTotalAccount(childId);
       const res = await api.get<ApiResponse<Accounts>>(endpoint);
       const accounts = res.data as Accounts;
@@ -111,14 +110,14 @@ function AccountContentInner() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentChild]);
 
-const autoTransHandler = () => {
-  // 현재 선택된 자녀 객체 찾기
-  const currentChildObj = data?.find((c) => c.userId === currentChild);
-  if (!currentChildObj) return; // 안전 체크
-  // store에 저장
-  setChildBaseInfo(currentChildObj.userId, currentChildObj.name);
-  router.push(`/account/auto-transfer`)
-};
+  const autoTransHandler = () => {
+    // 현재 선택된 자녀 객체 찾기
+    const currentChildObj = data?.find((c) => c.userId === currentChild);
+    if (!currentChildObj) return; // 안전 체크
+    // store에 저장
+    setChildBaseInfo(currentChildObj.userId, currentChildObj.name);
+    router.push(`/account/auto-transfer`);
+  };
 
   const handleViewCard = () => {
     // accountData에서 카드 여부 확인
@@ -143,14 +142,12 @@ const autoTransHandler = () => {
 
   const handleViewDetails = (accountType: string) => {
     if (accountType === "투자 계좌") {
-      console.log("clicked")
       router.push("/invest/portfolios");
       return;
     }
-    if(accountType === "목표 적금") {
-      console.log("clicked")
-    router.push("/goal");
-    return;
+    if (accountType === "목표 적금") {
+      router.push("/goal");
+      return;
     }
 
     const child = data?.find((c) => c.userId === currentChild);
