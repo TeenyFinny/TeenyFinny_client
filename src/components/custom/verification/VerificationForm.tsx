@@ -125,20 +125,29 @@ export default function VerificationForm({ mode, onNext, onSuccess, form: extern
   }, [generateAndShowOtp])
 
   /** 인증번호 검증 */
-  const handleVerifyOtp = useCallback((otp: string) => {
-    setOtpError(null)
+  const handleVerifyOtp = useCallback(
+    (otp: string) => {
+      // 이미 에러가 있는 상태에서 다시 확인 버튼을 누른 경우 바텀시트 닫기
+      if (otpError) {
+        setOtpBottomSheetOpen(false)
+        return
+      }
 
-    // 로컬에서 인증번호 검증
-    if (otp === displayOtpRef.current) {
-      // 인증 성공
-      setIsOtpVerified(true)
-      setOtpBottomSheetOpen(false)
       setOtpError(null)
-    } else {
-      // 인증 실패
-      setOtpError("인증번호가 일치하지 않습니다.")
-    }
-  }, [])
+
+      // 로컬에서 인증번호 검증
+      if (otp === displayOtpRef.current) {
+        // 인증 성공
+        setIsOtpVerified(true)
+        setOtpBottomSheetOpen(false)
+        setOtpError(null)
+      } else {
+        // 인증 실패 - 에러만 표시하고 바텀시트는 열어둠
+        setOtpError("인증번호가 일치하지 않습니다.")
+      }
+    },
+    [otpError]
+  )
 
   /** 다음 단계로 이동 */
   const handleNext = useCallback(() => {
@@ -229,18 +238,11 @@ export default function VerificationForm({ mode, onNext, onSuccess, form: extern
           >
             <div className="relative w-[357px] min-h-[90px] rounded-lg bg-white/70 backdrop-blur-3xl border border-white/30 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.30),0_8px_16px_-8px_rgba(0,0,0,0.18)] ring-1 ring-black/5 px-4 py-3">
               <div className="flex items-start gap-3">
-                {/* 좌측 아이콘 */}
-                <div className="flex-shrink-0">
-                  <div className="relative h-[60px] w-[60px] overflow-hidden rounded-lg bg-neutral-7 flex items-center justify-center">
-                    <img src="/logos/96x96.png" alt="Notification" className="h-[55px] w-[55px] object-contain" />
-                  </div>
-                </div>
-
                 {/* 우측 콘텐츠: 메시지 */}
                 <div className="relative flex-1">
                   <div className="h-[60px] flex items-center">
                     <p className="text-body-04 text-neutral-1 whitespace-pre-line">
-                      인증번호를 입력해주세요: <span className="font-semibold text-primary-1">{displayOtp}</span>
+                      [TeenyFinny] 인증번호를 입력해주세요: <span className="font-semibold text-netural-1">{displayOtp}</span>
                     </p>
                   </div>
                 </div>
