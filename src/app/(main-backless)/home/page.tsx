@@ -72,11 +72,12 @@ export default function Page() {
           ? userPayload.children.map((child) => ({
               userId: Number(child.userId ?? 0),
               name: child.name ?? "",
-              balance: String(child.balance ?? "0"),
+              // 쉼표가 포함된 문자열일 경우 제거하여 숫자로 변환 가능하게 함
+              balance: String(child.balance ?? "0").replace(/,/g, ""),
               gender: Number(child.gender ?? 1),
             }))
           : [];
-
+            console.log(children);
         // Zustand 상태 갱신
         useUserStore
           .getState()
