@@ -1,7 +1,5 @@
 // 호출 가능한 api를 한 파일에서 관리!
 
-import { p } from "framer-motion/client";
-
 const requests = {
   fetchTest: `/noticeTest`,
   fetchHome: `/home`,
@@ -11,7 +9,8 @@ const requests = {
   passwordRequest: `/auth/password`,
   authEmail: `/auth/email`,
   refresh: `/auth/refresh`,
-  updatePush: `/auth/push`,
+  fetchPushSettings: `/profile/push`,
+  updatePush: `/profile/push`,
   simplePassword: `/auth/simple-password`,
   verifyFamilyOtp: `/auth/otp`, // OTP 검증
   fetchGoal: `/goal`,
@@ -19,23 +18,25 @@ const requests = {
   fetchQuiz: "/quiz/info",
   investmentsSummary: `/investments/summary`,
   fetchGoalConfirm: `/goal/account/create`,
-  myStocks: `/investments/my-stocks`,
-  myStocksTop3: `/investments/my-stocks/top3`,
-  stockDetail: `/investments/stockDetail`,
-  investAccount: `/investments/account`,
+
+  investMyAccount: `/investments/account`,
+  investDashboard: `/investments/dashboard`,
+  investAccount: `/investments/account/check-account`,
 
   updateGoal: `/goal/update`,
   sellStock: `/investments/sellStock`,
-  tradeOrder: `/investments/tradeOrder`,
+  tradeBuy: `/investments/trade/buy`,
+  tradeSell: `/investments/trade/sell`,
   fetchChild: `/account/children`,
-  portfolio: `/investments/my-stocks/portfolio`,
+  portfolio: `/investments/portfolio`,
 
   fetchNotice: `/notice`,
 
-  koreainvestmentStockList: `/uapi/domestic-stock/v1/quotations/intstock-multprice`,
-  koreainvestmentStockDetail: `/uapi/domestic-stock/v1/quotations/inquire-price`,
+  stocks: `/investments/stocks`,
+  stockDetail: (code: string) => `/investments/stocks/${code}`,
 
-  fetchReport: (childId: number) => childId ? `/allowance/${childId}/report` : `/allowance/report`,
+  fetchReport: (childId: number) =>
+    childId ? `/allowance/${childId}/report` : `/allowance/report`,
   fetchMyHistory: "/account/history",
   fetchChildHistory: (childId: number) => `/account/${childId}/history`,
   fetchTransactionDetail: (transactionId: string) => `/account/history/${transactionId}`,

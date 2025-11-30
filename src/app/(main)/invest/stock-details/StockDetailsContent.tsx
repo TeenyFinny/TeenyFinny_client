@@ -10,14 +10,12 @@ import { BottomSheetSellStock } from "@/components/ui/bottom-sheet/BottomSheetSe
 import { createTradeOrder } from "@/lib/api/tradeOrder";
 
 interface StockDetail {
-  stck_shrn_iscd: string // 종목코드
-  bstp_kor_isnm: string, // 업종명
-  hts_kor_isnm: string, // 종목명
-  stck_prpr: string, // 현재가
-  prdy_vrss: string, // 전일 대비 가격
+  inter_shrn_iscd: string // 종목코드
+  inter_kor_isnm: string, // 종목명
+  inter2_prpr: string, // 현재가
+  inter2_prdy_vrss: string, // 전일 대비 가격
   prdy_ctrt: string, // 전일 대비 등락률(%)
   acml_vol: string, // 누적 거래량
-  prdy_vrss_sign: string, // 등락 구분 (1: 상승, 2: 상한, 3: 보합, 4: 하한, 5: 하락)
   availableStocks: number // 실제 api 데이터에는 없으나, 매수/매도 바텀시트에 필요하여 추가
   maxQuantity: number // 실제 api 데이터에는 없으나, 매수/매도 바텀시트에 필요하여 추가
 }
@@ -36,12 +34,17 @@ function StockDetailsContentInner() {
     if (!stck_shrn_iscd) return;
     (async () => {
       try {
-        const res = await api.get(`${requests.koreainvestmentStockDetail}?FID_COND_MRKT_DIV_CODE=J&FID_INPUT_ISCD=${stck_shrn_iscd}`);
-        setStock((res as any).output);
+        const res = await api.get(requests.stockDetail(stck_shrn_iscd));
+        const stockData = (res.data as any).output[0];
+        setStock({
+          ...stockData,
+          availableStocks: 10, // TODO: 실제 보유량 연동 필요
+          maxQuantity: 100, // TODO: 최대 주문 가능 수량 연동 필요
+        });
       } catch (e) {
         // 커스텀 에러관리
         const err = e as HttpError;
-        
+
         // 403일 경우 에러메시지를 반환하고 홈으로 라우팅
         if (err.statusCode === 403) {
           alert(err.message);
@@ -72,22 +75,22 @@ function StockDetailsContentInner() {
   }
 
   /** 주문 공통 처리 (buy / sell) */
-  const handleTradeOrder = async (quantity: number, totalPrice?: number) => {
+  const handleTradeOrder = async (quantity: number) => {
     if (!stock) return
 
     const type = mode === "buy" ? "BUY" : "SELL";
-    const price = stock.stck_prpr;
+    const price = stock.inter2_prpr;
 
     try {
       const res = await createTradeOrder(
-        stock.stck_shrn_iscd,
-        stock.stck_prpr,
+        stock.inter_shrn_iscd,
+        stock.inter_kor_isnm,
         price,
         quantity,
         type
       )
 
-      alert(`${stock.hts_kor_isnm} ${quantity}주 ${mode === "buy" ? "매수" : "매도"} 완료!`)
+      alert(`${stock.inter_kor_isnm} ${quantity}주 ${mode === "buy" ? "매수" : "매도"} 완료!`)
       console.log(`${type} 주문 결과:`, res)
     } catch (e) {
       console.error(`${mode} 주문 실패:`, e)
@@ -97,29 +100,34 @@ function StockDetailsContentInner() {
     }
   }
 
+  const isPositive = parseFloat(stock.inter2_prdy_vrss.replace(/,/g, "")) > 0;
+  const isZero = parseFloat(stock.inter2_prdy_vrss.replace(/,/g, "")) === 0;
+  const colorClass = isPositive ? "text-error" : isZero ? "text-neutral-1" : "text-primary-1";
+  const arrowIcon = isPositive ? "icon_invest_up.png" : "icon_invest_down.png";
+
   return (
     <div>
       {/* Main Content */}
       <main className="px-6 pt-4 pb-32">
         {/* Category and Refresh */}
         <div className="flex items-center justify-center gap-2 mb-17">
-          <span className={`${Number(stock.prdy_vrss_sign) < 3 ? "text-error" : "text-primary-1"} text-head-06`}>{stock.bstp_kor_isnm}</span>
-          <img src="/icons/refresh.png" alt="새로고침 아이콘"className="w-5 h-5" />
+          <span className={`${colorClass} text-head-06`}>국내주식</span>
+          <img src="/icons/refresh.png" alt="새로고침 아이콘" className="w-5 h-5" />
         </div>
 
         {/* Stock Name */}
-        <h1 className="text-center text-landing-01 text-neutral-1 mb-2">{stock.hts_kor_isnm}</h1>
+        <h1 className="text-center text-landing-01 text-neutral-1 mb-2">{stock.inter_kor_isnm}</h1>
 
         {/* Price and Change */}
         <div className="text-center mb-5">
-          <span className={`${Number(stock.prdy_vrss_sign) < 3 ? "text-error" : "text-primary-1"} text-head-06 mr-2`}>{stock.stck_prpr}원</span>
-          <span className={`${Number(stock.prdy_vrss_sign) < 3 ? "text-error" : "text-primary-1"} text-head-06`}>{stock.prdy_ctrt}%</span>
+          <span className={`${colorClass} text-head-06 mr-2`}>{stock.inter2_prpr}원</span>
+          <span className={`${colorClass} text-head-06`}>{stock.prdy_ctrt}%</span>
         </div>
 
         {/* Arrow Icon */}
         <div className="flex justify-center mb-5">
           <div className="w-47 h-40 bg-monochrome-lightgray rounded-[20px] flex items-center justify-center">
-            <img src={`/images/invest/${Number(stock.prdy_vrss_sign) < 3 ? "icon_invest_up.png" : "icon_invest_down.png"}`} alt="주식 차트 이미지" className="w-30 h-32"/>
+            <img src={`/images/invest/${arrowIcon}`} alt="주식 차트 이미지" className="w-30 h-32" />
           </div>
         </div>
 
@@ -127,8 +135,8 @@ function StockDetailsContentInner() {
         <div className="text-center">
           <p className="text-body-06 text-neutral-1 mb-2">
             {"어제보다 "}
-            <span className={`${Number(stock.prdy_vrss_sign) < 3 ? "text-error" : "text-primary-1"} text-head-03`}>{stock.prdy_vrss}원</span>
-            {" 올랐어요!"}
+            <span className={`${colorClass} text-head-03`}>{stock.inter2_prdy_vrss}원</span>
+            {isPositive ? " 올랐어요!" : isZero ? " 변동이 없어요." : " 내렸어요."}
           </p>
           <p className="text-body-06 text-neutral-1">지금까지 {stock.acml_vol}만큼 이 주식을 사고 팔았어요!</p>
         </div>
@@ -149,7 +157,7 @@ function StockDetailsContentInner() {
         <BottomSheetSellStock
           open={open}
           setOpen={setOpen}
-          stck_prpr={Number(String(stock.stck_prpr).replace(/,/g, ""))}
+          stck_prpr={Number(String(stock.inter2_prpr).replace(/,/g, ""))}
           maxQuantity={stock.maxQuantity}
           onConfirm={handleTradeOrder}
           onCancel={() => setOpen(false)}
@@ -161,7 +169,7 @@ function StockDetailsContentInner() {
         <BottomSheetBuyStock
           open={open}
           setOpen={setOpen}
-          stck_prpr={Number(String(stock.stck_prpr).replace(/,/g, ""))}
+          stck_prpr={Number(String(stock.inter2_prpr).replace(/,/g, ""))}
           availableStocks={Number(String(stock.availableStocks).replace(/,/g, ""))}
           maxQuantity={stock.maxQuantity}
           onConfirm={handleTradeOrder}

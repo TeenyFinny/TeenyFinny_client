@@ -6,28 +6,49 @@ import { useRouter } from "next/navigation";
 import api from "@/lib/axios/axios";
 import { TradeHistory } from "@/components/ui/tx-history-ui/TradeHistory";
 
+interface HoldingItem {
+  productCode: string;
+  productName: string;
+  quantity: string;
+  avgPrice: string;
+  currentPrice: string;
+  evaluationAmount: string;
+  profitAmount: string;
+  profitRate: number;
+  weight: number;
+}
+
+interface InvestDashboardRes {
+  userId: number;
+  depositAmount: string;
+  totEvluAmt: string;
+  totalProfitAmount: string;
+  totalProfitRate: number;
+  top3Holdings: HoldingItem[];
+}
+
 export default function Page() {
   const router = useRouter();
-  const [stocks, setStocks] = useState<any[]>([]);
-  const [investSummary, setInvestSummary] = useState<any>(null);
+  const [dashboardData, setDashboardData] = useState<InvestDashboardRes | null>(null);
   const [loading, setLoading] = useState(true);
-  const userId = 1 //TODO: 추후 유저ID 연동
+  const isMounted = useRef(true);
 
+  // 최초 데이터 로드
   useEffect(() => {
-
-    (async () => {
+    const fetchData = async () => {
       try {
-        const res = await api.get(requests.investAccount);
+        const accountRes = await api.get(requests.investAccount);
 
+        if (!accountRes.data) {
+          router.push("/invest/no-account");
+          return;
+        }
 
-
-        const [stockRes] = await Promise.all([
-          api.post(requests.myStocksTop3),
-        ]);
-        setStocks(stockRes.data.myStocks ?? []);
-        setInvestSummary(stockRes.data.summary ?? []);
+        // 2) 대시보드 기본 데이터
+        const res = await api.get<InvestDashboardRes>(requests.investDashboard);
+        console.log("Dashboard data:", res.data);
+        setDashboardData(res.data);
       } catch (e) {
-        // 커스텀 에러관리
         const err = e as HttpError;
         if (err.statusCode === 404) {
           router.push("/invest/no-account");//계좌가 없다면 안내페이지로
@@ -38,14 +59,29 @@ export default function Page() {
           alert(err.message);
           router.push("/");
         } else {
-          // 필요 시 다른 에러 처리
           console.error(err);
         }
       } finally {
         setLoading(false);
       }
-    })();
+    };
+
+    fetchData();
   }, [router]);
+
+  // 폴링 (데이터만 업데이트)
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const res = await api.get<InvestDashboardRes>(requests.investDashboard);
+        setDashboardData(res.data);
+      } catch (e) {
+        console.error("Polling error:", e);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   if (loading) {
     return (
@@ -55,128 +91,49 @@ export default function Page() {
     );
   }
 
+  if (!dashboardData) return null;
 
-
-  // unmount 검사용
-  // const isMounted = useRef(true);
-  // useEffect(() => {
-  //   return () => {
-  //     isMounted.current = false;
-  //   };
-  // }, []);
-
-  // /**
-  //  * Step 1 — 계좌 여부 검사
-  //  */
-  // useEffect(() => {
-  //   const checkAccount = async () => {
-  //     try {
-  //       const res = await api.get(
-  //         `${requests.investAccount}?user_id=${userId}`
-  //       );
-
-  //       if (!res.data?.hasAccount) {
-  //         router.push("/invest/no-account");
-  //         return;
-  //       }
-
-  //       // 계좌 정상 → 폴링 시작
-  //       startPolling();
-  //     } catch (e) {
-  //       const err = e as HttpError;
-  //       if (err.statusCode === 403) {
-  //         alert(err.message);
-  //         router.push("/");
-  //       } else {
-  //         console.error(err);
-  //       }
-  //     }
-  //   };
-
-  //   checkAccount();
-  // }, [router]);
-
-  /**
-   * Step 2 — 폴링으로 3개 주식 + Summary 받아오기
-   */
-  // const startPolling = () => {
-  //   let timer: NodeJS.Timeout;
-
-  //   const poll = async () => {
-  //     if (!isMounted.current) return;
-
-  //     try {
-  //       const res = await api.post(requests.myStocksTop3);
-
-  //       const newStocks = res.data.myStocks ?? [];
-  //       const newSummary = res.data.summary ?? [];
-
-  //       // 데이터 변경 여부 체크 (깜빡임 방지)
-  //       setStocks((prev) => {
-  //         const same = JSON.stringify(prev) === JSON.stringify(newStocks);
-  //         return same ? prev : newStocks;
-  //       });
-
-  //       setInvestSummary((prev: any) => {
-  //         const same = JSON.stringify(prev) === JSON.stringify(newSummary);
-  //         return same ? prev : newSummary;
-  //       });
-
-  //       setLoading(false);
-  //     } catch (e) {
-  //       console.error("폴링 오류:", e);
-  //     }
-
-  //     timer = setTimeout(poll, 7000);
-  //   };
-
-  //   poll();
-
-  //   return () => clearTimeout(timer);
-  // };
-
-  // // 로딩 UI
-  // if (loading || !investSummary) {
-  //   return (
-  //     <main className="min-h-screen flex justify-center items-center">
-  //       로딩중...
-  //     </main>
-  //   );
-  // }
-
+  const isPositive = parseFloat(dashboardData.totalProfitAmount) >= 0;
 
   return (
     <div className="px-[18px]">
       {/* Investment Status */}
       <div className="w-[340px] pl-3">
         <div className="">
+          {/* 추후 userstore로 변경 */}
           <h2 className="text-body-04 text-neutral-1">{"민트"}의</h2>
-          <p className="text-body-06 text-neutral-1">총 투자 현황입니다.</p>
+          <p className="text-body-06 text-neutral-1">총 투자 계좌 자산</p>
         </div>
 
         {/* Current Amount */}
         <div>
-          {/* <p className="text-landing-01 text-neutral-1 leading-none tracking-tight">
-            {investSummary.sctsEvluAmt} <span className="text-body-06">원</span>
-          </p> */}
+          <p className="text-landing-01 text-neutral-1 leading-none tracking-tight">
+            {dashboardData.totEvluAmt} <span className="text-body-06">원</span>
+          </p>
         </div>
 
         {/* Profit Amount */}
-        <div className="mb-8 flex items-center justify-between pr-26">
-          <p className={`text-body-06 ${investSummary.isPositive ? "text-error" : "text-primary-1"}`}>
-            {investSummary.isPositive ? "↑" : "↓"} {investSummary.profitAmount}원 (
-            {investSummary.profitRate}%)
-          </p>
+        <div className="relative mb-8 pr-26">
+  {/* Profit Amount */}
+  <p
+    className={`text-body-06 ${
+      isPositive ? "text-error" : "text-primary-1"
+    }`}
+  >
+    {isPositive ? "↑" : "↓"}{" "}
+    {dashboardData.totalProfitAmount}원 (
+    {dashboardData.totalProfitRate}%)
+  </p>
 
-          {/* Account Link */}
-          <a
-            href="/invest/my-stock-account"
-            className="flex items-center text-body-06 text-neutral-2 hover:text-neutral-1 transition-colors"
-          >
-            내 계좌 보기
-            <img src="/icons/arrow-right.png" alt="arrow-right icon" className="w-6 h-6" />
-          </a>
-        </div>
+  {/* Right-aligned link */}
+  <a
+    href="/invest/my-stock-account"
+    className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center text-body-06 text-neutral-2 hover:text-neutral-1 transition-colors"
+  >
+    내 계좌 보기
+    <img src="/icons/arrow-right.png" alt="arrow-right icon" className="w-6 h-6" />
+  </a>
+</div>
       </div>
 
 
@@ -189,16 +146,16 @@ export default function Page() {
           <span className="text-body-07 text-neutral-2 mt-3">평균단가</span>
         </div>
         <div className="mx-5 h-[1px] mt-[10px] bg-monochrome-gray" />
-        {stocks.map((stock, index) => (
-          <div key={stock.pdno}>
+        {dashboardData.top3Holdings.map((stock, index) => (
+          <div key={stock.productCode}>
             <TradeHistory
-              stockName={stock.prdtName}
-              stockCode={`보유 수량 ${stock.hldgQty}주`}
-              currentPrice={`${stock.pchsAvgPric.toLocaleString()} 원`}
-              changeRate={Number(stock.profitRate)}
+              stockName={stock.productName}
+              stockCode={`보유 수량 ${stock.quantity}주`}
+              currentPrice={`${stock.avgPrice} 원`}
+              changeRate={stock.profitRate}
             />
             {/* 항목 사이 구분선 (마지막 요소 제외) */}
-            {index < stocks.length - 1 && (
+            {index < dashboardData.top3Holdings.length - 1 && (
               <div className="mx-5 h-[1px] bg-monochrome-gray" />
             )}
           </div>

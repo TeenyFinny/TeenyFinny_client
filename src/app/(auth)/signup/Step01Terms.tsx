@@ -1,7 +1,7 @@
 // src/app/(auth)/signup/Step01Terms.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled";
@@ -49,6 +49,62 @@ export default function Step1Terms({
 
   /** 모달로 열릴 약관 ID */
   const [openModalId, setOpenModalId] = useState<string | null>(null);
+
+  /** 모달에 표시할 HTML 내용 */
+  const [modalHtmlContent, setModalHtmlContent] = useState<string>("");
+  const [modalLoading, setModalLoading] = useState(false);
+
+  /** 약관 HTML 로드 */
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const fetchHtml = async () => {
+      setModalLoading(true);
+      try {
+        const response = await fetch(`/terms/terms_${openModalId}.html`, {
+          signal: controller.signal,
+        });
+
+        if (controller.signal.aborted) return;
+
+        const html = await response.text();
+
+        if (controller.signal.aborted) return;
+
+        // style 태그 내용 추출
+        const styleMatch = html.match(/<style[^>]*>([\s\S]*)<\/style>/i);
+        let styleContent = styleMatch ? styleMatch[1] : "";
+        // body 스타일을 스코프화 (body를 .terms-content로 변경)
+        styleContent = styleContent.replace(/body\s*{/g, ".terms-content {");
+        // body 태그 내용 추출
+        const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+        const bodyContent = bodyMatch ? bodyMatch[1] : html;
+        // style과 body 내용을 합쳐서 렌더링
+        const fullContent = styleContent
+          ? `<style>${styleContent}</style><div class="terms-content">${bodyContent}</div>`
+          : `<div class="terms-content">${bodyContent}</div>`;
+
+        if (!controller.signal.aborted) {
+          setModalHtmlContent(fullContent);
+        }
+      } catch (error: any) {
+        if (error?.name !== "AbortError") {
+          console.error("약관 HTML 로드 실패:", error);
+          setModalHtmlContent("<p>약관을 불러올 수 없습니다.</p>");
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setModalLoading(false);
+        }
+      }
+    };
+
+    fetchHtml();
+
+    return () => {
+      controller.abort();
+    };
+  }, [openModalId]);
 
   /** 약관 목록 데이터 */
   const consentItems = [
@@ -188,12 +244,15 @@ export default function Step1Terms({
             </DialogTitle>
           </DialogHeader>
 
-          {/* HTML 약관 임베드 */}
-          {openModalId && (
-            <iframe
-              src={`/terms/terms_${openModalId}.html`}
-              className="w-full h-[500px] border-none"
-              title={`${openModalId} 약관`}
+          {/* HTML 약관 직접 렌더링 */}
+          {modalLoading ? (
+            <div className="flex items-center justify-center h-[500px]">
+              <p className="text-neutral-3">로딩 중...</p>
+            </div>
+          ) : (
+            <div
+              className="w-full h-[500px] overflow-y-auto"
+              dangerouslySetInnerHTML={{ __html: modalHtmlContent }}
             />
           )}
         </DialogContent>

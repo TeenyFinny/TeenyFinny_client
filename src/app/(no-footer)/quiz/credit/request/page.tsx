@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
@@ -48,6 +48,8 @@ export default function StockTerms() {
     const [openModalId, setOpenModalId] = useState<string | null>(null);
     // 모달 열림 상태
     const [openConfirm, setOpenConfirm] = useState(false);
+    const [modalHtmlContent, setModalHtmlContent] = useState<string>("");
+    const [modalLoading, setModalLoading] = useState(false);
 
     const consentItems = [
         { id: "investment", label: "투자 관련 주의사항 확인" },
@@ -57,6 +59,64 @@ export default function StockTerms() {
     ] as const
 
     const allChecked = Object.values(terms).every(Boolean);
+
+    // 약관 HTML 로드 및 파싱
+    useEffect(() => {
+        if (!openModalId) {
+            setModalHtmlContent("");
+            return;
+        }
+
+        const controller = new AbortController();
+
+        const fetchHtml = async () => {
+            setModalLoading(true);
+            try {
+                const response = await fetch(
+                    `/terms/terms_credit_${openModalId}.html`,
+                    { signal: controller.signal }
+                );
+
+                if (controller.signal.aborted) return;
+
+                const html = await response.text();
+
+                if (controller.signal.aborted) return;
+
+                // style 태그 내용 추출
+                const styleMatch = html.match(/<style[^>]*>([\s\S]*)<\/style>/i);
+                let styleContent = styleMatch ? styleMatch[1] : "";
+                // body 스타일을 스코프화 (body를 .terms-content로 변경)
+                styleContent = styleContent.replace(/body\s*{/g, ".terms-content {");
+                // body 태그 내용 추출
+                const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+                const bodyContent = bodyMatch ? bodyMatch[1] : html;
+                // style과 body 내용을 합쳐서 렌더링
+                const fullContent = styleContent
+                    ? `<style>${styleContent}</style><div class="terms-content">${bodyContent}</div>`
+                    : `<div class="terms-content">${bodyContent}</div>`;
+
+                if (!controller.signal.aborted) {
+                    setModalHtmlContent(fullContent);
+                }
+            } catch (error: any) {
+                if (error?.name !== "AbortError") {
+                    console.error("약관 HTML 로드 실패:", error);
+                    setModalHtmlContent("<p>약관을 불러올 수 없습니다.</p>");
+                }
+            } finally {
+                if (!controller.signal.aborted) {
+                    setModalLoading(false);
+                }
+            }
+        };
+
+        fetchHtml();
+
+        return () => {
+            controller.abort();
+        };
+    }, [openModalId]);
 
     const handleAllCheck = () => {
         const newValue = !allChecked;
@@ -120,7 +180,7 @@ export default function StockTerms() {
                 </header>
 
                 {/* 안내 텍스트 */}
-                <div className="pt-[0px] pb-[26px] text-left">
+                <div className="pt-0 pb-[26px] text-left">
                     <p className="text-body-06 text-neutral-2">
                         미성년자는 투자계좌를 만들려면 부모님의 도움이 {"\n"}필요해요.
                     </p>
@@ -233,12 +293,14 @@ export default function StockTerms() {
                                 {consentItems.find((item) => item.id === openModalId)?.label}
                             </DialogTitle>
                         </DialogHeader>
-
-                        {openModalId && (
-                            <iframe
-                                src={`/terms/terms_credit_${openModalId}.html`}
-                                className="w-full h-[500px] border-none"
-                                title={`${openModalId} 약관`}
+                        {modalLoading ? (
+                            <div className="flex items-center justify-center h-[500px]">
+                                <p className="text-neutral-3">로딩 중...</p>
+                            </div>
+                        ) : (
+                            <div
+                                className="w-full h-[500px] overflow-y-auto"
+                                dangerouslySetInnerHTML={{ __html: modalHtmlContent }}
                             />
                         )}
                     </DialogContent>
