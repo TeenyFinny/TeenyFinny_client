@@ -85,14 +85,12 @@ export default function RegisterPage() {
           birthDate: form.birthDate,
           gender: form.gender,
           phoneNumber: form.phoneNumber,
-        };
+        }
 
         // 회원가입 요청만 수행 (로그인은 완료 페이지에서 처리)
-        await api.post(requests.signup, payload);
-        res = null; // 로그인 요청 제거
+        await api.post(requests.signup, payload)
+        res = null // 로그인 요청 제거
       }
-
-      // 자동 로그인 제거 - 완료 페이지에서 로그인 처리
 
       // 완료 페이지로 이동하면서 이메일, 비밀번호, 역할 전달
       if (isKakaoSignup) {
@@ -122,6 +120,7 @@ export default function RegisterPage() {
             form.role
           );
         }
+        sessionStorage.removeItem("register-form-storage")
         reset();
         router.push("/signup/complete");
         return;

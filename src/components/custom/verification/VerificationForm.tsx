@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useCallback, useRef } from "react"
+import { useState, useMemo, useCallback, useRef, useEffect } from "react"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled"
 import { PhoneNumberInput } from "@/components/custom/allowance/checking/PhoneNumberInput"
@@ -84,6 +84,14 @@ export default function VerificationForm({ mode, onNext, onSuccess, form: extern
   const isBasicInfoComplete = currentPhoneNumber.length === 11 && birthFront.length === 6 && birthBack.length === 1 && currentName.trim().length > 0 && (mode === "verify" || gender !== null)
   const isButtonEnabled = isBasicInfoComplete && isOtpInputOpen && isOtpVerified
 
+  // 컴포넌트 언마운트 시 모달 닫기
+  useEffect(() => {
+    return () => {
+      setOtpBottomSheetOpen(false)
+      setOpenBirthErrorModal(false)
+    }
+  }, [])
+
   /** 인증번호 생성 및 표시 */
   const generateAndShowOtp = useCallback(() => {
     // 랜덤 6자리 인증번호 생성
@@ -94,10 +102,10 @@ export default function VerificationForm({ mode, onNext, onSuccess, form: extern
     setOtpError(null)
     setNotificationVisible(true)
 
-    // 알림 팝업 8초 후 자동 숨김
+    // 알림 팝업 5초 후 자동 숨김
     setTimeout(() => {
       setNotificationVisible(false)
-    }, 8000)
+    }, 5000)
   }, [])
 
   /** 인증번호 입력하기 버튼 클릭 */

@@ -55,6 +55,10 @@ const requests = {
 
   fetchProfile: `/profile`,
 
+  // ID/PW 찾기
+  findEmail: `/auth/find-email`, // ID 찾기
+  resetPassword: `/auth/reset-password`, // 비밀번호 재설정 요청
+
   // Kakao OAuth
   kakaoLogin: `/auth/oauth/kakao/login`,
   kakaoSignup: `/auth/oauth/kakao/signup`,
