@@ -93,7 +93,7 @@ export default function Page() {
       <div className="relative w-[327px] mx-auto bg-neutral-7 rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col items-center justify-center pt-[40px] pb-[51px] mb-[32px]">
         {/* <CHANGE> 상단 텍스트를 연속 도전 일수로 변경 */}
         <p className="text-center text-head-02 font-bold text-neutral-1 w-[231px] mb-18">
-          퀴즈 4일차 도전 중!
+          퀴즈 {streakDays + 1}일차 도전 중!
         </p>
 
         {/* <CHANGE> 중앙 이미지를 5x3 출석 스탬프 그리드로 변경 */}
@@ -102,7 +102,7 @@ export default function Page() {
             <div key={rowIndex} className="flex gap-4">
               {Array.from({ length: 5 }).map((_, colIndex) => {
                 const stampIndex = rowIndex * 5 + colIndex
-                const isStamped = stampIndex < 3
+                const isStamped = stampIndex < streakDays
 
                 return (
                   <div key={colIndex} className="relative">
