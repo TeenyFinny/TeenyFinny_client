@@ -56,6 +56,13 @@ export default function Step1Terms({
 
   /** 약관 HTML 로드 */
   useEffect(() => {
+    // openModalId가 null이면 fetch하지 않음
+    if (!openModalId) {
+      setModalHtmlContent("");
+      setModalLoading(false);
+      return;
+    }
+
     const controller = new AbortController();
 
     const fetchHtml = async () => {
