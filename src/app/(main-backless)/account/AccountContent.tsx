@@ -12,7 +12,7 @@ import { useSelectedChildStore } from "@/store/selectedChildStore";
 import { useUserStore } from "@/store/userStore";
 import { ApiResponse } from "@/types/axios/apiRes.t";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, useCallback } from "react";
 import { ChildDto } from "@/types/home";
 
 type Accounts = {
@@ -30,6 +30,13 @@ type CardInfo = {
   expiredAt: string;
   cvc: string;
 };
+
+// 계좌 타입 상수
+const ACCOUNT_TYPES = {
+  ALLOWANCE: "용돈 계좌",
+  INVEST: "투자 계좌",
+  GOAL: "목표 적금",
+} as const;
 
 function AccountContentInner() {
   const router = useRouter();
@@ -61,7 +68,7 @@ function AccountContentInner() {
     rawChildId !== null && rawChildId !== "" ? Number(rawChildId) : null;
 
   // 계좌 정보 조회 함수
-  const fetchAccountData = async (childId: number, showLoading: boolean = true) => {
+  const fetchAccountData = useCallback(async (childId: number, showLoading: boolean = true) => {
     // showLoading이 true일 때만 로딩 상태 표시 및 데이터 초기화
     if (showLoading) {
       setLoading(true);
@@ -91,7 +98,7 @@ function AccountContentInner() {
         setLoading(false);
       }
     }
-  };
+  }, [setInvestAccountExists]);
 
   const childHandler = (id: number) => {
     if (currentChild === id) {
@@ -107,8 +114,7 @@ function AccountContentInner() {
     if (currentChild) {
       fetchAccountData(currentChild);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentChild]);
+  }, [currentChild, fetchAccountData]);
 
   const autoTransHandler = () => {
     // 현재 선택된 자녀 객체 찾기
@@ -141,11 +147,11 @@ function AccountContentInner() {
   };
 
   const handleViewDetails = (accountType: string) => {
-    if (accountType === "투자 계좌") {
+    if (accountType === ACCOUNT_TYPES.INVEST) {
       router.push("/invest/portfolios");
       return;
     }
-    if (accountType === "목표 적금") {
+    if (accountType === ACCOUNT_TYPES.GOAL) {
       router.push("/goal");
       return;
     }
@@ -154,12 +160,12 @@ function AccountContentInner() {
     const childName = child?.name ?? "";
 
     const typeMap: Record<string, string> = {
-      "용돈 계좌": "allowance",
-      "목표 적금": "goal",
+      [ACCOUNT_TYPES.ALLOWANCE]: "allowance",
+      [ACCOUNT_TYPES.GOAL]: "goal",
     };
     const balanceMap: Record<string, string | null> = {
-      "용돈 계좌": allowance,
-      "목표 적금": goal,
+      [ACCOUNT_TYPES.ALLOWANCE]: allowance,
+      [ACCOUNT_TYPES.GOAL]: goal,
     };
 
     setHistoryData({
@@ -241,16 +247,16 @@ function AccountContentInner() {
         {/* 계좌 카드 */}
         {(loading || allowance) ? (
           <AccountCard
-            accountName="용돈 계좌"
+            accountName={ACCOUNT_TYPES.ALLOWANCE}
             balance={loading ? "불러오는 중..." : allowance!}
             showCard
-            onViewDetails={() => handleViewDetails("용돈 계좌")}
+            onViewDetails={() => handleViewDetails(ACCOUNT_TYPES.ALLOWANCE)}
             onCardClick={handleViewCard}
             isLoading={loading}
           />
         ) : (
           <AccountCardDisabled
-            accountName="용돈 계좌"
+            accountName={ACCOUNT_TYPES.ALLOWANCE}
             onCardClick={() => setIsAllowanceCreateOpen(true)}
           />
         )}
@@ -266,21 +272,21 @@ function AccountContentInner() {
 
         {(loading || invest) ? (
           <AccountCard
-            accountName="투자 계좌"
+            accountName={ACCOUNT_TYPES.INVEST}
             balance={loading ? "불러오는 중..." : invest!}
-            onViewDetails={() => handleViewDetails("투자 계좌")}
+            onViewDetails={() => handleViewDetails(ACCOUNT_TYPES.INVEST)}
             onCardClick={() => null}
             isLoading={loading}
           />
         ) : (
-          <AccountCardDisabled accountName="투자 계좌" onCardClick={() => setIsInvestOpen(true)} />
+          <AccountCardDisabled accountName={ACCOUNT_TYPES.INVEST} onCardClick={() => setIsInvestOpen(true)} />
         )}
 
         {(loading || goal) ? (
           <AccountCard
-            accountName="목표 적금"
+            accountName={ACCOUNT_TYPES.GOAL}
             balance={loading ? "불러오는 중..." : goal!}
-            onViewDetails={() => handleViewDetails("목표 적금")}
+            onViewDetails={() => handleViewDetails(ACCOUNT_TYPES.GOAL)}
             onCardClick={() => null}
             isLoading={loading}
           />
