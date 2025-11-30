@@ -100,7 +100,7 @@ export default function Page() {
   const updateSubmitHandler = async () => {
     try {
       if (isInit) {
-        await api.post(requests.fetchAutoTransfer(Number(selectedChildId)), {
+        await api.post(requests.fetchAutoTransferById(Number(selectedChildId)), {
           type: "ALLOWANCE",
           totalAmount: amount,
           transferDate: date,
@@ -186,7 +186,7 @@ export default function Page() {
       try {
         // 인터셉터가 res.data를 반환하므로 res가 응답 바디
         const res = await api.get<ApiResponse<AutoTransfer>>(
-          requests.fetchAutoTransfer(Number(selectedChildId)),
+          requests.fetchAutoTransferById(Number(selectedChildId)),
           { signal: controller.signal }
         );
         if (controller.signal.aborted) return;

@@ -31,9 +31,11 @@ interface AccountCardProps {
   onViewDetails?: () => void
    /** 카드 버튼 클릭 핸들러 */
   onCardClick?: () => void
+  /** 로딩 상태 여부 */
+  isLoading?: boolean
 }
 
-export function AccountCard({ accountName, balance, showCard = false, onViewDetails, onCardClick }: AccountCardProps) {
+export function AccountCard({ accountName, balance, showCard = false, onViewDetails, onCardClick, isLoading = false }: AccountCardProps) {
   return (
     <div className="relative w-[340px] rounded-[16px] px-[24px] py-[11px] bg-primary-1/[0.12] h-[111px]">
       {/* 상단: 통장 이름과 카드 버튼 */}
@@ -41,7 +43,7 @@ export function AccountCard({ accountName, balance, showCard = false, onViewDeta
         <h3 className="text-body-05 text-neutral-2 leading-[17px] tracking-[-0.6px] whitespace-pre-line mt-[2px] pt-[13px]">
           {accountName}
         </h3>
-        {showCard && (
+        {showCard && !isLoading && (
           // 카드 컴포넌트를 여기에 넣으세요
           <TinyStateBadge enabled={true} label="카드" onClick={() => onCardClick?.()} />
         )}
@@ -54,23 +56,25 @@ export function AccountCard({ accountName, balance, showCard = false, onViewDeta
             아직 개설된 계좌가 없어요
           </p>
         ) : (
-          <p className="text-neutral-1 text-head-00 leading-[31px] font-bold tracking-[-0.6px] whitespace-pre-line">
-            {balance} 원
+          <p className={`${isLoading ? "text-neutral-3 text-body-04" : "text-neutral-1 text-head-00"} leading-[31px] font-bold tracking-[-0.6px] whitespace-pre-line`}>
+            {balance} {isLoading ? "" : "원"}
           </p>
         )}
       </div>
 
       {/* 상세 내역 보기 버튼 */}
-      <button
-        onClick={onViewDetails}
-        className="absolute right-4 bottom-4 inline-flex items-center justify-end gap-1 h-[22px] w-[100px] py-[1px]"
-        type="button"
-      >
-        <span className="text-body-02 text-primary-1 leading-[17px] group-hover:text-primary-2 transition-colors whitespace-pre-line">
-          상세 내역 보기
-        </span>
-        <ChevronRight className="w-5 h-5 text-primary-1 group-hover:text-primary-2 transition-colors" />
-      </button>
+      {!isLoading && (
+        <button
+          onClick={onViewDetails}
+          className="absolute right-4 bottom-4 inline-flex items-center justify-end gap-1 h-[22px] w-[100px] py-[1px]"
+          type="button"
+        >
+          <span className="text-body-02 text-primary-1 leading-[17px] group-hover:text-primary-2 transition-colors whitespace-pre-line">
+            상세 내역 보기
+          </span>
+          <ChevronRight className="w-5 h-5 text-primary-1 group-hover:text-primary-2 transition-colors" />
+        </button>
+      )}
     </div>
   )
 }
