@@ -40,8 +40,7 @@ const requests = {
   fetchChildHistory: (childId: number) => `/account/${childId}/history`,
   fetchTransactionDetail: (transactionId: string) => `/account/history/${transactionId}`,
   fetchChildCard: (childId?: number) => childId ? `/account/${childId}/card` : `/account/card`,
-  fetchTotalAccount: (childId?: number) => childId ? `/account/${childId}/summary` : `/account/summary`,
-  fetchAutoTransfer: (childId?: number) => `/account/${childId}/auto-transfer`,
+  fetchTotalAccount: (childId: number) => `/account/${childId}/summary`,
   fetchAutoTransferById: (childId: number) =>  `/account/${childId}/auto-transfer`,
 
   verifyPhoneNumber: `/auth/identity`,
