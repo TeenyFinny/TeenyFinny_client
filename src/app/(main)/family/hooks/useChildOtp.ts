@@ -6,7 +6,6 @@ import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 import { HttpError } from "@/types/axios/httpError.t";
 import { useUserStore } from "@/store/userStore";
-import { useNotificationStore } from "@/store/notificationStore";
 
 /**
  * useChildOtp
@@ -40,7 +39,6 @@ import { useNotificationStore } from "@/store/notificationStore";
 export const useChildOtp = (enabled: boolean) => {
   const router = useRouter();
   const { userId } = useUserStore();
-  const { setMessage } = useNotificationStore();
 
   /** 입력된 OTP 숫자 (최대 6자리) */
   const [value, setValue] = useState("");
@@ -57,6 +55,10 @@ export const useChildOtp = (enabled: boolean) => {
   /** 모달 제어 */
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogText, setDialogText] = useState("");
+
+  /** 시도 횟수 (최대 5회) */
+  const [attemptCount, setAttemptCount] = useState(0);
+  const MAX_ATTEMPTS = 5;
 
   /**
    * OTP 변경 핸들러
@@ -75,13 +77,22 @@ export const useChildOtp = (enabled: boolean) => {
    * OTP 검증 요청
    *
    * 1. enabled가 false이면 실행하지 않음
-   * 2. 입력값이 6자리가 아닌 경우 즉시 에러 표시
-   * 3. 서버에 familyOtp 검증 요청
-   * 4. 성공 시 /home 페이지로 이동
-   * 5. 실패 시 에러 메시지 표시
+   * 2. 시도 횟수 확인 (최대 5회)
+   * 3. 입력값이 6자리가 아닌 경우 즉시 에러 표시
+   * 4. 서버에 familyOtp 검증 요청
+   * 5. 성공 시 /home 페이지로 이동
+   * 6. 실패 시 에러 메시지 표시 및 시도 횟수 증가
    */
   const submit = useCallback(async () => {
     if (!enabled) return;
+
+    // 시도 횟수 초과 확인
+    if (attemptCount >= MAX_ATTEMPTS) {
+      setInputError(true);
+      setDialogText(`시도 횟수를 초과했습니다.\n(최대 ${MAX_ATTEMPTS}회)`);
+      setDialogOpen(true);
+      return;
+    }
 
     // 6자리 미완성 입력
     if (value.length !== 6) {
@@ -99,21 +110,38 @@ export const useChildOtp = (enabled: boolean) => {
         familyOtp: Number(value),
       };
 
-      const res = await api.post(requests.verifyFamilyOtp, body);
+      await api.post(requests.verifyFamilyOtp, body);
 
       /** 검증 성공 */
       // 가족 등록 완료 시 hasFamily 플래그 제거
       sessionStorage.removeItem("hasFamily");
-      setMessage("가족 등록에 성공했습니다.");
+
+      // 알림은 SSE를 통해 서버에서 자동으로 전송됨 (useSse에서 setMessage(data.content) 호출)
+      // 부모와 동일하게 SSE를 통해 알림을 받음
+
+      // /home으로 이동 (SSE를 통해 받은 알림은 /home 페이지에서 PushNotification으로 표시됨)
       router.push("/home");
     } catch (err: any) {
       /** 서버 오류 */
       setInputError(true);
 
+      // 시도 횟수 증가
+      const newAttemptCount = attemptCount + 1;
+      setAttemptCount(newAttemptCount);
+
       if (err instanceof HttpError) {
         const { statusCode } = err;
         if (statusCode === 400) {
-          setDialogText("코드가 일치하지 않습니다\n다시 입력해주세요");
+          const remainingAttempts = MAX_ATTEMPTS - newAttemptCount;
+          if (remainingAttempts > 0) {
+            setDialogText(
+              `코드가 일치하지 않습니다\n다시 입력해주세요\n(남은 시도: ${remainingAttempts}회)`
+            );
+          } else {
+            setDialogText(
+              `코드가 일치하지 않습니다\n시도 횟수를 초과했습니다.\n(최대 ${MAX_ATTEMPTS}회)`
+            );
+          }
         } else if (statusCode === 410) {
           setDialogText("만료된 코드입니다\n새로운 코드를 발급받으세요");
         } else {
@@ -128,7 +156,7 @@ export const useChildOtp = (enabled: boolean) => {
     } finally {
       setIsSubmitting(false);
     }
-  }, [enabled, value, router, userId]);
+  }, [enabled, value, router, userId, attemptCount]);
 
   return {
     value,
@@ -140,5 +168,8 @@ export const useChildOtp = (enabled: boolean) => {
     dialogOpen,
     setDialogOpen,
     dialogText,
+    attemptCount,
+    maxAttempts: MAX_ATTEMPTS,
+    remainingAttempts: MAX_ATTEMPTS - attemptCount,
   };
 };

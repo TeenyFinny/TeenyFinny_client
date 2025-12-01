@@ -50,7 +50,7 @@ export default function MyPageBase({ menu }: MyPageBaseProps) {
   const handlePasswordComplete = async (simplePassword: string) => {
     try {
       const res = await api.post(requests.simplePassword, {
-        password: simplePassword,
+        password: String(simplePassword),
       })
 
       if (res.data?.matched === true) {

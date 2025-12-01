@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import AboutBanner from "../AboutBanner";
+import ChildAllowanceCard from "./ChildAllowanceCard";
 import { AccountCard } from "@/components/custom/account/AccountCard";
 import { getHomeData } from "@/lib/api/home";
 import { UserDto } from "@/types/home";
@@ -56,8 +56,6 @@ export default function ChildDashboard() {
     return <div>데이터를 불러올 수 없습니다.</div>;
   }
 
-  const userId = user.userId;
-
   /**
    * 상세 내역 보기 클릭 이벤트
    *
@@ -72,36 +70,31 @@ export default function ChildDashboard() {
    */
   const handleViewCard = () => {
     (async () => {
-    try {
-      const endpoint = requests.fetchChildCard() // 자녀 본인 → /account/card
-      const res = await api.get<ApiResponse<CardInfo>>(endpoint);
-      const card = res.data as CardInfo;
-      if (card.hasCard) {
-        setCardInfo(card);
-        setCardOpen(true);
-      } else {
-        router.push(`/allowance/card/create`);
+      try {
+        const endpoint = requests.fetchChildCard(); // 자녀 본인 → /account/card
+        const res = await api.get<ApiResponse<CardInfo>>(endpoint);
+        const card = res.data as CardInfo;
+        if (card.hasCard) {
+          setCardInfo(card);
+          setCardOpen(true);
+        } else {
+          router.push(`/allowance/card/create`);
+        }
+      } catch (e) {
+        console.error(e);
       }
-    } catch (e) {
-      console.error(e);
-    }
-  })();
+    })();
   };
   /**
    * 리포트 페이지 이동 이벤트
    */
   const reportHandler = () => {
-    router.push(`/allowance/report`)
+    router.push(`/allowance/report`);
   };
 
   return (
     <div className="max-h-screen px-[17px]">
       <div className="max-w-md mx-auto space-y-3">
-        {/* 배너 */}
-        <div className="flex flex-col gap-6">
-          <AboutBanner />
-        </div>
-
         {/* 계좌 제목 */}
         <div className="pl-[7px] h-[21px] flex justify-between items-center">
           <p className="text-head-03 font-bold text-neutral-3 mb-[10px] mt-[20px]">
@@ -115,7 +108,7 @@ export default function ChildDashboard() {
         </div>
 
         {/* 계좌 카드: 용돈 계좌 */}
-        <AccountCard
+        <ChildAllowanceCard
           accountName="용돈 계좌"
           balance={user.depositBalance ?? "0"}
           showCard={true}
@@ -123,20 +116,20 @@ export default function ChildDashboard() {
           onCardClick={() => handleViewCard()}
         />
 
-          <CardDetail
-            open={cardOpen}
-            setOpen={setCardOpen}
-            cardName={cardInfo?.name ?? ""}
-            cardNumber={cardInfo?.cardNumber ?? ""}
-            expiry={cardInfo?.expiredAt ?? ""}
-            cvc={cardInfo?.cvc ?? ""}
-          />
+        <CardDetail
+          open={cardOpen}
+          setOpen={setCardOpen}
+          cardName={cardInfo?.name ?? ""}
+          cardNumber={cardInfo?.cardNumber ?? ""}
+          expiry={cardInfo?.expiredAt ?? ""}
+          cvc={cardInfo?.cvc ?? ""}
+        />
 
         {/* 계좌 카드: 투자 계좌 */}
         <AccountCard
           accountName="투자 계좌"
           balance={user.investmentBalance ?? "0"}
-          onViewDetails={() => handleViewDetails("투자 계좌")}
+          onViewDetails={() => router.push("/invest")}
           onCardClick={() => null}
         />
 
@@ -144,7 +137,14 @@ export default function ChildDashboard() {
         <AccountCard
           accountName="목표 적금"
           balance={user.savingBalance ?? "0"}
-          onViewDetails={() => handleViewDetails("목표 적금")}
+          onViewDetails={() => {
+            const savingBalance = user.savingBalance ?? "-1";
+            if (savingBalance === "-1") {
+              router.push("/goal/intro");
+            } else {
+              router.push("/goal");
+            }
+          }}
           onCardClick={() => null}
         />
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { PasswordInput } from "@/components/ui/input/PasswordInput";
+import { useState, useEffect } from "react";
+import { BottomSheetPassword } from "@/components/ui/bottom-sheet/BottomSheetPassword";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled";
 
@@ -10,42 +10,66 @@ type Step06SimplePasswordProps = Readonly<{
 }>;
 
 export default function Step06SimplePassword({
-  onComplete
+  onComplete,
 }: Step06SimplePasswordProps) {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [isPasswordSheetOpen, setIsPasswordSheetOpen] = useState(false);
+  const [isConfirmSheetOpen, setIsConfirmSheetOpen] = useState(false);
+  const [isPasswordSet, setIsPasswordSet] = useState(false);
 
-  const passwordError = useMemo(() => {
-    if (!submitted && !password) return undefined;
-    if (password && !/^[0-9]+$/.test(password)) return "숫자만 입력 가능합니다.";
-    if (password.length > 0 && password.length !== 6) return "비밀번호는 6자리 숫자여야 합니다.";
-    return undefined;
-  }, [password, submitted]);
+  // 컴포넌트 마운트 시 첫 번째 바텀시트 자동 열기
+  useEffect(() => {
+    setIsPasswordSheetOpen(true);
+  }, []);
 
-  const confirmError = useMemo(() => {
-    if (!submitted && !confirm) return undefined;
-    if (confirm !== password) return "비밀번호가 일치하지 않습니다.";
-    return undefined;
-  }, [password, confirm, submitted]);
+  const handlePasswordComplete = (pin: string) => {
+    setPassword(pin);
+    setIsPasswordSet(true);
+    setIsPasswordSheetOpen(false);
+    // 첫 번째 비밀번호 입력 완료 후 확인 바텀시트 열기
+    setTimeout(() => {
+      setIsConfirmSheetOpen(true);
+    }, 300);
+  };
+
+  const handleConfirmComplete = (pin: string) => {
+    setConfirm(pin);
+    setIsConfirmSheetOpen(false);
+
+    // 비밀번호 확인
+    if (pin === password) {
+      onComplete(pin);
+    } else {
+      // 비밀번호가 일치하지 않으면 다시 첫 번째부터 시작
+      setPassword("");
+      setConfirm("");
+      setIsPasswordSet(false);
+      setTimeout(() => {
+        setIsPasswordSheetOpen(true);
+      }, 300);
+    }
+  };
 
   const isValid =
-    !passwordError &&
-    !confirmError &&
-    password.length === 6 &&
-    password === confirm;
+    password.length === 6 && confirm.length === 6 && password === confirm;
 
   const handleNext = () => {
-    setSubmitted(true);
     if (isValid) {
       onComplete(password);
+    } else if (isPasswordSet) {
+      setIsConfirmSheetOpen(true);
+    } else {
+      setIsPasswordSheetOpen(true);
     }
   };
 
   return (
     <div className="flex flex-col">
       <div className="pt-[34px] pb-[10px] text-left">
-        <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">간편 비밀번호를 등록해 주세요</h1>
+        <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
+          간편 비밀번호를 등록해 주세요
+        </h1>
       </div>
       <div className="pb-[31px] text-left">
         <p className="text-body-05 text-neutral-2 whitespace-pre-line">
@@ -55,24 +79,27 @@ export default function Step06SimplePassword({
 
       <div className="w-full max-w-[327px] flex flex-col gap-[31px]">
         <div className="flex flex-col">
-          <PasswordInput
-            label="간편 비밀번호"
-            value={password}
-            onChange={setPassword}
-          />
-          {passwordError && (
-            <p className="text-body-08 text-error px-1">{passwordError}</p>
-          )}
+          <div className="text-body-05 text-neutral-2 mb-2">간편 비밀번호</div>
+          <div className="h-[48px] flex items-center px-4 border border-neutral-4 rounded-[10px] bg-neutral-7">
+            <span className="text-body-04 text-neutral-1">
+              {password ? "●".repeat(6) : "간편 비밀번호를 입력해주세요"}
+            </span>
+          </div>
         </div>
 
         <div className="flex flex-col">
-          <PasswordInput
-            label="간편 비밀번호 확인"
-            value={confirm}
-            onChange={setConfirm}
-          />
-          {confirmError && (
-            <p className="text-body-08 text-error px-1">{confirmError}</p>
+          <div className="text-body-05 text-neutral-2 mb-2">
+            간편 비밀번호 확인
+          </div>
+          <div className="h-[48px] flex items-center px-4 border border-neutral-4 rounded-[10px] bg-neutral-7">
+            <span className="text-body-04 text-neutral-1">
+              {confirm ? "●".repeat(6) : "간편 비밀번호를 다시 입력해주세요"}
+            </span>
+          </div>
+          {confirm && confirm !== password && (
+            <p className="text-body-08 text-error px-1 mt-1">
+              비밀번호가 일치하지 않습니다.
+            </p>
           )}
         </div>
       </div>
@@ -84,6 +111,24 @@ export default function Step06SimplePassword({
           <BigButtonDisabled label="다음" onClick={handleNext} />
         )}
       </div>
+
+      {/* 첫 번째 비밀번호 입력 바텀시트 */}
+      <BottomSheetPassword
+        open={isPasswordSheetOpen}
+        setOpen={setIsPasswordSheetOpen}
+        onComplete={handlePasswordComplete}
+        title="간편 비밀번호"
+        shouldOverlayBottomBar={true}
+      />
+
+      {/* 비밀번호 확인 바텀시트 */}
+      <BottomSheetPassword
+        open={isConfirmSheetOpen}
+        setOpen={setIsConfirmSheetOpen}
+        onComplete={handleConfirmComplete}
+        title="간편 비밀번호 확인"
+        shouldOverlayBottomBar={true}
+      />
     </div>
   );
 }
