@@ -1,7 +1,8 @@
 "use client"
 
+import { Suspense } from "react"
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { NormalInput2 } from "@/components/ui/input/NormalInput2"
 import { SmallButtonActivated } from "@/components/ui/button/SmallButtonActivated"
 import { SmallButtonDisabled } from "@/components/ui/button/SmallButtonDisabled"
@@ -15,8 +16,10 @@ interface GoalData {
     payDay: string
 }
 
-export default function GoalSettingPage() {
+function GoalSettingContent() {
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const goalId = searchParams.get("goalId")
 
     const [goalData, setGoalData] = useState<GoalData | null>(null)
     const [payDay, setPayDay] = useState("")
@@ -24,18 +27,20 @@ export default function GoalSettingPage() {
 
     // 🔹 GET: 기존 목표 정보 로드
     useEffect(() => {
+        if (!goalId) return
+
         const fetchGoalData = async () => {
             try {
                 console.log("📡 목표 정보 불러오는 중...")
 
-                const res = await api.get(requests.updateGoal)
+                const res = await api.get(requests.fetchGoalForUpdate(goalId))
                 const raw = res.data?.data || res.data
 
                 const mappedData: GoalData = {
-                    goalName: raw.goalName,
-                    totalAmount: Number(raw.totalAmount).toLocaleString(),
-                    monthlyAmount: Number(raw.monthlyAmount).toLocaleString(),
-                    payDay: raw.payDay,  // 🔥 여기 수정됨
+                    goalName: raw.name,
+                    totalAmount: raw.targetAmount,
+                    monthlyAmount: raw.monthlyAmount,
+                    payDay: String(raw.payDay),
                 }
 
                 console.log("✅ 변환된 GoalData:", mappedData)
@@ -47,7 +52,7 @@ export default function GoalSettingPage() {
         }
 
         fetchGoalData()
-    }, [])
+    }, [goalId])
 
     // 🔹 기간 계산
     useEffect(() => {
@@ -66,12 +71,11 @@ export default function GoalSettingPage() {
 
             console.log("📨 PATCH 요청 데이터:", payload)
 
-            const res = await api.patch(requests.updateGoal, payload)
+            const res = await api.patch(requests.updateGoal(goalId!), payload)
 
             console.log("✅ 수정 완료:", res.data)
 
-            alert(`납입일이 ${payDay}일로 수정되었습니다!`)
-            router.push("/goal")
+            router.push(`/goal/${goalId}`)
         } catch (error) {
             console.error("❌ 수정 실패:", error)
         }
@@ -101,14 +105,14 @@ export default function GoalSettingPage() {
                     <NormalInput2
                         label="적금 이름을 지어주세요"
                         value={goalData.goalName}
-                        onChange={() => {}}
+                        onChange={() => { }}
                         disabled
                     />
 
                     <NormalInput2
                         label="총 얼마를 모을까요?"
                         value={goalData.totalAmount}
-                        onChange={() => {}}
+                        onChange={() => { }}
                         disabled
                         isNumeric
                         unit="원"
@@ -117,7 +121,7 @@ export default function GoalSettingPage() {
                     <NormalInput2
                         label="한 달에 얼마를 모을까요?"
                         value={goalData.monthlyAmount}
-                        onChange={() => {}}
+                        onChange={() => { }}
                         disabled
                         isNumeric
                         unit="원"
@@ -143,10 +147,18 @@ export default function GoalSettingPage() {
                 </div>
 
                 <div className="mt-17 flex gap-2.5">
-                    <SmallButtonDisabled label="취소" onClick={() => router.push("/goal")} />
+                    <SmallButtonDisabled label="취소" onClick={() => router.push(`/goal/${goalId}`)} activated />
                     <SmallButtonActivated label="수정" onClick={handleSave} />
                 </div>
             </main>
         </div>
+    )
+}
+
+export default function GoalSettingPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <GoalSettingContent />
+        </Suspense>
     )
 }

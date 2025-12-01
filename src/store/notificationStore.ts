@@ -1,43 +1,41 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import api from "@/lib/axios/axios";
+import requests from "@/lib/axios/requests";
 
 /**
  * @typedef {Object} NotificationStore
  * @property {string | null} message - 화면 상단 PushNotification에 표시될 메시지.
+ * @property {boolean} hasUnread - 읽지 않은 알림 존재 여부.
  * @property {(msg: string | null) => void} setMessage - 메시지를 설정하거나 초기화하는 setter 함수.
+ * @property {() => Promise<void>} checkUnread - 읽지 않은 알림 여부를 서버에서 확인하는 함수.
  */
 interface NotificationStore {
   message: string | null;
+  hasUnread: boolean;
   setMessage: (msg: string | null) => void;
+  checkUnread: () => Promise<void>;
 }
 
 /**
  * useNotificationStore
  *
- * 전역에서 PushNotification 메시지를 관리하기 위한 Zustand 스토어입니다.
- *
- * ### 역할
- * - 페이지 간 이동 시에도 메시지를 유지합니다.
- * - 성공/실패 메시지를 중앙 집중식으로 관리합니다.
- * - profile 진입 시 PushNotification을 자연스럽게 표시할 수 있습니다.
- *
- * ### 예시
- * ```tsx
- * const { setMessage } = useNotificationStore();
- *
- * const onSuccess = () => {
- *   setMessage("비밀번호 변경에 성공하였습니다.");
- *   router.push("/profile");
- * };
- * ```
- *
- * @returns {NotificationStore} PushNotification 전역 상태와 setter 함수
+ * 전역에서 PushNotification 메시지 및 알림 상태를 관리하기 위한 Zustand 스토어입니다.
  */
 export const useNotificationStore = create(
   persist<NotificationStore>(
     (set) => ({
       message: null,
+      hasUnread: false,
       setMessage: (msg) => set({ message: msg }),
+      checkUnread: async () => {
+        try {
+          const res = await api.get(requests.fetchNotice);
+          set({ hasUnread: res.data.hasNotice });
+        } catch (error) {
+          console.error("알림 상태 확인 실패:", error);
+        }
+      },
     }),
     {
       name: "teenyfinny-notification",

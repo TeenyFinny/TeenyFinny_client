@@ -9,6 +9,7 @@
 interface CustomButtonProps {
   label: string
   onClick: () => void
+  activated?: boolean
 }
 
 /**
@@ -40,7 +41,7 @@ interface CustomButtonProps {
  * />
  * ```
  */
-export function SmallButtonDisabled({ label, onClick }: CustomButtonProps) {
+export function SmallButtonDisabled({ label, onClick, activated = false }: CustomButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -51,7 +52,7 @@ export function SmallButtonDisabled({ label, onClick }: CustomButtonProps) {
         text-neutral-1 text-body-06 leading-[19px] font-semibold tracking-[-0.6px]
         whitespace-pre-line
       "
-      disabled={true}
+      disabled={!activated}
     >
       {label}
     </button>
