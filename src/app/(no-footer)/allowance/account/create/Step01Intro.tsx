@@ -68,7 +68,6 @@ export default function Step01Intro({ onNext }: Step1IntroProps) {
       </div>
 
       <div className="fixed bottom-[56px] left-1/2 -translate-x-1/2 w-[327px]">
-        <p className="mb-[12px] flex items-center justify-center text-body-01 text-neutral-3">자녀가 보유한 계좌가 없습니다.</p>
         <BigButtonActivated label="개설하기" onClick={onNext}/>
       </div>
     </div>

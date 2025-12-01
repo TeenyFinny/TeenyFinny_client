@@ -58,7 +58,7 @@ export default function LoadingScreenCircle({ onComplete }: LoadingScreenCircleP
         {/* Text */}
         <div className="text-center">
           <h2 className="mb-1 font-sans text-xl font-bold text-gray-900">
-            {isDone ? "완료!" : "잠시만 기다려주세요"}
+            {isDone ? "완료!" : "가족관계 확인 중..."}
           </h2>
         </div>
 
