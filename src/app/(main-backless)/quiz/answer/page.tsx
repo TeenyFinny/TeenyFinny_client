@@ -19,12 +19,11 @@ export default function Page() {
   const router = useRouter()
   const {
     setQuizData,
-    streakDays,
+    quizDate,
     courseCompleted,
     monthlyReward,
     todaySolved,
-    explanation,
-    quizDate
+    explanation
   } = useQuizStore()
 
   const EDUCATION_COURSE_LAST_DAY = 14 //교육과정의 마지막 일차
@@ -34,7 +33,7 @@ export default function Page() {
   // ---------------------------
   // 배지 텍스트
   // ---------------------------
-  const leftBadgeText = `${streakDays + 1}일차 도전!`
+  const leftBadgeText = `${quizDate + 1}일차 도전!`
 
   const rightBadgeText = `${todaySolved + 1} / 2 문제`
 
