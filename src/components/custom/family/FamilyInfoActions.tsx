@@ -49,7 +49,7 @@ export function FamilyInfoActions() {
   };
 
   return (
-    <div className="max-w-[327px]">
+    <div className="fixed bottom-[134px] w-full max-w-[327px]">
       <BigButtonActivated label="확인" onClick={handleConfirm} />
     </div>
   );

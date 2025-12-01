@@ -6,6 +6,7 @@ type Props = Readonly<{
   value: string;
   onChange: (v: string) => void;
   error: boolean;
+  disabled?: boolean;
 }>;
 
 /**
@@ -25,9 +26,10 @@ type Props = Readonly<{
  * @param {string} props.value - 현재 입력된 OTP 값(제어형 상태)
  * @param {(v: string) => void} props.onChange - OTP 입력 변경 핸들러
  * @param {boolean} props.error - 입력 오류 여부 (에러 스타일 적용 여부)
+ * @param {boolean} props.disabled - 비활성화 여부
  *
  * @returns {JSX.Element} OTP 입력 UI
  */
-export default function ChildOtpSection({ value, onChange, error }: Props) {
-  return <OtpInput value={value} onChange={onChange} error={error} />;
+export default function ChildOtpSection({ value, onChange, error, disabled }: Props) {
+  return <OtpInput value={value} onChange={onChange} error={error} disabled={disabled} />;
 }
