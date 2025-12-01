@@ -12,34 +12,6 @@ function generateRandomState(): string {
 }
 
 /**
- * 현재 환경에 맞는 카카오 Redirect URI를 반환합니다.
- *
- * @returns 카카오 Redirect URI
- */
-export function getKakaoRedirectUri(): string {
-  // 클라이언트 사이드에서 현재 호스트 확인
-  if (typeof window !== "undefined") {
-    const origin = window.location.origin;
-
-    // 프로덕션 환경
-    if (origin.includes("teeny-finny-client.vercel.app")) {
-      return "https://teeny-finny-client.vercel.app/kakao/callback";
-    }
-
-    // 로컬 개발 환경
-    if (origin.includes("localhost") || origin.includes("127.0.0.1")) {
-      return "http://localhost:3000/kakao/callback";
-    }
-  }
-
-  // 환경 변수가 설정되어 있으면 사용 (서버 사이드 또는 폴백)
-  return (
-    process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI ||
-    "https://teeny-finny-client.vercel.app/kakao/callback"
-  );
-}
-
-/**
  * 카카오 OAuth 인증 URL을 생성합니다.
  *
  * @returns 카카오 로그인 페이지 URL
@@ -49,11 +21,9 @@ export function getKakaoAuthUrl(): string {
   const state = generateRandomState();
   sessionStorage.setItem("kakao-oauth-state", state);
 
-  const redirectUri = getKakaoRedirectUri();
-
   const params = new URLSearchParams({
     client_id: process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY!,
-    redirect_uri: redirectUri,
+    redirect_uri: process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI!,
     response_type: "code",
     state: state,
   });
