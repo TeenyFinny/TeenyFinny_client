@@ -59,7 +59,7 @@ function AccountContentInner() {
   const [isInvestOpen, setIsInvestOpen] = useState<boolean>(false);
   const [isSavingOpen, setIsSavingOpen] = useState<boolean>(false);
   const [isReportWarningOpen, setIsReportWarningOpen] = useState<boolean>(false);
-
+  const [showInvestCreateButton, setShowInvestCreateButton] = useState(false);
   const handleReportClick = () => {
     if (!allowance) {
       setIsReportWarningOpen(true);
@@ -91,14 +91,14 @@ function AccountContentInner() {
       const endpoint = requests.fetchTotalAccount(childId);
       const res = await api.get<ApiResponse<Accounts>>(endpoint);
       const accounts = res.data as Accounts;
-      
+
       // 서버에서 받은 데이터를 state에 설정 (-1은 null로 변환)
       setTotal(accounts.total);
       setAllowance(accounts.allowance === "-1" ? null : accounts.allowance);
       setInvest(accounts.invest === "-1" ? null : accounts.invest);
       setGoal(accounts.goal === "-1" ? null : accounts.goal);
       setInvestAccountExists(accounts.invest !== null && accounts.invest !== "-1");
-      
+
       setAccountData(accounts);
     } catch (e) {
       console.error(e);
@@ -202,6 +202,24 @@ function AccountContentInner() {
     if (children && children.length > 0) setData(children);
   }, [children]);
 
+  useEffect(() => {
+    if (!data || data.length === 0 || currentChild === 0) return;
+
+    const fetchRequestCompleted = async () => {
+      try {
+        const res = await api.get(requests.fetchChildQuiz(currentChild));
+        const completed = res.data.requestCompleted;
+        console.log("리퀘스트" + completed);
+        setShowInvestCreateButton(completed);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    fetchRequestCompleted();
+  }, [data, currentChild, invest]);
+
+
 
   /** URL childId 우선 선택 → 없으면 store의 selectedChildId → 없으면 첫 번째 아이 fallback */
   useEffect(() => {
@@ -294,17 +312,38 @@ function AccountContentInner() {
           cvc={cardInfo?.cvc ?? ""}
         />
 
-        {(loading || invest) ? (
+        {/* 투자 계좌 카드 */}
+        {loading ? (
           <AccountCard
             accountName={ACCOUNT_TYPES.INVEST}
-            balance={loading ? "불러오는 중..." : invest!}
+            balance="불러오는 중..."
             onViewDetails={() => handleViewDetails(ACCOUNT_TYPES.INVEST)}
             onCardClick={() => null}
             isLoading={loading}
           />
+        ) : invest ? (
+          <AccountCard
+            accountName={ACCOUNT_TYPES.INVEST}
+            balance={invest}
+            onViewDetails={() => handleViewDetails(ACCOUNT_TYPES.INVEST)}
+          />
+        ) : showInvestCreateButton ? (
+          <AccountCard
+            accountName={ACCOUNT_TYPES.INVEST}
+            balance="투자 계좌 개설 요청 중!"
+            onViewDetails={() => {
+              console.log("currentChild:", currentChild);
+              router.push(`/invest/create-invest-account`);
+            }}
+          />
         ) : (
-          <AccountCardDisabled accountName={ACCOUNT_TYPES.INVEST} onCardClick={() => setIsInvestOpen(true)} />
+          <AccountCardDisabled
+            accountName={ACCOUNT_TYPES.INVEST}
+            onCardClick={() => setIsInvestOpen(true)}
+          />
         )}
+
+
 
         {(loading || goal) ? (
           <AccountCard
@@ -318,9 +357,9 @@ function AccountContentInner() {
           <AccountCardDisabled accountName="목표 계좌" onCardClick={() => setIsSavingOpen(true)} />
         )}
 
-        <button 
-        onClick={handleReportClick}
-        className="flex justify-start w-[335px] h-[48px] border border-monochrome-gray bg-neutral-7 rounded-4xl text-body-04 items-center mt-0">
+        <button
+          onClick={handleReportClick}
+          className="flex justify-start w-[335px] h-[48px] border border-monochrome-gray bg-neutral-7 rounded-4xl text-body-04 items-center mt-0">
           <img
             src="/images/account/illust_account_report.png"
             alt="리포트 아이콘"
