@@ -30,6 +30,18 @@ type Props = Readonly<{
  *
  * @returns {JSX.Element} OTP 입력 UI
  */
-export default function ChildOtpSection({ value, onChange, error, disabled }: Props) {
-  return <OtpInput value={value} onChange={onChange} error={error} disabled={disabled} />;
+export default function ChildOtpSection({
+  value,
+  onChange,
+  error,
+  disabled,
+}: Props) {
+  return (
+    <OtpInput
+      value={value}
+      onChange={onChange}
+      error={error}
+      disabled={disabled}
+    />
+  );
 }

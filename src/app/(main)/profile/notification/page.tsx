@@ -101,7 +101,7 @@ export default function PushSettingPage() {
   return (
     <main className="w-full h-full max-h-[500px]">
       {/* 상단 텍스트 */}
-      <div className="px-6 mt-9">
+      <div className="px-6 pt-[36px] ">
         <h1 className="text-head-01 font-bold text-neutral-1 text-left">
           서비스 알림 설정
         </h1>

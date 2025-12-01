@@ -15,7 +15,7 @@ function KakaoCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const setUser = useUserStore((state) => state.setUser);
-  
+
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ function KakaoCallbackContent() {
       }
 
       // CSRF 방어: state 검증
-      const savedState = sessionStorage.getItem('kakao-oauth-state');
+      const savedState = sessionStorage.getItem("kakao-oauth-state");
       if (!state || state !== savedState) {
         setError("잘못된 요청입니다. (CSRF 검증 실패)");
         setTimeout(() => router.push("/login"), 2000);
@@ -41,7 +41,7 @@ function KakaoCallbackContent() {
       }
 
       // state 사용 완료 후 삭제
-      sessionStorage.removeItem('kakao-oauth-state');
+      sessionStorage.removeItem("kakao-oauth-state");
 
       if (!code) {
         setError("인증 코드를 받지 못했습니다.");
@@ -56,7 +56,15 @@ function KakaoCallbackContent() {
           redirectUri: process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI,
         });
 
-        const { isNewUser, user, tokenType, accessToken, tempToken, kakaoEmail, kakaoName } = response.data;
+        const {
+          isNewUser,
+          user,
+          tokenType,
+          accessToken,
+          tempToken,
+          kakaoEmail,
+          kakaoName,
+        } = response.data;
 
         if (isNewUser) {
           // 신규 사용자: 임시 토큰과 카카오 정보 저장 후 기존 회원가입 페이지로
@@ -148,21 +156,21 @@ function KakaoCallbackContent() {
 
 /**
  * 카카오 OAuth 콜백 페이지
- * 
+ *
  * Suspense로 감싸서 useSearchParams 사용
  */
 export default function KakaoCallbackPage() {
   return (
-    <Suspense fallback={
-      <main className="min-h-screen flex flex-col items-center justify-center px-6">
-        <div className="flex flex-col items-center gap-6">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-1"></div>
-          <div className="text-body-04 text-neutral-1">
-            로딩 중...
+    <Suspense
+      fallback={
+        <main className="min-h-screen flex flex-col items-center justify-center px-6">
+          <div className="flex flex-col items-center gap-6">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-1"></div>
+            <div className="text-body-04 text-neutral-1">로딩 중...</div>
           </div>
-        </div>
-      </main>
-    }>
+        </main>
+      }
+    >
       <KakaoCallbackContent />
     </Suspense>
   );

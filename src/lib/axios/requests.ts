@@ -8,6 +8,8 @@ const requests = {
   // Auth
   login: `/auth/login`,
   signup: `/auth/signup`,
+  fetchProfileInfo: `/profile/info`,
+  updateProfileInfo: `/profile/info`,
   passwordRequest: `/auth/password`,
   authEmail: `/auth/email`,
   refresh: `/auth/refresh`,

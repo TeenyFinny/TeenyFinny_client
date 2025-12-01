@@ -23,3 +23,13 @@ export const getProfileInfo = async (
   });
   return response.data as ProfileInfoRes;
 };
+
+/**
+ * 내 정보 업데이트
+ * @param data - 업데이트할 프로필 정보
+ */
+export const updateProfileInfo = async (
+  data: Partial<UserProfile>
+): Promise<void> => {
+  await api.patch(requests.updateProfileInfo, data);
+};
