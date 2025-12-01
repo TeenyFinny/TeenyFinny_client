@@ -39,7 +39,16 @@ interface HeaderBarProps {
  * />
  * ```
  */
+import { useEffect } from "react"
+import { useNotificationStore } from "@/store/notificationStore"
+
 export function HeaderBar({ onBackClick, onNotificationClick }: HeaderBarProps) {
+  const { hasUnread, checkUnread } = useNotificationStore()
+
+  useEffect(() => {
+    checkUnread()
+  }, [checkUnread])
+
   return (
     <header className="w-full bg-primary-4 border-primary-4">
       {/* 높이 56px, 좌 12px / 우 12px 패딩 */}
@@ -62,7 +71,7 @@ export function HeaderBar({ onBackClick, onNotificationClick }: HeaderBarProps) 
         {/** 알림 버튼 */}
         <button
           onClick={onNotificationClick}
-          className="flex items-center justify-center w-10 h-10 transition-opacity hover:opacity-70 active:opacity-50"
+          className="relative flex items-center justify-center w-10 h-10 transition-opacity hover:opacity-70 active:opacity-50"
           aria-label="알림"
         >
           <Image
@@ -72,6 +81,9 @@ export function HeaderBar({ onBackClick, onNotificationClick }: HeaderBarProps) 
             height={24}
             className="w-6 h-6 -scale-x-100"
           />
+          {hasUnread && (
+            <div className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#FF0000] rounded-full" />
+          )}
         </button>
       </div>
     </header>
