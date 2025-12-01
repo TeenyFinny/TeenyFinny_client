@@ -113,7 +113,7 @@ export default function Step07ChildInfoInput({
         birth,
         address,
         detailAddress,
-        password,
+        password: String(password),
       };
 
       const res = await api.post(requests.submitChildInfo, req);

@@ -6,7 +6,6 @@ import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 import { HttpError } from "@/types/axios/httpError.t";
 import { useUserStore } from "@/store/userStore";
-import { useNotificationStore } from "@/store/notificationStore";
 
 /**
  * useChildOtp
@@ -40,7 +39,6 @@ import { useNotificationStore } from "@/store/notificationStore";
 export const useChildOtp = (enabled: boolean) => {
   const router = useRouter();
   const { userId } = useUserStore();
-  const { setMessage } = useNotificationStore();
 
   /** 입력된 OTP 숫자 (최대 6자리) */
   const [value, setValue] = useState("");
@@ -112,12 +110,16 @@ export const useChildOtp = (enabled: boolean) => {
         familyOtp: Number(value),
       };
 
-      const res = await api.post(requests.verifyFamilyOtp, body);
+      await api.post(requests.verifyFamilyOtp, body);
 
       /** 검증 성공 */
       // 가족 등록 완료 시 hasFamily 플래그 제거
       sessionStorage.removeItem("hasFamily");
-      setMessage("가족 등록에 성공했습니다.");
+
+      // 알림은 SSE를 통해 서버에서 자동으로 전송됨 (useSse에서 setMessage(data.content) 호출)
+      // 부모와 동일하게 SSE를 통해 알림을 받음
+
+      // /home으로 이동 (SSE를 통해 받은 알림은 /home 페이지에서 PushNotification으로 표시됨)
       router.push("/home");
     } catch (err: any) {
       /** 서버 오류 */
