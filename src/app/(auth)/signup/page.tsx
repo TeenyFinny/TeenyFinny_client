@@ -63,7 +63,7 @@ export default function RegisterPage() {
           birthDate: formattedBirthDate,
           gender: form.gender,
           phoneNumber: form.phoneNumber,
-          simplePassword: simplePassword,
+          simplePassword: String(simplePassword),
         };
 
         // 카카오 회원가입은 백엔드에서 토큰을 반환함
@@ -81,7 +81,7 @@ export default function RegisterPage() {
           password,
           name: form.name,
           role: form.role,
-          simplePassword: simplePassword,
+          simplePassword: String(simplePassword),
           birthDate: form.birthDate,
           gender: form.gender,
           phoneNumber: form.phoneNumber,

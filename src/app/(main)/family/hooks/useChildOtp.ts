@@ -117,7 +117,15 @@ export const useChildOtp = (enabled: boolean) => {
       /** 검증 성공 */
       // 가족 등록 완료 시 hasFamily 플래그 제거
       sessionStorage.removeItem("hasFamily");
-      setMessage("가족 등록에 성공했습니다.");
+
+      // 알림 메시지 설정 (SSE를 통해 받는 Notification의 content 형식과 동일하게)
+      // 서버 응답에서 content를 우선 사용하고, 없으면 기본 메시지 사용
+      // 부모가 받는 알림과 동일한 형식으로 표시됨
+      const notificationMessage =
+        res.data?.content || "가족 등록이 완료되었습니다.";
+      setMessage(notificationMessage);
+
+      // /home으로 이동 (알림은 /home 페이지에서 PushNotification으로 표시됨)
       router.push("/home");
     } catch (err: any) {
       /** 서버 오류 */
