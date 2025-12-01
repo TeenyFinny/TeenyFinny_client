@@ -46,7 +46,7 @@ export default function NotificationsPage() {
         if (homeRes.data.user.children) {
           setChildren(homeRes.data.user.children);
         }
-      } catch (error: AxiosError) {
+      } catch (error: any) {
         if (error.name === "CanceledError" || error.code === "ERR_CANCELED") {
           // 페이지 취소 에러는 return
           return;
