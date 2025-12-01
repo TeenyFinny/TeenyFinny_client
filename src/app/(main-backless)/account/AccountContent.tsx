@@ -163,13 +163,19 @@ function AccountContentInner() {
     })();
   };
 
-  const handleViewDetails = (accountType: string) => {
+  const handleViewDetails = async (accountType: string) => {
     if (accountType === ACCOUNT_TYPES.INVEST) {
       router.push("/invest/portfolios");
       return;
     }
     if (accountType === ACCOUNT_TYPES.GOAL) {
-      router.push("/goal");
+      try {
+        const res = await api.get(requests.fetchChildGoal(currentChild));
+        const goalId = res.data;
+        router.push(`/goal/${goalId}`);
+      } catch (e) {
+        console.error("Failed to fetch ongoing goal ID:", e);
+      }
       return;
     }
 
