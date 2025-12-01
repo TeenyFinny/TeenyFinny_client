@@ -5,26 +5,29 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { TransactionHistory } from "@/components/ui/tx-history-ui/TransactionHistory"
 import { useUserStore } from "@/store/userStore"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import api from "@/lib/axios/axios"
 import requests from "@/lib/axios/requests"
 import { HttpError } from "@/types/axios/httpError.t"
 
 interface GoalSaving {
-  goal_id: number
-  user_id: number
+  goalId: number
+  userId: number
   name: string
-  target_amount: number
-  current_amount: number
+  targetAmount: string
+  currentAmount: string
   period: number
   progress: number
-  user_name: string
-  deposit_amount: number[]
-  deposit_datetime: string[]
+  userName: string
+  depositAmount: string[]
+  depositDatetime: string[]
 }
 
 export default function SavingsDetailScreen() {
   const router = useRouter()
+  const params = useParams()
+  const goalId = params.goalId as string
+
   const [goal, setGoal] = useState<GoalSaving | null>(null)
   const [transactions, setTransactions] = useState<
     { id: string; type: string; amount: number; date: string }[]
@@ -38,35 +41,35 @@ export default function SavingsDetailScreen() {
   useEffect(() => {
     const controller = new AbortController()
 
-    ;(async () => {
-      try {
-        const res = await api.get(requests.fetchGoal, {
-          signal: controller.signal,
-        })
+      ; (async () => {
+        try {
+          const res = await api.get(requests.fetchGoal(goalId), {
+            signal: controller.signal,
+          })
 
-        const data: GoalSaving = res.data
-        if (!data) throw new Error("데이터가 비어 있습니다.")
-        setGoal(data)
+          const data: GoalSaving = res.data
+          if (!data) throw new Error("데이터가 비어 있습니다.")
+          setGoal(data)
 
-        const tx = data.deposit_amount.map((amount, idx) => ({
-          id: String(idx + 1),
-          type: `${data.user_name} 입금`,
-          amount,
-          date: data.deposit_datetime[idx],
-        }))
-        setTransactions(tx)
-      } catch (e) {
-        const err = e as HttpError
-        console.error("[GOAL] 데이터 요청 실패:", err)
-        if (err.statusCode === 403) {
-          alert(err.message)
-          router.push("/")
+          const tx = data.depositAmount.map((amount, idx) => ({
+            id: String(idx + 1),
+            type: `${data.userName} 입금`,
+            amount: Number(amount.replace(/,/g, "")),
+            date: data.depositDatetime[idx],
+          }))
+          setTransactions(tx)
+        } catch (e) {
+          const err = e as HttpError
+          console.error("[GOAL] 데이터 요청 실패:", err)
+          if (err.statusCode === 403) {
+            alert(err.message)
+            router.push("/")
+          }
         }
-      }
-    })()
+      })()
 
     return () => controller.abort()
-  }, [router])
+  }, [router, goalId])
 
   if (!goal) return <div className="text-center mt-10">로딩중...</div>
 
@@ -113,11 +116,11 @@ export default function SavingsDetailScreen() {
 
           <div className="flex items-center gap-2">
             <span className="text-body-02 text-neutral-3">
-              {goal.current_amount.toLocaleString()} (원)
+              {goal.currentAmount} (원)
             </span>
             <span className="text-body-02 text-neutral-3">/</span>
             <span className="text-body-02 text-neutral-3">
-              {goal.target_amount.toLocaleString()} (원)
+              {goal.targetAmount} (원)
             </span>
           </div>
         </div>

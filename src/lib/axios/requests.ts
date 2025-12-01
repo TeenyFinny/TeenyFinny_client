@@ -1,5 +1,10 @@
 // 호출 가능한 api를 한 파일에서 관리!
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> db0f82a (feat: 목표 상세 보기 백 api  연동)
 const requests = {
   fetchTest: `/noticeTest`,
   fetchHome: `/home`,
@@ -13,7 +18,7 @@ const requests = {
   updatePush: `/profile/push`,
   simplePassword: `/auth/simple-password`,
   verifyFamilyOtp: `/auth/otp`, // OTP 검증
-  fetchGoal: `/goal`,
+  fetchGoal: (goalId: number | string) => `/goal/${goalId}`,
   fetchProgress: "/quiz/progresses",
   fetchQuiz: "/quiz/info",
   investmentsSummary: `/investments/summary`,
