@@ -7,6 +7,7 @@ import requests from "@/lib/axios/requests";
 import { saveAuthToken } from "@/lib/auth/token";
 import { useUserStore } from "@/store/userStore";
 import { HttpError } from "@/types/axios/httpError.t";
+import { getKakaoRedirectUri } from "@/lib/auth/kakaoAuth";
 
 /**
  * 카카오 OAuth 콜백 페이지 내부 컴포넌트
@@ -51,9 +52,10 @@ function KakaoCallbackContent() {
 
       try {
         // 백엔드에 code 전송
+        const redirectUri = getKakaoRedirectUri();
         const response = await api.post(requests.kakaoLogin, {
           code,
-          redirectUri: process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI,
+          redirectUri,
         });
 
         const { isNewUser, user, tokenType, accessToken, tempToken, kakaoEmail, kakaoName } = response.data;
