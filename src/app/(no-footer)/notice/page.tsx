@@ -158,6 +158,16 @@ export default function NotificationsPage() {
 
           setIsDialogOpen(true);
         }
+
+        // ⭐ 자녀용: 목표 달성 완료 알림 → /goal/achieve 이동
+        if (
+          notification.type === "GOAL" &&
+          notification.title === "목표 달성 완료!"
+        ) {
+          router.push("/goal/achieve");
+          return;
+        }
+
       }
     } catch (error) {
       console.error("읽음 처리 실패:", error);
@@ -184,14 +194,16 @@ export default function NotificationsPage() {
 
   const handleGoalApprove = async () => {
     if (!selectedGoalId) return
-    try {
-      await api.patch(requests.approveGoal(selectedGoalId), { approve: true })
-      alert("목표 생성을 승인했습니다.")
-      setIsGoalRequestModalOpen(false)
-    } catch (error) {
-      console.error("승인 실패:", error)
-      alert("승인 처리에 실패했습니다.")
-    }
+    // try {
+    //   await api.patch(requests.approveGoal(selectedGoalId), { approve: true })
+    //   alert("목표 생성을 승인했습니다.")
+    //   setIsGoalRequestModalOpen(false)
+    // } catch (error) {
+    //   console.error("승인 실패:", error)
+    //   alert("승인 처리에 실패했습니다.")
+    // }
+    router.push(`/goal/intro?goalId=${selectedGoalId}`);
+    setIsGoalRequestModalOpen(false);
   }
 
   const handleGoalReject = async () => {
@@ -219,9 +231,8 @@ export default function NotificationsPage() {
           <div
             key={n.id} // ✅ id로 key 지정
             onClick={() => handleRead(n)} // ✅ 객체 전달
-            className={`cursor-pointer transition-colors ${
-              n.isRead ? "bg-transparent" : "bg-[rgba(0,103,172,0.15)]"
-            }`}
+            className={`cursor-pointer transition-colors ${n.isRead ? "bg-transparent" : "bg-[rgba(0,103,172,0.15)]"
+              }`}
           >
             <NotificationItem
               message={n.title}

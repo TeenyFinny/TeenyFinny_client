@@ -3,16 +3,20 @@
 import { useRouter } from "next/navigation"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 import { useUserStore } from "@/store/userStore"
+import { useSearchParams } from "next/navigation"
 
 export default function GoalIntroPage() {
   const router = useRouter()
   const { userType } = useUserStore()
 
+  const searchParams = useSearchParams()
+  const goalId = searchParams.get("goalId")
+
   const buttonLabel =
     userType === "parent" ? "목표 적금 개설하기" : "목표 생성하기"
 
   const handleClick = () => {
-    if (userType === "parent") router.push("/goal/account/create")
+    if (userType === "parent") router.push(`/goal/account/create?goalId=${goalId}`)
     else router.push("/goal/create")
   }
 
