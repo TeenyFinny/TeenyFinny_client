@@ -6,10 +6,8 @@ import { useEffect } from "react";
 
 export default function Move({
   onNext,
-  childId,
 }: {
   onNext: () => void;
-  childId: number;   // 부모가 선택한 childId 전달받도록 추가
 }) {
 
   const MOVE_PAGE_DELAY = 2500;

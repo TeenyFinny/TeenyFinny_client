@@ -209,7 +209,6 @@ function AccountContentInner() {
       try {
         const res = await api.get(requests.fetchChildQuiz(currentChild));
         const completed = res.data.requestCompleted;
-        console.log("리퀘스트" + completed);
         setShowInvestCreateButton(completed);
       } catch (e) {
         console.error(e);
@@ -217,7 +216,7 @@ function AccountContentInner() {
     };
 
     fetchRequestCompleted();
-  }, [data, currentChild, invest]);
+  }, [data, currentChild]);
 
 
 
@@ -332,7 +331,6 @@ function AccountContentInner() {
             accountName={ACCOUNT_TYPES.INVEST}
             balance="투자 계좌 개설 요청 중!"
             onViewDetails={() => {
-              console.log("currentChild:", currentChild);
               router.push(`/invest/create-invest-account`);
             }}
           />
