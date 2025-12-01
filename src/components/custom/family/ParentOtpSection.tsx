@@ -2,7 +2,7 @@
 
 import OtpDisplay from "@/components/custom/family/OtpDisplay";
 
-type Props = Readonly<{ 
+type Props = Readonly<{
   otp: string | null;
   timeRemaining?: number;
 }>;

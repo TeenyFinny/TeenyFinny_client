@@ -66,28 +66,38 @@ export default function MyPage() {
 
   // verify 페이지에서 돌아왔을 때 프로필 정보 다시 불러오기
   useEffect(() => {
+    let controller: AbortController;
+
     const handleFocus = () => {
       if (userId) {
-        const controller = new AbortController();
+        // 이전 요청이 있다면 취소
+        controller?.abort();
+
+        controller = new AbortController();
+        const { signal } = controller;
+
         const loadUser = async () => {
           try {
-            const data = await getProfileInfo(controller.signal);
-            if (!controller.signal.aborted) {
+            const data = await getProfileInfo(signal);
+            if (!signal.aborted) {
               setProfileInfo(data);
             }
           } catch (err: any) {
-            if (!controller.signal.aborted && process.env.NODE_ENV === "development") {
+            if (!signal.aborted && process.env.NODE_ENV === "development") {
               console.error("사용자 정보를 불러오지 못했습니다.", err);
             }
           }
         };
         loadUser();
-        return () => controller.abort();
       }
     };
 
     window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+      // 컴포넌트 언마운트 시 진행 중인 요청 취소
+      controller?.abort();
+    };
   }, [userId]);
 
   return (
