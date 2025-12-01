@@ -5,6 +5,7 @@ import { HeaderBarBackless } from "./HeaderBarBackless" // 새로 만든 뒤로�
 import { useState } from "react"
 import { TitleOnlyDialog } from "@/components/ui/modal/TitleOnlyDialog"
 import { useUserStore } from "@/store/userStore"
+import { useSse } from "@/hooks/useSse"
 
 /**
  * @typedef HeaderBarBacklessWrapperProps
@@ -26,6 +27,7 @@ const HeaderBarBacklessWrapper = ({ onNotice }: HeaderBarBacklessWrapperProps) =
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const { userType } = useUserStore()
+  useSse() // SSE 연결 활성화
 
   /**
    * 알림 버튼 클릭 핸들러

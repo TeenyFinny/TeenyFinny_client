@@ -15,6 +15,7 @@ interface NotificationStore {
   message: string | null;
   hasUnread: boolean;
   setMessage: (msg: string | null) => void;
+  setHasUnread: (hasUnread: boolean) => void;
   checkUnread: () => Promise<void>;
 }
 
@@ -29,6 +30,7 @@ export const useNotificationStore = create(
       message: null,
       hasUnread: false,
       setMessage: (msg) => set({ message: msg }),
+      setHasUnread: (hasUnread) => set({ hasUnread }),
       checkUnread: async () => {
         // 로그인되지 않은 상태에서는 API 호출하지 않음
         if (!hasAuthToken()) {
