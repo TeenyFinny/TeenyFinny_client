@@ -14,6 +14,7 @@ import { ApiResponse } from "@/types/axios/apiRes.t";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense, useCallback } from "react";
 import { ChildDto } from "@/types/home";
+import { AccountCard2 } from "@/components/custom/account/AccountCard2";
 
 type Accounts = {
   total: string | null;
@@ -327,7 +328,7 @@ function AccountContentInner() {
             onViewDetails={() => handleViewDetails(ACCOUNT_TYPES.INVEST)}
           />
         ) : showInvestCreateButton ? (
-          <AccountCard
+          <AccountCard2
             accountName={ACCOUNT_TYPES.INVEST}
             balance="투자 계좌 개설 요청 중!"
             onViewDetails={() => {
