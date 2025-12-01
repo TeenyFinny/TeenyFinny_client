@@ -137,8 +137,14 @@ function AccountContentInner() {
     // 현재 선택된 자녀 객체 찾기
     const currentChildObj = data?.find((c) => c.userId === currentChild);
     if (!currentChildObj) return; // 안전 체크
+    
+    // 투자 계좌 존재 여부 확인
+    const hasInvest = accountData?.invest !== "-1";
+    
     // store에 저장
     setChildBaseInfo(currentChildObj.userId, currentChildObj.name);
+    setInvestAccountExists(hasInvest);
+    
     router.push(`/account/auto-transfer`);
   };
 
