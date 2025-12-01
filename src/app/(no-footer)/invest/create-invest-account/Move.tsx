@@ -19,7 +19,10 @@ export default function Move({
         // childId를 body에 담아서 POST
         await api.post(requests.investMyAccount, { childId: selectedChildId });
 
+          // 2) requestCompleted false로 PATCH
+    await api.patch(requests.fetchChildQuiz(Number(selectedChildId)));
         // 계좌 생성 성공 → 다음 화면으로 이동
+
         onNext();
 
       } catch (err) {
