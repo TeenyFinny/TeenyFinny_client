@@ -260,8 +260,8 @@ export function BottomSheetPassword({
               const isFilled = pin.length > i;
               const borderColorClass = error
                 ? "border-error"
-                : "border-neutral-4";
-              const filledBgClass = error ? "bg-error" : "bg-neutral-4";
+                : "border-primary-1";
+              const filledBgClass = error ? "bg-error" : "bg-primary-1";
 
               return (
                 <div
