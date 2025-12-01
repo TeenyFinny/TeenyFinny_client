@@ -50,6 +50,24 @@ export default function Page() {
     }
   }, [message]);
 
+  /** 브라우저 뒤로가기 차단 */
+  useEffect(() => {
+    // 히스토리에 현재 페이지를 추가하여 뒤로가기 시 같은 페이지에 머물도록 함
+    window.history.pushState(null, "", window.location.href);
+
+    const handlePopState = (event: PopStateEvent) => {
+      // 뒤로가기 시 다시 현재 페이지로 push
+      window.history.pushState(null, "", window.location.href);
+      event.preventDefault();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
   /** 사용자 정보 로드 */
   useEffect(() => {
     const controller = new AbortController();

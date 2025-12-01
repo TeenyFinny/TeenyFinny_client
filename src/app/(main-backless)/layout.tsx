@@ -3,6 +3,9 @@
 import { NavigationBar } from "@/components/layout/bar/NavigationBar"
 import HeaderbarBacklessWrapper from "@/components/layout/headerbar/HeaderBarBacklessWrapper"
 import { useUserStore } from "@/store/userStore"
+import { hasAuthToken } from "@/lib/auth/token"
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
 import type React from "react"
 
 export default function MainLayout({
@@ -11,6 +14,19 @@ export default function MainLayout({
   children: React.ReactNode
 }) {
   const { userType } = useUserStore()
+  const router = useRouter()
+
+  // 미로그인 사용자 리다이렉트
+  useEffect(() => {
+    if (!hasAuthToken()) {
+      router.replace("/login")
+    }
+  }, [router])
+
+  // 로그인되지 않은 경우 아무것도 렌더링하지 않음
+  if (!hasAuthToken()) {
+    return null
+  }
 
   return (
     // 전체를 중앙에 고정된 375×812 모바일 프레임으로
