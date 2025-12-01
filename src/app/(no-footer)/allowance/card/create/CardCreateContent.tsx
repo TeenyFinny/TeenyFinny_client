@@ -17,7 +17,7 @@ function CardCreateContentInner() {
       {step === 1 && <Step01CardIntro onNext={() => setStep(2)} />}
       {step === 2 && <Step02CardAuthAgreement onNext={() => setStep(3)} />}
       {step === 3 && <Step03CardAuth onNext={() => setStep(4)} />}
-      {step === 4 && <Step04CardOptions onNext={() => setStep(5)} childId={childId}/>}
+      {step === 4 && <Step04CardOptions onNext={() => setStep(5)}/>}
       {step === 5 && <Step05CardComplete />}
     </>
   );
