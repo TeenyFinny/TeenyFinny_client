@@ -5,7 +5,7 @@ import { NormalInput2 } from "@/components/ui/input/NormalInput2"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 import api from "@/lib/axios/axios"
 import requests from "@/lib/axios/requests"
-import { HttpError } from "@/types/axios/httpError.t"
+import { useRouter, useSearchParams } from "next/navigation"
 
 interface GoalData {
   goalName: string
@@ -22,43 +22,69 @@ export default function Step05Review({ onNext }: Step05ReviewProps) {
   const [goalData, setGoalData] = useState<GoalData | null>(null)
   const [calculatedMonths, setCalculatedMonths] = useState(0)
 
+  const searchParams = useSearchParams()
+  const goalId = searchParams.get("goalId")
+
+  const router = useRouter()
+
   // 목표 데이터 불러오기
   useEffect(() => {
-    const controller = new AbortController();
+    if (!goalId || goalId === "null") {
+      console.error("goalId가 없습니다. URL에 ?goalId=값 이 있어야 합니다.")
+      return
+    }
 
     const fetchGoalData = async () => {
       try {
-        const res = await api.get(requests.fetchGoalConfirm, {
-          signal: controller.signal,
-        });
+        const res = await api.get(requests.fetchGoalConfirm(goalId))
 
-        // 🚨 res 가 null이면 (abort된 상황), 바로 return 하여 이후 코드 실행 방지
-        if (res === null) return;
+        const raw = res.data
 
-        const data: GoalData = res.data;
-        if (!data) throw new Error("데이터가 비어 있습니다.");
+        const formatted: GoalData = {
+          goalName: raw.name,
+          totalAmount: raw.targetAmount,
+          monthlyAmount: raw.monthlyAmount,
+          payDay: String(raw.payDay),
+        }
 
-        setGoalData(data);
+        setGoalData(formatted)
       } catch (e) {
-        // ❗ abort는 이미 return 했기 때문에 여기 e는 abort가 아님
-        console.error("❌ [GOAL] 데이터 로드 실패:", e);
+        console.error("❌ [GOAL] 데이터 로드 실패:", e)
       }
-    };
+    }
 
-    fetchGoalData();
-    return () => controller.abort();
-  }, []);
-
+    fetchGoalData()
+  }, [goalId])
 
   // 목표 기간 계산
   useEffect(() => {
     if (!goalData) return
 
-    const total = Number(goalData.totalAmount.replace(/,/g, "")) || 0
-    const monthly = Number(goalData.monthlyAmount.replace(/,/g, "")) || 0
+    const total = Number((goalData.totalAmount || "0").replace(/,/g, ""))
+    const monthly = Number((goalData.monthlyAmount || "0").replace(/,/g, ""))
 
     setCalculatedMonths(monthly > 0 ? Math.ceil(total / monthly) : 0)
   }, [goalData])
+
+  const handleApprove = async () => {
+    if (!goalId || goalId === "null") {
+      alert("goalId가 없습니다.");
+      return;
+    }
+
+    try {
+      await api.patch(
+        requests.approveGoal(goalId),
+        { approve: true }
+      );
+
+      onNext()
+
+    } catch (e) {
+      console.error("승인 요청 실패:", e);
+      alert("승인 처리 중 오류가 발생했습니다.");
+    }
+  }
 
   if (!goalData) {
     return (
@@ -71,7 +97,6 @@ export default function Step05Review({ onNext }: Step05ReviewProps) {
   return (
     <div className="flex h-[712px] flex-col bg-primary-4">
       <main className="flex flex-col overflow-hidden px-6">
-        {/* 제목 */}
         <div className="mt-[51px]">
           <h1 className="text-head-01 text-neutral-1">자녀의 목표를 확인하세요</h1>
           <p className="mt-3 mb-[0.6px] text-body-05 text-neutral-3">
@@ -80,38 +105,13 @@ export default function Step05Review({ onNext }: Step05ReviewProps) {
           </p>
         </div>
 
-        {/* 입력 필드 */}
         <div className="mt-10 space-y-6">
-          <NormalInput2
-            label="적금 이름"
-            value={goalData.goalName}
-            onChange={() => { }}
-            disabled
-          />
-          <NormalInput2
-            label="총 얼마를 모을까요?"
-            value={`${goalData.totalAmount} 원`}
-            onChange={() => { }}
-            disabled
-            isNumeric
-          />
-          <NormalInput2
-            label="한 달에 얼마를 모을까요?"
-            value={`${goalData.monthlyAmount} 원`}
-            onChange={() => { }}
-            disabled
-            isNumeric
-          />
-          <NormalInput2
-            label="언제 저금할까요?"
-            value={`${goalData.payDay} 일`}
-            onChange={() => { }}
-            disabled
-            isNumeric
-          />
+          <NormalInput2 label="적금 이름" value={goalData.goalName} disabled onChange={() => { }} />
+          <NormalInput2 label="총 얼마를 모을까요?" value={`${goalData.totalAmount} 원`} disabled isNumeric onChange={() => { }} />
+          <NormalInput2 label="한 달에 얼마를 모을까요?" value={`${goalData.monthlyAmount} 원`} disabled isNumeric onChange={() => { }} />
+          <NormalInput2 label="언제 저금할까요?" value={`${goalData.payDay} 일`} disabled isNumeric onChange={() => { }} />
         </div>
 
-        {/* 계산 결과 */}
         {calculatedMonths > 0 && (
           <div className="mt-6 pb-[0.2px] text-right">
             <p className="text-head-08 text-neutral-2">
@@ -124,9 +124,8 @@ export default function Step05Review({ onNext }: Step05ReviewProps) {
           </div>
         )}
 
-        {/* 버튼 */}
         <div className="absolute bottom-14 flex">
-          <BigButtonActivated label="목표 적금 생성하기" onClick={onNext} />
+          <BigButtonActivated label="목표 적금 생성하기" onClick={handleApprove} />
         </div>
       </main>
     </div>

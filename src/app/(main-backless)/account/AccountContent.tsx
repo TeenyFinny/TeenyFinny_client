@@ -163,16 +163,21 @@ function AccountContentInner() {
     })();
   };
 
-  const handleViewDetails = (accountType: string) => {
-    // TODO: 계좌 타입에 따라 다른 페이지로 이동
-    // if (accountType === ACCOUNT_TYPES.INVEST) {
-    //   router.push("/invest/portfolios");
-    //   return;
-    // }
-    // if (accountType === ACCOUNT_TYPES.GOAL) {
-    //   router.push("/goal");
-    //   return;
-    // }
+  const handleViewDetails = async (accountType: string) => {
+    if (accountType === ACCOUNT_TYPES.INVEST) {
+      router.push("/invest/portfolios");
+      return;
+    }
+    if (accountType === ACCOUNT_TYPES.GOAL) {
+      try {
+        const res = await api.get(requests.fetchChildGoal(currentChild));
+        const goalId = res.data;
+        router.push(`/goal/${goalId}`);
+      } catch (e) {
+        console.error("Failed to fetch ongoing goal ID:", e);
+      }
+      return;
+    }
 
     const child = data?.find((c) => c.userId === currentChild);
     const childName = child?.name ?? "";
