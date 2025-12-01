@@ -22,9 +22,7 @@ export default function Page() {
   const router = useRouter()
   const {
     setQuizData,
-    streakDays,        //연속 풀이 일수
     courseCompleted,   //교육과정 완료 여부
-    monthlyReward,     //용돈조르기권 획즉 여부
     todaySolved,       //오늘 푼 문제 수
     quizDate,          //교육과정진행일자
     progressId,        //퀴즈 진행도 id
@@ -80,7 +78,7 @@ export default function Page() {
     return <LoadingScreenSkeletonQuiz />;
   }
   //퀴즈 가능 여부 확인
-  const quizActive = (!courseCompleted || !monthlyReward) && todaySolved < 2;
+  const quizActive = !courseCompleted && todaySolved < 2;
 
   return (
     <main
@@ -92,7 +90,7 @@ export default function Page() {
    =============================== */}
       <div className="relative w-[327px] mx-auto bg-neutral-7 rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col items-center justify-center pt-[40px] pb-[51px] mb-[32px]">
         <p className="text-center text-primary-1 text-head-02 font-bold text-neutral-1 w-[231px] mt-5 mb-13">
-          퀴즈 {streakDays + 1}일차 도전 중!
+          퀴즈 {quizDate + 1}일차 도전 중!
         </p>
 
         <div className="flex flex-col gap-4 justify-center items-center">
@@ -100,7 +98,7 @@ export default function Page() {
             <div key={rowIndex} className="flex gap-4">
               {Array.from({ length: 5 }).map((_, colIndex) => {
                 const stampIndex = rowIndex * 5 + colIndex
-                const isStamped = stampIndex < streakDays
+                const isStamped = stampIndex < quizDate
 
                 return (
                   <div key={colIndex} className="relative">
