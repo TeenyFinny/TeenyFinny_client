@@ -137,12 +137,19 @@ export default function ChildDashboard() {
         <AccountCard
           accountName="목표 적금"
           balance={user.savingBalance ?? "0"}
-          onViewDetails={() => {
+          onViewDetails={async () => {
             const savingBalance = user.savingBalance ?? "-1";
             if (savingBalance === "-1") {
               router.push("/goal/intro");
             } else {
-              router.push("/goal");
+              try {
+                const res = await api.get(requests.fetchMyOngoingGoal);
+                const goalId = res.data;
+                router.push(`/goal/${goalId}`);
+              } catch (e) {
+                console.error("목표 ID 조회 실패:", e);
+                router.push("/home"); // Fallback
+              }
             }
           }}
           onCardClick={() => null}

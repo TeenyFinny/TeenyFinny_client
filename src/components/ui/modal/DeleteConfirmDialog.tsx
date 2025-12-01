@@ -15,9 +15,11 @@ import {
 } from "@/components/ui/alert-dialog"
 
 interface DeleteConfirmDialogProps {
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
   trigger?: React.ReactNode
   title: string
-  description: string
+  description: React.ReactNode
   ltBtnTxt: string
   rtBtnTxt: string
   onClickLtBtn?: () => void
@@ -25,6 +27,8 @@ interface DeleteConfirmDialogProps {
 }
 
 export function DeleteConfirmDialog({
+  open,
+  onOpenChange,
   trigger,
   title,
   description,
@@ -34,7 +38,7 @@ export function DeleteConfirmDialog({
   onClickRtBtn,
 }: DeleteConfirmDialogProps) {
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
       {trigger && <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>}
       <AlertDialogContent className="w-[270px] p-0 gap-0 rounded-[14px] backdrop-blur-[27px]">
         <AlertDialogHeader className="px-4 text-center ">

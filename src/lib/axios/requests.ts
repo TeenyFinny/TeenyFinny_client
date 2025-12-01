@@ -42,9 +42,13 @@ const requests = {
   confirmCancel: (goalId: number | string) => `/goal/${goalId}/confirm-cancel`,
   confirmComplete: (goalId: number | string) =>
     `/goal/${goalId}/confirm-complete`,
+  approveGoal: (goalId: number | string) => `/goal/${goalId}/approve`,
   fetchChildGoal: (childId: number | string) =>
     `/goal/child/${childId}/ongoing`,
+  fetchChildPendingGoal: (childId: number | string) =>
+    `/goal/child/${childId}/pending`,
   fetchGoalConfirm: `/goal/account/create`,
+  fetchMyOngoingGoal: `/goal/ongoing`,
 
   // Quiz
   fetchProgress: "/quiz/progresses",
