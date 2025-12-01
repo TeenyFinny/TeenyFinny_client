@@ -21,14 +21,13 @@ export default function Page() {
     setQuizData,
     quizDate,
     courseCompleted,
-    monthlyReward,
     todaySolved,
     explanation
   } = useQuizStore()
 
   const EDUCATION_COURSE_LAST_DAY = 14 //교육과정의 마지막 일차
 
-  const quizActive = !courseCompleted && !monthlyReward && todaySolved < 2
+  const quizActive = !courseCompleted && todaySolved < 2
 
   // ---------------------------
   // 배지 텍스트
