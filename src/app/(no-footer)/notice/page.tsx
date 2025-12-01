@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { NotificationItem } from "@/components/ui/notice/NotificationItem";
-import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog";
-import api from "@/lib/axios/axios";
-import requests from "@/lib/axios/requests";
+import { useEffect, useState } from "react"
+import { NotificationItem } from "@/components/ui/notice/NotificationItem"
+import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog"
+import { DeleteConfirmDialog } from "@/components/ui/modal/DeleteConfirmDialog"
+import api from "@/lib/axios/axios"
+import requests from "@/lib/axios/requests"
 
 interface Notification {
   id: number;
@@ -18,18 +19,20 @@ interface Notification {
 import { useRouter } from "next/navigation";
 
 export default function NotificationsPage() {
-  const router = useRouter();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [modalContent, setModalContent] = useState({
-    title: "",
-    description: "",
-  });
-  const [selectedGoalId, setSelectedGoalId] = useState<number | null>(null);
-  const [children, setChildren] = useState<any[]>([]);
-  const [confirmAction, setConfirmAction] = useState<
-    "CANCEL" | "COMPLETE" | null
-  >(null);
+  const router = useRouter()
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [modalContent, setModalContent] = useState({ title: "", description: "" })
+  const [selectedGoalId, setSelectedGoalId] = useState<number | null>(null)
+  const [children, setChildren] = useState<any[]>([])
+  const [confirmAction, setConfirmAction] = useState<"CANCEL" | "COMPLETE" | null>(null)
+  const [isGoalRequestModalOpen, setIsGoalRequestModalOpen] = useState(false)
+  const [goalCreationData, setGoalCreationData] = useState({
+    childName: "",
+    period: 0,
+    monthlyAmount: 0,
+    totalAmount: 0
+  })
 
   useEffect(() => {
     const controller = new AbortController();
@@ -69,6 +72,36 @@ export default function NotificationsPage() {
             n.id === notification.id ? { ...n, isRead: true } : n
           )
         );
+
+        // 목표 생성 요청 알림 클릭 시 모달 띄우기
+        if (notification.type === "GOAL" && notification.title === "목표 생성 요청") {
+          const childName = notification.content.split("(이)가")[0]
+          const child = children.find((c: any) => c.name === childName)
+
+          if (child) {
+            try {
+              const pendingRes = await api.get(requests.fetchChildPendingGoal(child.userId))
+              const goalData = pendingRes.data
+              setSelectedGoalId(goalData.id)
+
+              const total = Number(goalData.targetAmount.replace(/,/g, ""))
+              const monthly = Number(goalData.monthlyAmount.replace(/,/g, ""))
+              const period = goalData.period
+
+              setGoalCreationData({
+                childName,
+                period,
+                monthlyAmount: monthly,
+                totalAmount: total
+              })
+
+              setIsGoalRequestModalOpen(true)
+            } catch (err) {
+              console.error("목표 정보 조회 실패:", err)
+              alert("목표 정보를 불러오는데 실패했습니다.")
+            }
+          }
+        }
 
         // 목표 중도 해지 요청인 경우 모달 띄우기 (읽지 않은 상태일 때만)
         if (
@@ -149,6 +182,30 @@ export default function NotificationsPage() {
     }
   };
 
+  const handleGoalApprove = async () => {
+    if (!selectedGoalId) return
+    try {
+      await api.patch(requests.approveGoal(selectedGoalId), { approve: true })
+      alert("목표 생성을 승인했습니다.")
+      setIsGoalRequestModalOpen(false)
+    } catch (error) {
+      console.error("승인 실패:", error)
+      alert("승인 처리에 실패했습니다.")
+    }
+  }
+
+  const handleGoalReject = async () => {
+    if (!selectedGoalId) return
+    try {
+      await api.patch(requests.approveGoal(selectedGoalId), { approve: false })
+      alert("목표 생성을 반려했습니다.")
+      setIsGoalRequestModalOpen(false)
+    } catch (error) {
+      console.error("반려 실패:", error)
+      alert("반려 처리에 실패했습니다.")
+    }
+  }
+
   return (
     <div className="h-[712px] bg-transparent">
       {/* Title */}
@@ -183,6 +240,21 @@ export default function NotificationsPage() {
         description={modalContent.description}
         confirmText="확인"
         onConfirm={handleConfirm}
+      />
+
+      <DeleteConfirmDialog
+        open={isGoalRequestModalOpen}
+        onOpenChange={setIsGoalRequestModalOpen}
+        title={`${goalCreationData.childName}(이)가 목표 계좌 개설을 원해요!`}
+        description={
+          <>
+            {goalCreationData.period}달 간 {goalCreationData.monthlyAmount.toLocaleString()}원 씩<br />총 {goalCreationData.totalAmount.toLocaleString()}원을 모을 거예요!
+          </>
+        }
+        ltBtnTxt="거절"
+        rtBtnTxt="승인"
+        onClickLtBtn={handleGoalReject}
+        onClickRtBtn={handleGoalApprove}
       />
     </div>
   );

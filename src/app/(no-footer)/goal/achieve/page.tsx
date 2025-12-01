@@ -1,12 +1,36 @@
 "use client"
 
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
+import api from "@/lib/axios/axios"
+import requests from "@/lib/axios/requests"
+import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog"
 
 export default function GoalAchievePage() {
     const router = useRouter()
 
-    const handleConfirm = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false)
+
+    const handleConfirm = async () => {
+        try {
+            // 1. 내 진행 중인 목표 ID 조회
+            const goalRes = await api.get(requests.fetchMyOngoingGoal)
+            const goalId = goalRes.data
+
+            // 2. 목표 완료 요청 API 호출
+            await api.post(requests.requestComplete(goalId))
+
+            // 3. 성공 시 모달 오픈
+            setIsModalOpen(true)
+        } catch (error) {
+            console.error("목표 완료 요청 실패:", error)
+            // 에러 처리 (예: 알림 표시)
+            alert("목표 완료 요청에 실패했습니다.")
+        }
+    }
+
+    const handleModalConfirm = () => {
         router.push("/home")
     }
 
@@ -41,10 +65,19 @@ export default function GoalAchievePage() {
 
                 {/* Buttons */}
                 <div className="absolute bottom-14 flex">
-                    {/* "확인" → /home 페이지 */}
+                    {/* "확인" → API 호출 후 모달 */}
                     <BigButtonActivated label="확인" onClick={handleConfirm} />
                 </div>
             </main>
+
+            <ConfirmationDialog
+                open={isModalOpen}
+                onOpenChange={setIsModalOpen}
+                title="부모님께 목표 달성 알림을 보냈어요!"
+                description="가까운 영업점에 방문하여 해지하세요"
+                confirmText="확인"
+                onConfirm={handleModalConfirm}
+            />
         </div>
     )
 }
