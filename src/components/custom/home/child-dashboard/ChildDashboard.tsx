@@ -34,6 +34,7 @@ export default function ChildDashboard() {
   const [cardOpen, setCardOpen] = useState(false);
   const [cardInfo, setCardInfo] = useState<CardInfo | null>(null);
   const [isCardWaitingOpen, setIsCardWaitingOpen] = useState(false);
+  const [isReportWarningOpen, setIsReportWarningOpen] = useState(false); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,6 +93,11 @@ export default function ChildDashboard() {
    * 리포트 페이지 이동 이벤트
    */
   const reportHandler = () => {
+    // 카드가 없으면 경고 모달 표시
+    if (!cardInfo?.hasCard) {
+      setIsReportWarningOpen(true);
+      return;
+    }
     router.push(`/allowance/report`);
   };
 
@@ -178,6 +184,15 @@ export default function ChildDashboard() {
           onOpenChange={() => setIsCardWaitingOpen(false)}
           title="아직 카드가 없어요!"
           description="부모가 카드를 발급해줄 때까지 기다려주세요!"
+          confirmText="확인"
+        />
+
+        {/* 리포트 접근 제한 모달 */}
+        <ConfirmationDialog
+          open={isReportWarningOpen}
+          onOpenChange={() => setIsReportWarningOpen(false)}
+          title="카드가 없어요!"
+          description="카드를 발급해야 확인할 수 있습니다."
           confirmText="확인"
         />
       </div>
