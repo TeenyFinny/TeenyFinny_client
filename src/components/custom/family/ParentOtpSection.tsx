@@ -2,7 +2,10 @@
 
 import OtpDisplay from "@/components/custom/family/OtpDisplay";
 
-type Props = Readonly<{ otp: string | null }>;
+type Props = Readonly<{ 
+  otp: string | null;
+  timeRemaining?: number;
+}>;
 
 /**
  * ParentOtpSection
@@ -19,9 +22,10 @@ type Props = Readonly<{ otp: string | null }>;
  *
  * @param {Object} props
  * @param {string | null} props.otp - 서버에서 발급받은 6자리 OTP (없으면 null)
+ * @param {number} props.timeRemaining - 남은 시간(초)
  *
  * @returns {JSX.Element} OTP 표시 UI
  */
-export default function ParentOtpSection({ otp }: Props) {
-  return <OtpDisplay otp={otp} />;
+export default function ParentOtpSection({ otp, timeRemaining }: Props) {
+  return <OtpDisplay otp={otp} timeRemaining={timeRemaining} />;
 }
