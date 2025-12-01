@@ -8,6 +8,8 @@ import { BottomSheetPassword } from "@/components/ui/bottom-sheet/BottomSheetPas
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 
+import { useSelectedChildStore } from "@/store/selectedChildStore";
+
 /**
  * Step08ChildInfoInput
  *
@@ -30,6 +32,7 @@ export default function Step07ChildInfoInput({
 }: {
   onNext: () => void;
 }) {
+  const { selectedChildId } = useSelectedChildStore();
   const [childName, setChildName] = useState("");
   const [childPhone, setChildPhone] = useState("");
   const [birth, setBirth] = useState("");
@@ -106,14 +109,16 @@ export default function Step07ChildInfoInput({
 
   /** 비밀번호 입력 완료 시 다음 단계 이동 */
   const handlePasswordComplete = async (password: string) => {
+    console.log(selectedChildId)
     try {
       const req = {
+        childId: selectedChildId,
         childName,
         childPhone,
         birth,
         address,
         detailAddress,
-        password,
+        password: String(password),
       };
 
       const res = await api.post(requests.submitChildInfo, req);

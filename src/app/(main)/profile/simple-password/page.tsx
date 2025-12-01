@@ -39,7 +39,7 @@ export default function SimplePasswordRegisterPage() {
 
     try {
       const payload = {
-        password: password,
+        password: String(password),
       };
 
       await api.patch(requests.simplePassword, payload);

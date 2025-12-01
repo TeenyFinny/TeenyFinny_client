@@ -53,6 +53,7 @@ const requests = {
   // Quiz
   fetchProgress: "/quiz/progresses",
   fetchQuiz: "/quiz/info",
+  fetchChildQuiz: (childId: number) => `/quiz/${childId}/progresses`,
 
   // Investments
   investmentsSummary: `/investments/summary`,
