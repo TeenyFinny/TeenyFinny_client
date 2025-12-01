@@ -77,8 +77,9 @@ export default function ChildDashboard() {
         if (card.hasCard) {
           setCardInfo(card);
           setCardOpen(true);
+        } else {
+          router.push(`/allowance/card/create`);
         }
-        // 카드가 없으면 아무 동작도 하지 않음 (void 처리)
       } catch (e) {
         console.error(e);
       }
@@ -137,7 +138,7 @@ export default function ChildDashboard() {
           accountName="목표 적금"
           balance={user.savingBalance ?? "0"}
           onViewDetails={() => {
-            const savingBalance = user.savingBalance ?? "0";
+            const savingBalance = user.savingBalance ?? "-1";
             if (savingBalance === "-1") {
               router.push("/goal/intro");
             } else {

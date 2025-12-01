@@ -18,7 +18,7 @@ interface ChildAllowanceCardProps {
 }
 
 /**
- * ChildAccountCard
+ * ChildAllowanceCard
  *
  * 자녀 대시보드에서 사용하는 계좌 카드 컴포넌트입니다.
  * ChildrenCarousel과 동일한 크기와 스타일을 사용합니다.
