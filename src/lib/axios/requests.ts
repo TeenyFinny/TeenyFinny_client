@@ -1,8 +1,12 @@
 // 호출 가능한 api를 한 파일에서 관리!
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
+=======
+import { p } from "framer-motion/client";
+>>>>>>> 6472d12 (feat: 알림창 api 연결)
 
 >>>>>>> db0f82a (feat: 목표 상세 보기 백 api  연동)
 const requests = {
@@ -18,8 +22,7 @@ const requests = {
   updatePush: `/profile/push`,
   simplePassword: `/auth/simple-password`,
   verifyFamilyOtp: `/auth/otp`, // OTP 검증
-  fetchGoal: (goalId: number | string) => `/goal/${goalId}`,
-  createGoal: `/goal`,
+  fetchGoal: `/goal`,
   fetchProgress: "/quiz/progresses",
   fetchQuiz: "/quiz/info",
   investmentsSummary: `/investments/summary`,
@@ -29,9 +32,7 @@ const requests = {
   investDashboard: `/investments/dashboard`,
   investAccount: `/investments/account/check-account`,
 
-  updateGoal: (goalId: number | string) => `/goal/${goalId}`,
-  fetchGoalForUpdate: (goalId: number | string) => `/goal/${goalId}/edit`,
-  requestCancel: (goalId: number | string) => `/goal/${goalId}/request-cancel`,
+  updateGoal: `/goal/update`,
   sellStock: `/investments/sellStock`,
   tradeBuy: `/investments/trade/buy`,
   tradeSell: `/investments/trade/sell`,
@@ -41,6 +42,8 @@ const requests = {
   fetchNotice: `/notice`,
   fetchNotices: `/notices`,
   markAsRead: (id: number | string) => `/notices/${id}/read`,
+  confirmCancel: (goalId: number | string) => `/goal/${goalId}/confirm-cancel`,
+  fetchChildGoal: (childId: number | string) => `/goal/child/${childId}/ongoing`,
 
   stocks: `/investments/stocks`,
   stockDetail: (code: string) => `/investments/stocks/${code}`,

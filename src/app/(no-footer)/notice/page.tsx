@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { NotificationItem } from "@/components/ui/notice/NotificationItem"
+import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog"
 import api from "@/lib/axios/axios"
 import requests from "@/lib/axios/requests"
 
@@ -9,12 +10,17 @@ interface Notification {
   id: number
   title: string
   content: string
+  type: string
   time: string
   isRead: boolean
 }
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([])
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [modalContent, setModalContent] = useState({ title: "", description: "" })
+  const [selectedGoalId, setSelectedGoalId] = useState<number | null>(null)
+  const [children, setChildren] = useState<any[]>([])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -22,6 +28,11 @@ export default function NotificationsPage() {
       try {
         const res = await api.get(requests.fetchNotices, { signal: controller.signal })
         setNotifications(res.data)
+
+        const homeRes = await api.get(requests.fetchHome, { signal: controller.signal })
+        if (homeRes.data.user.children) {
+          setChildren(homeRes.data.user.children)
+        }
       } catch (error) {
         console.error("알림 데이터를 불러오지 못했습니다:", error)
       }
@@ -32,16 +43,53 @@ export default function NotificationsPage() {
   }, [])
 
   // ✅ 클릭 시 읽음 처리 (id 기준)
-  const handleRead = async (id: number) => {
+  const handleRead = async (notification: Notification) => {
     try {
-      await api.patch(requests.markAsRead(id))
-      setNotifications(prev =>
-        prev.map(n =>
-          n.id === id ? { ...n, isRead: true } : n
+      if (!notification.isRead) {
+        await api.patch(requests.markAsRead(notification.id))
+        setNotifications(prev =>
+          prev.map(n =>
+            n.id === notification.id ? { ...n, isRead: true } : n
+          )
         )
-      )
+
+        // 목표 중도 해지 요청인 경우 모달 띄우기 (읽지 않은 상태일 때만)
+        if (notification.type === "GOAL" && notification.title === "목표 중도 해지 요청") {
+          const childName = notification.content.split("(이)가")[0]
+          setModalContent({
+            title: `${childName}(이)가 목표 적금 중도 해지를 원해요!`,
+            description: "가까운 영업점에 방문하여 해지하세요."
+          })
+
+          // 자녀 이름으로 자녀 ID 찾기
+          const child = children.find((c: any) => c.name === childName)
+          if (child) {
+            try {
+              const goalRes = await api.get(requests.fetchChildGoal(child.userId))
+              setSelectedGoalId(goalRes.data)
+            } catch (err) {
+              console.error("목표 ID 조회 실패:", err)
+            }
+          }
+
+          setIsDialogOpen(true)
+        }
+      }
     } catch (error) {
       console.error("읽음 처리 실패:", error)
+    }
+  }
+
+  const handleConfirmCancel = async () => {
+    if (!selectedGoalId) return
+
+    try {
+      await api.put(requests.confirmCancel(selectedGoalId))
+      alert("목표 취소가 확정되었습니다.")
+      setIsDialogOpen(false)
+    } catch (error) {
+      console.error("목표 취소 확정 실패:", error)
+      alert("목표 취소 확정에 실패했습니다.")
     }
   }
 
@@ -57,7 +105,7 @@ export default function NotificationsPage() {
         {notifications.map(n => (
           <div
             key={n.id} // ✅ id로 key 지정
-            onClick={() => handleRead(n.id)} // ✅ id로 클릭 처리
+            onClick={() => handleRead(n)} // ✅ 객체 전달
             className={`cursor-pointer transition-colors ${n.isRead ? "bg-transparent" : "bg-[rgba(0,103,172,0.15)]"
               }`}
           >
@@ -70,6 +118,15 @@ export default function NotificationsPage() {
           </div>
         ))}
       </div>
+
+      <ConfirmationDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        title={modalContent.title}
+        description={modalContent.description}
+        confirmText="확인"
+        onConfirm={handleConfirmCancel}
+      />
     </div>
   )
 }
