@@ -17,29 +17,22 @@ import requests from "@/lib/axios/requests"
  */
 export default function Page() {
   const router = useRouter()
-  const user_id = 1
   const {
     setQuizData,
-    streakDays,
+    quizDate,
     courseCompleted,
-    monthlyReward,
     todaySolved,
-    coupon,
-    explanation,
-    quizDate
+    explanation
   } = useQuizStore()
 
-  const STREAK_DAYS_FOR_REWARD = 3 //용돈조르기권을 얻기 위한 연속 문제 풀이 일수
   const EDUCATION_COURSE_LAST_DAY = 14 //교육과정의 마지막 일차
 
-  const quizActive = !courseCompleted && !monthlyReward && todaySolved < 2
+  const quizActive = !courseCompleted && todaySolved < 2
 
   // ---------------------------
   // 배지 텍스트
   // ---------------------------
-  const leftBadgeText = monthlyReward
-    ? "이번 달 도전 완료"
-    : `${streakDays+1}일 연속 도전!`
+  const leftBadgeText = `${quizDate + 1}일차 도전!`
 
   const rightBadgeText = `${todaySolved + 1} / 2 문제`
 
@@ -57,19 +50,6 @@ export default function Page() {
     const res = await api.patch(requests.fetchProgress, { todaySolved: updatedSolved })
     setQuizData({ todaySolved: updatedSolved })
     return updatedSolved
-  }
-
-  /**
-   * 월간 보상 지급 및 쿠폰 수를 서버에 PATCH 요청으로 업데이트하고,
-   * 전역 상태를 갱신합니다.
-   *
-   * @param user_id - 현재 사용자 ID
-   * @param coupon - 현재 쿠폰 개수
-   * @param setQuizData - 상태를 업데이트하는 함수
-   */
-  const updateMonthlyReward = async (coupon: number) => {
-    await api.patch(requests.fetchProgress, { monthlyReward: true, coupon: coupon + 1 })
-    setQuizData({ monthlyReward: true, coupon: coupon + 1 })
   }
 
   /**
@@ -101,13 +81,7 @@ export default function Page() {
         router.push("/quiz/info")
       } else if (updatedSolved === 2) {
         // 보상 / 이동 처리 로직
-        if (streakDays === STREAK_DAYS_FOR_REWARD && !monthlyReward) {
-          if (quizDate === EDUCATION_COURSE_LAST_DAY && !courseCompleted) {
-            await updateCourseCompleted()
-          }
-          await updateMonthlyReward(coupon)
-          router.push("/quiz/coupon")
-        } else if (quizDate === EDUCATION_COURSE_LAST_DAY && !courseCompleted) {
+        if (quizDate === EDUCATION_COURSE_LAST_DAY && !courseCompleted) {
           await updateCourseCompleted()
           router.push("/quiz/credit")
         } else {
@@ -116,7 +90,7 @@ export default function Page() {
       }
     } catch (err) {
       console.error("진행도 업데이트 실패:", err)
-    } 
+    }
   }
 
 

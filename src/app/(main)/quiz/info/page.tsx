@@ -22,9 +22,7 @@ export default function Page() {
     const {
         setQuizData,
         quizDate,
-        streakDays,
         courseCompleted,
-        monthlyReward,
         todaySolved,
         title,
         info,
@@ -89,9 +87,7 @@ if (loading) {
     // ---------------------------
     // 배지 텍스트
     // ---------------------------
-    const leftBadgeText = monthlyReward
-        ? "이번 달 도전 완료"
-        : `${streakDays+1}일 연속 도전!`
+    const leftBadgeText = `${quizDate + 1}일차 도전!`
 
     const rightBadgeText = `${todaySolved + 1} / 2 문제`
 
