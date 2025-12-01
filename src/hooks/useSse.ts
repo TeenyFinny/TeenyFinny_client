@@ -21,7 +21,7 @@ export const useSse = () => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      heartbeatTimeout: 86400000, // 24시간 (연결 유지 시간)
+      heartbeatTimeout: 3600000, // 1시간 (연결 유지 시간)
     });
 
     // 3. 연결 성공 시
@@ -36,7 +36,7 @@ export const useSse = () => {
         console.log("SSE Notification Received:", data);
 
         // 알림 스토어 업데이트 (팝업 표시)
-        setMessage(data.content); // 또는 data.title + data.content
+        setMessage(data.content); // 알림 팝업에 표시될 메시지
         setHasUnread(true);
       } catch (err) {
         console.error("SSE Parse Error:", err);
