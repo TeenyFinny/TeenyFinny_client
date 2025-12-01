@@ -72,12 +72,10 @@ export default function NotificationsPage() {
 
           if (child) {
             try {
-              // 1. 대기 중인 목표 ID 조회
               const pendingRes = await api.get(requests.fetchChildPendingGoal(child.userId))
               const goalData = pendingRes.data
               setSelectedGoalId(goalData.id)
 
-              // 3. 데이터 가공
               const total = Number(goalData.targetAmount.replace(/,/g, ""))
               const monthly = Number(goalData.monthlyAmount.replace(/,/g, ""))
               const period = goalData.period
