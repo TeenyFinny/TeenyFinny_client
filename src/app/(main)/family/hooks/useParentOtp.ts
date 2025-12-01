@@ -159,7 +159,7 @@ export const useParentOtp = (enabled: boolean) => {
 
     // 기존 타이머 정리
     if (timeUpdateTimerRef.current) {
-      clearInterval(timeUpdateTimerRef.current);
+      clearTimeout(timeUpdateTimerRef.current);
     }
 
     // 1초마다 남은 시간 계산
@@ -174,7 +174,7 @@ export const useParentOtp = (enabled: boolean) => {
       // 시간이 0이 되면 타이머 정리
       if (remaining === 0) {
         if (timeUpdateTimerRef.current) {
-          clearInterval(timeUpdateTimerRef.current);
+          clearTimeout(timeUpdateTimerRef.current);
         }
       }
     }, 1000);

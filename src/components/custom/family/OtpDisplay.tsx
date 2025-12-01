@@ -24,7 +24,9 @@ export default function OtpDisplay({ otp, timeRemaining }: OtpDisplayProps) {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   return (
@@ -42,16 +44,14 @@ export default function OtpDisplay({ otp, timeRemaining }: OtpDisplayProps) {
           );
         })}
       </div>
-      {timeRemaining !== undefined && otp && (
-        <div className="mt-[16px] pb-[182px]">
+      <div className={`pb-[182px] ${otp ? "mt-[16px]" : ""}`}>
+        {otp && timeRemaining !== undefined && (
           <p className="text-body-06 text-neutral-3">
-            유효 시간: <span className="text-primary">{formatTime(timeRemaining)}</span>
+            유효 시간:{" "}
+            <span className="text-primary">{formatTime(timeRemaining)}</span>
           </p>
-        </div>
-      )}
-      {timeRemaining === undefined && otp && (
-        <div className="mt-[16px] pb-[182px]"></div>
-      )}
+        )}
+      </div>
       {!otp && <div className="pb-[182px]"></div>}
     </div>
   );
