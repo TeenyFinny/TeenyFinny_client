@@ -45,6 +45,7 @@ const requests = {
   fetchChildGoal: (childId: number | string) =>
     `/goal/child/${childId}/ongoing`,
   fetchGoalConfirm: `/goal/account/create`,
+  fetchMyOngoingGoal: `/goal/ongoing`,
 
   // Quiz
   fetchProgress: "/quiz/progresses",
