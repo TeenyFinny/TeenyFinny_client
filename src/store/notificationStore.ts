@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
+import { hasAuthToken } from "@/lib/auth/token";
 
 /**
  * @typedef {Object} NotificationStore
@@ -29,6 +30,11 @@ export const useNotificationStore = create(
       hasUnread: false,
       setMessage: (msg) => set({ message: msg }),
       checkUnread: async () => {
+        // 로그인되지 않은 상태에서는 API 호출하지 않음
+        if (!hasAuthToken()) {
+          return;
+        }
+        
         try {
           const res = await api.get(requests.fetchNotice);
           set({ hasUnread: res.data.hasNotice });
