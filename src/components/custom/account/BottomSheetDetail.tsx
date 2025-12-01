@@ -19,7 +19,8 @@ interface DetailData {
   merchant: string;
   amount: string;
   date: string;
-  type: string;
+  code: string; // 입금/출금
+  type: string; // 거래 구분(예: 일시불, 할부 등)
   category: string;
   approveAmount: string;
   balanceAfter: string;
@@ -193,7 +194,7 @@ export function BottomSheetDetail({
             {/* 상세 정보 리스트 */}
             <div className="mt-[26px] px-[26px] flex flex-col gap-[23px]">
               <InfoRow label="거래일" value={detail.date} />
-              <InfoRow label="거래구분" value={detail.type} />
+              <InfoRow label="거래구분" value={detail.type || "일시불"} />
               <InfoRow label="카테고리" value={detail.category} />
               <InfoRow
                 label="거래금액"

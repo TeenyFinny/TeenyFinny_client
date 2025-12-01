@@ -22,16 +22,14 @@ export function DonutChart({
   innerRadius = 20,
   outerRadius = 75,
 }: PortfolioDonutChartProps) {
-  if (!data || data.length === 0)
-    return (
-      <div className="flex items-center justify-center text-body-06 text-neutral-2"
-           style={{ width: size, height: size }}>
-        데이터 없음
-      </div>
-    );
+  const isEmpty = !data || data.length === 0;
+  const chartData = isEmpty ? [{ name: "empty", percentage: 1 }] : data;
+  const chartColors = isEmpty ? ["#E0E0E0"] : COLORS; // neutral-4 color for empty state
     
   // 조각 중앙에 정확히 라벨 그리기
   const renderCenterLabel = (props: { cx: number; cy: number; midAngle?: number; innerRadius: number; outerRadius: number; percent?: number; name?: string }) => {
+    if (isEmpty) return null; // 빈 데이터일 때는 라벨 표시 안 함
+    
     const { cx, cy, midAngle = 0, innerRadius, outerRadius, percent = 0, name = "" } = props
     const r = innerRadius + (outerRadius - innerRadius) * 0.5 // 도넛 링 가운데
     // Recharts는 시계방향 각도, SVG 좌표계 보정 위해 -midAngle 사용
@@ -57,7 +55,7 @@ export function DonutChart({
       {/* width/height를 고정값으로 주면 좌표 계산이 딱 맞아요 */}
       <PieChart width={size} height={size}>
         <Pie
-          data={data}
+          data={chartData}
           dataKey="percentage"
           nameKey="name"
           cx={size / 2}
@@ -72,9 +70,9 @@ export function DonutChart({
           isAnimationActive={false} // 필요시 true
           activeShape={false}
         >
-        {Array.isArray(data) &&
-          data.map((_, i) => (
-            <Cell key={i} fill={COLORS[i % COLORS.length]} stroke="none" style={{ outline: 'none', cursor: 'default' }}/>
+        {Array.isArray(chartData) &&
+          chartData.map((_, i) => (
+            <Cell key={i} fill={chartColors[i % chartColors.length]} stroke="none" style={{ outline: 'none', cursor: 'default' }}/>
           ))}
         </Pie>
       </PieChart>
