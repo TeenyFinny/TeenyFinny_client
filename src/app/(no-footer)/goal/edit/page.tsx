@@ -1,5 +1,6 @@
 "use client"
 
+import { Suspense } from "react"
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { NormalInput2 } from "@/components/ui/input/NormalInput2"
@@ -15,7 +16,7 @@ interface GoalData {
     payDay: string
 }
 
-export default function GoalSettingPage() {
+function GoalSettingContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const goalId = searchParams.get("goalId")
@@ -151,5 +152,13 @@ export default function GoalSettingPage() {
                 </div>
             </main>
         </div>
+    )
+}
+
+export default function GoalSettingPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <GoalSettingContent />
+        </Suspense>
     )
 }

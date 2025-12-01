@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { useRouter } from "next/navigation"
 import { SmallButtonActivated } from "@/components/ui/button/SmallButtonActivated"
 import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog"
@@ -12,7 +12,7 @@ import requests from "@/lib/axios/requests"
 
 import { HttpError } from "@/types/axios/httpError.t"
 
-export default function DeleteReconfirmationPage() {
+function DeleteReconfirmationContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const goalId = searchParams.get("goalId")
@@ -107,5 +107,13 @@ export default function DeleteReconfirmationPage() {
                 onConfirm={handleConfirm}
             />
         </div>
+    )
+}
+
+export default function DeleteReconfirmationPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <DeleteReconfirmationContent />
+        </Suspense>
     )
 }

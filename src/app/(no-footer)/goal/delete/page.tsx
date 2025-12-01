@@ -1,10 +1,11 @@
 "use client"
 
+import { Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { SmallButtonActivated } from "@/components/ui/button/SmallButtonActivated"
 import { SmallButtonDisabled } from "@/components/ui/button/SmallButtonDisabled"
 
-export default function DeleteConfirmationPage() {
+function DeleteConfirmationContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const goalId = searchParams.get("goalId")
@@ -53,5 +54,13 @@ export default function DeleteConfirmationPage() {
         </div>
       </main>
     </div>
+  )
+}
+
+export default function DeleteConfirmationPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <DeleteConfirmationContent />
+    </Suspense>
   )
 }
