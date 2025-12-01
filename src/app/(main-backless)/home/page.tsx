@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/userStore";
+import { useSelectedChildStore } from "@/store/selectedChildStore";
 import { HttpError } from "@/types/axios/httpError.t";
 import ParentDashboard from "@/components/custom/home/parent-dashboard/ParentDashboard";
 import requests from "@/lib/axios/requests";
@@ -110,6 +111,8 @@ export default function Page() {
           // ⭐⭐ 부모일 때만 자녀 requestCompleted 조회 실행 ⭐⭐
           fetchCompletedChildren(children);
         } else if (normalizedRole === "child") {
+          // 자녀로 로그인 시 selectedChildStore 초기화
+          sessionStorage.removeItem('teenfinny-selected-child');
           setChildData(userPayload);
           setParentData(null);
           setError(null);
