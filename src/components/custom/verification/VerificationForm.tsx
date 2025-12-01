@@ -259,10 +259,10 @@ export default function VerificationForm({
       {/* 타이틀 */}
       <div
         className={`text-left ${
-          mode === "signup" ? "pt-[34px] pb-[24px]" : "mt-[43px] mb-[24px]"
+          mode === "signup" ? "pt-[34px] pb-[24px]" : "pt-[36px] pb-[24px]"
         }`}
       >
-        <h1 className="text-head-01 text-neutral-1 whitespace-pre-line">
+        <h1 className="text-head-01 text-neutral-1 whitespace-pre-line ">
           {mode === "update"
             ? "프로필 정보를 수정해 주세요"
             : "이용중인 통신사 정보와\n휴대폰번호를 입력해 주세요"}
