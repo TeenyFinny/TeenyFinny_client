@@ -45,9 +45,9 @@ export function ConfirmDisabledInputDialog({
         <AlertDialogHeader className="px-5 pt-4.5 pb-4 space-y-3 text-center">
           <AlertDialogTitle className="text-center">
             <span className="text-head-06 text-(--color-neutral-1)">{title}</span>
-            </AlertDialogTitle>
+          </AlertDialogTitle>
         </AlertDialogHeader>
-          {/* Form Content */}
+        {/* Form Content */}
         <div className="w-full px-4 pb-4.5 flex flex-col gap-4">
           {/* Amount Input */}
           <div className="flex flex-col gap-1">
@@ -84,7 +84,7 @@ export function ConfirmDisabledInputDialog({
           <AlertDialogAction
             onClick={onClickRtBtn}
             className="flex-1 m-0 h-12 rounded-none rounded-br-[14px] border-0 bg-transparent  hover:bg-transparent transition-colors"
-            >
+          >
             <span className="text-body-04 text-(--color-error)">{rtBtnText}</span>
           </AlertDialogAction>
         </AlertDialogFooter>
