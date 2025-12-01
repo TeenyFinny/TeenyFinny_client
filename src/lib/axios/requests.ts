@@ -1,81 +1,89 @@
 // 호출 가능한 api를 한 파일에서 관리!
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
-=======
-import { p } from "framer-motion/client";
->>>>>>> 6472d12 (feat: 알림창 api 연결)
-
->>>>>>> db0f82a (feat: 목표 상세 보기 백 api  연동)
 const requests = {
+  // 공통
   fetchTest: `/noticeTest`,
   fetchHome: `/home`,
+
+  // Auth
   login: `/auth/login`,
   signup: `/auth/signup`,
-  fetchProfileInfo: `/profile/info`,
   passwordRequest: `/auth/password`,
   authEmail: `/auth/email`,
   refresh: `/auth/refresh`,
-  fetchPushSettings: `/profile/push`,
-  updatePush: `/profile/push`,
   simplePassword: `/auth/simple-password`,
-  verifyFamilyOtp: `/auth/otp`, // OTP 검증
-  fetchGoal: (goalId: number | string) => `/goal/${goalId}`,
-  createGoal: `/goal`,
-  fetchGoalForUpdate: (goalId: number | string) => `/goal/${goalId}/edit`,
-  updateGoal: (goalId: number | string) => `/goal/${goalId}`,
-  requestCancel: (goalId: number | string) => `/goal/${goalId}/request-cancel`,
-  requestComplete: (goalId: number | string) => `/goal/${goalId}/request-complete`,
-
-  fetchProgress: "/quiz/progresses",
-  fetchQuiz: "/quiz/info",
-  investmentsSummary: `/investments/summary`,
-  fetchGoalConfirm: `/goal/account/create`,
-
-  investMyAccount: `/investments/account`,
-  investDashboard: `/investments/dashboard`,
-  investAccount: `/investments/account/check-account`,
-
-  sellStock: `/investments/sellStock`,
-  tradeBuy: `/investments/trade/buy`,
-  tradeSell: `/investments/trade/sell`,
-  fetchChild: `/account/children`,
-  portfolio: `/investments/portfolio`,
-
-  fetchNotice: `/notice`,
-  fetchNotices: `/notices`,
-  markAsRead: (id: number | string) => `/notices/${id}/read`,
-  confirmCancel: (goalId: number | string) => `/goal/${goalId}/confirm-cancel`,
-  confirmComplete: (goalId: number | string) => `/goal/${goalId}/confirm-complete`,
-  fetchChildGoal: (childId: number | string) => `/goal/child/${childId}/ongoing`,
-
-  stocks: `/investments/stocks`,
-  stockDetail: (code: string) => `/investments/stocks/${code}`,
-
-  fetchReport: (childId: number) =>
-    childId ? `/allowance/${childId}/report` : `/allowance/report`,
-  fetchMyHistory: "/account/history",
-  fetchChildHistory: (childId: number) => `/account/${childId}/history`,
-  fetchTransactionDetail: (transactionId: string) => `/account/history/${transactionId}`,
-  fetchChildCard: (childId?: number) => childId ? `/account/${childId}/card` : `/account/card`,
-  fetchTotalAccount: (childId: number) => `/account/${childId}/summary`,
-  fetchAutoTransferById: (childId: number) =>  `/account/${childId}/auto-transfer`,
-
   verifyPhoneNumber: `/auth/identity`,
-  submitChildInfo: `/allowance/accounts`,
-  submitCardInfo: `/allowance/cards`,
-
-  fetchProfile: `/profile`,
+  verifyFamilyOtp: `/auth/otp`, // OTP 검증
 
   // ID/PW 찾기
-  findEmail: `/auth/find-email`, // ID 찾기
-  resetPassword: `/auth/reset-password`, // 비밀번호 재설정 요청
+  findEmail: `/auth/find-email`,
+  resetPassword: `/auth/reset-password`,
 
   // Kakao OAuth
   kakaoLogin: `/auth/oauth/kakao/login`,
   kakaoSignup: `/auth/oauth/kakao/signup`,
+
+  // Profile
+  fetchProfileInfo: `/profile/info`,
+  updateProfileInfo: `/profile/info`,
+  fetchPushSettings: `/profile/push`,
+  updatePush: `/profile/push`,
+  fetchProfile: `/profile`,
+
+  // Goal 관련 (feat/goal-be-connect + dev 통합)
+  fetchGoal: (goalId?: number | string) =>
+    goalId ? `/goal/${goalId}` : `/goal`,
+  createGoal: `/goal`,
+  fetchGoalForUpdate: (goalId: number | string) => `/goal/${goalId}/edit`,
+  updateGoal: (goalId: number | string) => `/goal/${goalId}`,
+  requestCancel: (goalId: number | string) => `/goal/${goalId}/request-cancel`,
+  requestComplete: (goalId: number | string) =>
+    `/goal/${goalId}/request-complete`,
+  confirmCancel: (goalId: number | string) => `/goal/${goalId}/confirm-cancel`,
+  confirmComplete: (goalId: number | string) =>
+    `/goal/${goalId}/confirm-complete`,
+  fetchChildGoal: (childId: number | string) =>
+    `/goal/child/${childId}/ongoing`,
+  fetchGoalConfirm: `/goal/account/create`,
+
+  // Quiz
+  fetchProgress: "/quiz/progresses",
+  fetchQuiz: "/quiz/info",
+
+  // Investments
+  investmentsSummary: `/investments/summary`,
+  investMyAccount: `/investments/account`,
+  investDashboard: `/investments/dashboard`,
+  investAccount: `/investments/account/check-account`,
+  stocks: `/investments/stocks`,
+  stockDetail: (code: string) => `/investments/stocks/${code}`,
+  portfolio: `/investments/portfolio`,
+  sellStock: `/investments/sellStock`,
+  tradeBuy: `/investments/trade/buy`,
+  tradeSell: `/investments/trade/sell`,
+
+  // Children / Account
+  fetchChild: `/account/children`,
+  fetchMyHistory: "/account/history",
+  fetchChildHistory: (childId: number) => `/account/${childId}/history`,
+  fetchTransactionDetail: (transactionId: string) =>
+    `/account/history/${transactionId}`,
+  fetchChildCard: (childId?: number) =>
+    childId ? `/account/${childId}/card` : `/account/card`,
+  fetchTotalAccount: (childId: number) => `/account/${childId}/summary`,
+  fetchAutoTransferById: (childId: number) =>
+    `/account/${childId}/auto-transfer`,
+
+  // Allowance
+  submitChildInfo: `/allowance/accounts`,
+  submitCardInfo: `/allowance/cards`,
+  fetchReport: (childId?: number) =>
+    childId ? `/allowance/${childId}/report` : `/allowance/report`,
+
+  // Notice
+  fetchNotice: `/notice`,
+  fetchNotices: `/notices`,
+  markAsRead: (id: number | string) => `/notices/${id}/read`,
 };
 
 export default requests;
