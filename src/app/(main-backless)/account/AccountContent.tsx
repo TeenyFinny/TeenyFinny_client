@@ -41,7 +41,7 @@ const ACCOUNT_TYPES = {
 function AccountContentInner() {
   const router = useRouter();
   const { children, userType } = useUserStore();
-  const { setHistoryData, setInvestAccountExists, setChildBaseInfo } = useSelectedChildStore();
+  const { setHistoryData, setInvestAccountExists, setChildBaseInfo, selectedChildId } = useSelectedChildStore();
   const searchParams = useSearchParams();
 
   const [data, setData] = useState<ChildDto[] | null>(children ?? null);
@@ -58,6 +58,15 @@ function AccountContentInner() {
   const [isCardCreateOpen, setIsCardCreateOpen] = useState<boolean>(false);
   const [isInvestOpen, setIsInvestOpen] = useState<boolean>(false);
   const [isSavingOpen, setIsSavingOpen] = useState<boolean>(false);
+  const [isReportWarningOpen, setIsReportWarningOpen] = useState<boolean>(false);
+
+  const handleReportClick = () => {
+    if (!allowance) {
+      setIsReportWarningOpen(true);
+      return;
+    }
+    router.push(`/allowance/report`);
+  };
 
   const [cardOpen, setCardOpen] = useState(false);
   const [cardInfo, setCardInfo] = useState<CardInfo | null>(null);
@@ -101,6 +110,13 @@ function AccountContentInner() {
   }, [setInvestAccountExists]);
 
   const childHandler = (id: number) => {
+    // Find the child object to get the name
+    const child = data?.find((c) => c.userId === id);
+    if (!child) return;
+
+    // Update store with selected child info
+    setChildBaseInfo(id, child.name);
+
     if (currentChild === id) {
       // 이미 선택된 자녀를 다시 클릭하면 로딩 없이 백그라운드에서 갱신
       fetchAccountData(id, false);
@@ -187,7 +203,7 @@ function AccountContentInner() {
   }, [children]);
 
 
-  /** URL childId 우선 선택 → 없으면 첫 번째 아이 fallback */
+  /** URL childId 우선 선택 → 없으면 store의 selectedChildId → 없으면 첫 번째 아이 fallback */
   useEffect(() => {
     if (!data || data.length === 0) return;
 
@@ -197,13 +213,21 @@ function AccountContentInner() {
       data.some((c) => c.userId === presetChildId);
 
     if (isValidPreset) {
-      setCurrentChild(presetChildId);
+      const child = data.find((c) => c.userId === presetChildId);
+      if (child) {
+        setCurrentChild(presetChildId);
+        setChildBaseInfo(presetChildId, child.name);
+      }
+    } else if (selectedChildId && data.some((c) => c.userId === selectedChildId)) {
+      // URL 파라미터가 없으면 store에 저장된 selectedChildId 사용
+      setCurrentChild(selectedChildId);
     } else if (currentChild === 0) {
-      // 현재 선택된 자녀가 없고(0) 프리셋도 없으면 첫 번째 자녀 선택
+      // 현재 선택된 자녀가 없고(0) 프리셋/스토어 값도 없으면 첫 번째 자녀 선택
       setCurrentChild(data[0].userId);
+      setChildBaseInfo(data[0].userId, data[0].name);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [presetChildId, data]);
+  }, [presetChildId, data, selectedChildId]);
 
 
 
@@ -295,7 +319,7 @@ function AccountContentInner() {
         )}
 
         <button 
-        onClick={() => router.push(`/allowance/report`)}
+        onClick={handleReportClick}
         className="flex justify-start w-[335px] h-[48px] border border-monochrome-gray bg-neutral-7 rounded-4xl text-body-04 items-center mt-0">
           <img
             src="/images/account/illust_account_report.png"
@@ -381,6 +405,13 @@ function AccountContentInner() {
         description={`아이가 계좌 개설을 요청할 때까지 기다려주세요!`}
         confirmText="확인"
       />
+      <ConfirmationDialog
+        open={isReportWarningOpen}
+        onOpenChange={() => setIsReportWarningOpen(false)}
+        title="입출금 계좌가 없어요!"
+        description="입출금 계좌를 개설해야지 확인할 수 있습니다."
+        confirmText="확인"
+      />
     </div>
   );
 }
@@ -398,4 +429,3 @@ export default function AccountContent() {
     </Suspense>
   );
 }
-
