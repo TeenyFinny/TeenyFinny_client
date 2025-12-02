@@ -9,14 +9,10 @@ import { PushNotification } from "@/components/ui/notice/PushNotification"
 import { useNotificationStore } from "@/store/notificationStore"
 import type React from "react"
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
+export default function MainLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const { userType } = useUserStore()
-  const isAuthenticated = useRequireAuth("/login")
+  useRequireAuth("/login") // 리다이렉트만 처리, 반환값은 사용하지 않음
 
-  // 로그인되지 않은 경우 아무것도 렌더링하지 않음
-  if (!isAuthenticated) {
-    return null
-  }
   const { message, setMessage } = useNotificationStore()
   useSse()
 
