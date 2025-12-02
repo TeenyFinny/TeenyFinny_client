@@ -34,7 +34,7 @@ export function LandingClient() {
     if (step < totalSteps) {
       nextStep();
     } else {
-      router.push("/login");
+      router.push("/home");
     }
   };
 
@@ -51,7 +51,7 @@ export function LandingClient() {
 
         <div className="w-[327px]">
           {step === totalSteps ? (
-            <BigButtonActivated label="시작하기" onClick={handleNext} />
+            <BigButtonActivated label="홈으로" onClick={handleNext} />
           ) : (
             <GrayBigButtonActivated label="다음" onClick={handleNext} />
           )}
