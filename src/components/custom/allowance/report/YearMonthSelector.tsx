@@ -1,3 +1,11 @@
+"use client";
+
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@radix-ui/react-dropdown-menu";
 import { ChevronDown } from "lucide-react";
 
 interface YearMonthSelectorProps {
@@ -13,97 +21,86 @@ export default function YearMonthSelector({
 }: YearMonthSelectorProps) {
   const START_YEAR = 2024;
   const START_MONTH = 12;
+
   const now = new Date();
   const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth(); // 0-based, so this is actually previous month when we add 1 later
-  
-  // Calculate previous month for the limit
+  const currentMonth = now.getMonth();
+
   let limitYear = currentYear;
-  let limitMonth = currentMonth; // This is 0-based, so getMonth() in December (11) means November is the limit
-  
-  if (limitMonth === 0) {
-    // If current month is January (0), previous month is December of last year
-    limitYear = currentYear - 1;
-    limitMonth = 12;
-  }
-  // If currentMonth > 0, limitMonth is already correct (e.g., December=11 means limit is November=11)
+  let limitMonth = currentMonth === 0 ? 12 : currentMonth;
 
-  // Generate available years
-  const availableYears: number[] = [];
-  for (let y = START_YEAR; y <= limitYear; y++) {
-    availableYears.push(y);
-  }
+  const years = Array.from(
+    { length: limitYear - START_YEAR + 1 },
+    (_, i) => START_YEAR + i
+  );
 
-  // Generate available months based on selected year
-  const getAvailableMonths = (selectedYear: number): number[] => {
-    const months: number[] = [];
-    const startM = selectedYear === START_YEAR ? START_MONTH : 1;
-    const endM = selectedYear === limitYear ? limitMonth : 12;
+  const months = Array.from({ length: 12 }, (_, i) => i + 1).filter(
+    (m) =>
+      (year !== START_YEAR || m >= START_MONTH) &&
+      (year !== limitYear || m <= limitMonth)
+  );
 
-    for (let m = startM; m <= endM; m++) {
-      months.push(m);
-    }
-    return months;
-  };
-
-  const availableMonths = getAvailableMonths(year);
-
-  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newYear = Number(e.target.value);
-    const newAvailableMonths = getAvailableMonths(newYear);
-    
-    // If current month is not available in new year, select the first available month
-    const newMonth = newAvailableMonths.includes(month)
+  const handleYearChange = (newYear: number) => {
+    let validMonths = months;
+    const newMonth = validMonths.includes(month)
       ? month
-      : newAvailableMonths[0];
-    
+      : validMonths[0];
     onChange(newYear, newMonth);
   };
 
-  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newMonth = Number(e.target.value);
+  const handleMonthChange = (newMonth: number) => {
     onChange(year, newMonth);
   };
 
   return (
-    <div className="flex items-center gap-[8px]">
-      {/* Year Selector */}
-      <div className="relative inline-block">
-        <select
-          value={year}
-          onChange={handleYearChange}
-          className="appearance-none bg-neutral-7 shadow rounded-[8px] pl-3 pr-8 py-2 text-body-01 text-neutral-1 font-medium focus:outline-none cursor-pointer"
+    <div className="flex items-center gap-[10px]">
+      {/* YEAR */}
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          className="flex items-center gap-[4px] bg-neutral-7 shadow rounded-[8px] px-[12px] py-[6px] text-body-01 text-neutral-1 w-fit"
         >
-          {availableYears.map((y) => (
-            <option key={y} value={y} className="bg-neutral-7">
-              {y}년
-            </option>
-          ))}
-        </select>
-        <ChevronDown
-          size={16}
-          className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-1"
-        />
-      </div>
+          {year}년 <ChevronDown size={16} />
+        </DropdownMenuTrigger>
 
-      {/* Month Selector */}
-      <div className="relative inline-block">
-        <select
-          value={month}
-          onChange={handleMonthChange}
-          className="appearance-none bg-neutral-7 shadow rounded-[8px] pl-3 pr-8 py-2 text-body-01 text-neutral-1 font-medium focus:outline-none cursor-pointer"
+        <DropdownMenuContent
+          align="start"
+          className="rounded-[12px] bg-neutral-7 shadow-lg border border-neutral-5 mt-[6px] z-[9999] min-w-[90px]" // ⬅️ z-index + 기본 width
         >
-          {availableMonths.map((m) => (
-            <option key={m} value={m} className="bg-neutral-7">
-              {m}월
-            </option>
+          {years.map((y) => (
+            <DropdownMenuItem
+              key={y}
+              onClick={() => handleYearChange(y)}
+              className="px-[14px] py-[12px] text-body-04 text-neutral-1 hover:bg-neutral-6 cursor-pointer"
+            >
+              {y}년
+            </DropdownMenuItem>
           ))}
-        </select>
-        <ChevronDown
-          size={16}
-          className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-1"
-        />
-      </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* MONTH */}
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          className="flex items-center gap-[4px] bg-neutral-7 shadow rounded-[8px] px-[12px] py-[6px] text-body-01 text-neutral-1 min-w-[68px]"
+        >
+          {month}월 <ChevronDown size={16} />
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent
+          align="start"
+          className="rounded-[12px] bg-neutral-7 shadow-lg border border-neutral-5 mt-[6px] z-[9999] min-w-[68px]" // ⬅️ z-index
+        >
+          {months.map((m) => (
+            <DropdownMenuItem
+              key={m}
+              onClick={() => handleMonthChange(m)}
+              className="px-[14px] py-[12px] text-body-04 text-neutral-1 hover:bg-neutral-6 cursor-pointer"
+            >
+              {m}월
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }
