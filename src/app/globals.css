@@ -37,6 +37,8 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --mint-flash: #dcf4e6;
+  --pale-green: #c3e7d5;
 }
 
 .dark {
@@ -112,6 +114,8 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-pale-green: var(--pale-green);
+  --color-mint-flash: var(--mint-flash);
 
   /* Primary Colors */
   --color-primary-1: #0067ac;
@@ -124,8 +128,13 @@
   --color-neutral-2: #898989;
   --color-neutral-3: #989898;
   --color-neutral-4: #cacaca;
-  --color-neutral-5: #e0e0e0;
-  --color-neutral-6: #ffffff;
+  --color-neutral-7: #ffffff;
+  --color-monochrome-gray: #e8ebee;
+  --color-monochrome-lightgray: #f6f7f8;
+
+  /* Chart Colors */
+  --color-chart-3: #0d77cf;
+  --color-chart-10: #e24851;
 
   /* Semantic Colors */
   --color-error: #ef4c4a;
@@ -134,9 +143,11 @@
   --color-success: #55bb59;
 
   /* Typography - Font Family */
-  --font-sans: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-sans: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
+    sans-serif;
 
   /* Typography - Font Sizes */
+  --font-size-head-00: 1.625rem; /* 26px 추가 */
   --font-size-head-01: 1.5rem; /* 24px */
   --font-size-head-02: 1.25rem; /* 20px */
   --font-size-head-03: 1.125rem; /* 18px */
@@ -156,6 +167,11 @@
   --font-size-body-07: 0.875rem; /* 14px */
   --font-size-body-08: 0.75rem; /* 12px */
 
+  /* 추가사항 */
+  --font-size-account-title: 2.5rem; /* 40px  */
+  --font-size-nav-title: 0.625rem; /* 10px */
+  --font-size-landing-01: 1.75rem; /* 28px */
+
   /* Typography - Font Weights */
   --font-weight-bold: 700;
   --font-weight-semibold: 600;
@@ -165,6 +181,7 @@
   /* Typography - Letter Spacing */
   --letter-spacing-tight: -0.6px;
   --letter-spacing-tighter: -0.8px;
+  --letter-spacing-tightest: -0.12px;
 }
 
 @layer base {
@@ -178,6 +195,14 @@
 
 /* Custom Typography Classes */
 @layer utilities {
+  /* 26px 헤더용 폰트 스타일 추가 */
+  .text-head-00 {
+    font-size: var(--font-size-head-00);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-tight);
+    line-height: normal;
+  }
+
   .text-head-01 {
     font-size: var(--font-size-head-01);
     font-weight: var(--font-weight-bold);
@@ -293,7 +318,28 @@
   .text-body-08 {
     font-size: var(--font-size-body-08);
     font-weight: var(--font-weight-regular);
-    letter-spacing: -0.6px;
+    letter-spacing: var(--letter-spacing-tight);
+    line-height: normal;
+  }
+
+  .text-landing-01 {
+    font-size: var(--font-size-landing-01);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-tight);
+    line-height: normal;
+  }
+
+  .text-account-title {
+    font-size: var(--font-size-account-title);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-tight);
+    line-height: normal;
+  }
+
+  .text-nav-title {
+    font-size: var(--font-size-nav-title);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-tightest);
     line-height: normal;
   }
 }
