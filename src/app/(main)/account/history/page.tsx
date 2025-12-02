@@ -223,7 +223,7 @@ function HistoryPageContent() {
       </div>
 
       {/* 거래 리스트 */}
-      <div className="flex-1 overflow-y-auto px-[20px] mt-[12px]">
+      <div className="flex-1 overflow-y-auto px-[20px] mt-[12px] [&::-webkit-scrollbar]:hidden">
         {isLoading ? (
           <div className="flex justify-center items-center py-10 text-body-04 text-neutral-2">
             불러오는 중...
