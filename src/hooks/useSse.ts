@@ -1,12 +1,15 @@
 import { useEffect } from "react";
 import { useNotificationStore } from "@/store/notificationStore";
-import { hasAuthToken, loadAuthToken } from "@/lib/auth/token";
+import { loadAuthToken } from "@/lib/auth/token";
 import { EventSourcePolyfill } from "event-source-polyfill";
 
-const SSE_URL = `${process.env.NEXT_PUBLIC_BASE_URL}/notifications/subscribe`;
+const SSE_URL = `${process.env.NEXT_PUBLIC_BASE_URL}/channel/notifications/subscribe`;
 
 export const useSse = () => {
-  const { setMessage, setHasUnread } = useNotificationStore();
+  const setMessage = useNotificationStore((state) => state.setMessage);
+  const setHasUnread = useNotificationStore(
+    (state) => (state as any).setHasUnread
+  );
 
   useEffect(() => {
     // 1. 토큰 확인
