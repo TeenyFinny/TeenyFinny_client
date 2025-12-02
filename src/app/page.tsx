@@ -1,10 +1,10 @@
 import { AuthShell } from "@/components/layout/AuthShell";
-import { LandingClient } from "@/app/(auth)/landing/LandingClient";
+import SplashScreen from "@/components/custom/splash/SplashScreen";
 
 export default function Page() {
   return (
     <AuthShell>
-      <LandingClient />
+      <SplashScreen />
     </AuthShell>
   );
 }
