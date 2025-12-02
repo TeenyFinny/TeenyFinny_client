@@ -121,18 +121,18 @@ export default function Page() {
         )}
 
         {/* 중앙 이미지 */}
-        <div className="absolute top-[135px] w-[214px] h-[214px] mb-8">
+        <div className="absolute top-[145px] w-[180px] h-[180px] mb-13">
           <Image
             src="/images/quiz/illust_quiz_1.png"
             alt="퀴즈 일러스트"
-            width={214}
-            height={214}
+            width={180}
+            height={180}
             priority
           />
         </div>
 
         {/* 하단 설명 텍스트 */}
-        <p className="absolute top-[407px] left-[45px] text-center text-head-04 font-bold text-neutral-1 w-[237px] mb-8 leading-relaxed">
+        <p className="absolute top-[387px] left-[45px] text-center text-head-02 font-bold text-primary-1 w-[237px] mb-13 leading-relaxed">
           {explanation}
         </p>
       </div>
