@@ -1,6 +1,7 @@
 // app/(auth)/login/page.tsx
 "use client"
 
+import { useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useLoginForm } from "./useLoginForm"
@@ -10,6 +11,11 @@ import { startKakaoLogin } from "@/lib/auth/kakaoAuth"
 
 export default function Page() {
   const { email, password, error, isSubmitting, handleEmailChange, handlePasswordChange, handleSubmit } = useLoginForm()
+
+  // 로그인 페이지로 돌아올 때 sessionStorage 전체 삭제
+  useEffect(() => {
+    sessionStorage.clear()
+  }, [])
 
   const handleKakaoLogin = () => {
     startKakaoLogin()
