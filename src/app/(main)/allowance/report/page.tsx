@@ -84,7 +84,7 @@ console.log("selectedChildId", selectedChildId);
     report?.comparedType === "more" ? "더 썼어요" : "아꼈어요";
 
   return (
-    <div className="px-[27px] pb-[20px]">
+    <div className="h-full overflow-y-auto [&::-webkit-scrollbar]:hidden px-[27px] pb-[20px]">
       {/* ------ 상단 Header ------ */}
       <div className="flex flex-col mt-[16px]">
         <div className="flex items-center justify-between">

@@ -31,7 +31,7 @@ export default function InvestStatusWithChart({
   return (
     <div>
       {/* Top Summary Card */}
-      <div className="bg-white rounded-3xl mt-6 p-6 shadow-lg">
+      <div className="bg-white rounded-3xl min-h-[230px] mt-6 p-6 shadow-lg">
         <div className="flex items-center">
           {/* Left: Investment Summary */}
           <div className="flex-1 w-[45%]">

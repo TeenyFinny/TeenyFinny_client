@@ -9,6 +9,8 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { TradeHistory } from "@/components/ui/tx-history-ui/TradeHistory";
 
+import { useUserStore } from "@/store/userStore";
+
 // =========================
 //  타입 정의 (백엔드 기준)
 // =========================
@@ -31,23 +33,12 @@ interface InvestSummary {
   totalProfitRate: number;
 }
 
-// =========================
-//  InvestStatus props 변환
-// =========================
-const mapToInvestStatusProps = (summary: InvestSummary) => ({
-  userName: "효징징징이",
-  currentAmount: summary.totEvluAmt,
-  profitAmount: summary.totalProfitAmount,
-  profitRate: String(summary.totalProfitRate),
-  availableAmount: summary.depositAmount,
-  isPositive: summary.totalProfitRate >= 0,
-});
-
 export default function Page() {
   const router = useRouter();
   const [stocks, setStocks] = useState<Holding[]>([]);
   const [investSummary, setInvestSummary] = useState<InvestSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  const userName = useUserStore((state) => state.userName);
 
   const isMounted = useRef(true);
 
@@ -109,11 +100,11 @@ export default function Page() {
 
           return changed
             ? {
-                depositAmount: data.depositAmount,
-                totEvluAmt: data.totEvluAmt,
-                totalProfitAmount: data.totalProfitAmount,
-                totalProfitRate: data.totalProfitRate,
-              }
+              depositAmount: data.depositAmount,
+              totEvluAmt: data.totEvluAmt,
+              totalProfitAmount: data.totalProfitAmount,
+              totalProfitRate: data.totalProfitRate,
+            }
             : prev;
         });
 
@@ -148,6 +139,15 @@ export default function Page() {
     );
   }
 
+  const investStatusProps = {
+    userName: userName,
+    currentAmount: investSummary.totEvluAmt,
+    profitAmount: investSummary.totalProfitAmount,
+    profitRate: String(investSummary.totalProfitRate),
+    availableAmount: investSummary.depositAmount,
+    isPositive: investSummary.totalProfitRate >= 0,
+  };
+
   // =====================================
   //  렌더링
   // =====================================
@@ -156,7 +156,7 @@ export default function Page() {
       <div className="flex flex-col items-center pt-6">
 
         {/* 투자 요약 카드 */}
-        <InvestStatus {...mapToInvestStatusProps(investSummary)} />
+        <InvestStatus {...investStatusProps} />
 
         <h2 className="text-head-06 text-neutral-2 px-4 pt-12 self-start">
           내가 산 주식
