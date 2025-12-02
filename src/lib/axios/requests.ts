@@ -60,15 +60,22 @@ const requests = {
   investMyAccount: `/investments/account`,
   investDashboard: `/investments/dashboard`,
   investAccount: `/investments/account/check-account`,
-  stocks: `/investments/stocks`,
-  stockDetail: (code: string) => `/investments/stocks/${code}`,
-  portfolio: `/investments/portfolio`,
+  portfolioDates: "/investments/portfolio/dates",
   sellStock: `/investments/sellStock`,
   tradeBuy: `/investments/trade/buy`,
   tradeSell: `/investments/trade/sell`,
 
   // Children / Account
   fetchChild: `/account/children`,
+
+  portfolio: `/investments/portfolio`,
+
+
+  stocks: `/investments/stocks`,
+  stocksBuy: `/investments/stocks/buy`,
+  stocksSell: `/investments/stocks/sell`,
+  stockDetail: (code: string) => `/investments/stocks/detail/${code}`,
+
   fetchMyHistory: "/account/history",
   fetchChildHistory: (childId: number) => `/account/${childId}/history`,
   fetchTransactionDetail: (transactionId: string) =>
