@@ -9,14 +9,8 @@ import { useNotificationStore } from "@/store/notificationStore"
 import { useRequireAuth } from "@/hooks/useRequireAuth"
 import React from "react"
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
-  const { userType } = useUserStore()
-  const isAuthenticated = useRequireAuth("/login")
-
-  // 로그인되지 않은 경우 아무것도 렌더링하지 않음
-  if (!isAuthenticated) {
-    return null
-  }
+export default function MainLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  useRequireAuth("/login") // 리다이렉트만 처리, 반환값은 사용하지 않음
   const { message, setMessage } = useNotificationStore()
   useSse()
 
