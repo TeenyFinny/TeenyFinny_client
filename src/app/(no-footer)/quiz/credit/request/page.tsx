@@ -155,10 +155,7 @@ export default function StockTerms() {
             setQuizData({ requestCompleted: true });
 
             // // 3️⃣ (선택) 부모님 푸시 알림 보내기
-            // await api.post(requests.sendParentNotification(user_id), {
-            //     type: "account_request",
-            //     message: "자녀가 투자 계좌 생성을 요청했습니다.",
-            // });
+            await api.post(requests.investAccountRequest);
 
             // 4️⃣ 홈으로 이동
             router.push("/home");
