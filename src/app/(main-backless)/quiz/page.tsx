@@ -97,7 +97,7 @@ export default function Page() {
 
         <div className="flex flex-col gap-4 justify-center items-center">
           {Array.from({ length: 3 }).map((_, rowIndex) => (
-            <div key={rowIndex} className="flex gap-4">
+            <div key={rowIndex} className="flex gap-4 mb-2">
               {Array.from({ length: 5 }).map((_, colIndex) => {
                 const stampIndex = rowIndex * 5 + colIndex
                 const isStamped = stampIndex < quizDate
