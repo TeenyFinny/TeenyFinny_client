@@ -44,30 +44,38 @@ function AllStocksContentInner() {
   const [notiOpen, setNotiOpen] = useState(false);
   const [notiMessage, setNotiMessage] = useState("");
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const [stockRes] = await Promise.all([
-          api.get(requests.stocks),
-        ]);
-        setStocks((stockRes.data as any).output ?? []);
-      } catch (e) {
-        // 커스텀 에러관리
-        const err = e as HttpError;
+  const fetchStocks = async () => {
+    try {
+      const url = mode === "buy" ? requests.stocksBuy : requests.stocksSell;
+      const res = await api.get(url);
+      setStocks(res.data.output ?? []);
+    } catch (e) {
+      const err = e as HttpError;
 
-        // 403일 경우 에러메시지를 반환하고 홈으로 라우팅
-        if (err.statusCode === 403) {
-          alert(err.message);
-          router.push("/");
-        } else {
-          // 필요 시 다른 에러 처리
-          console.error(err);
-        }
-      } finally {
-        setLoading(false);
+      if (err.statusCode === 403) {
+        alert(err.message);
+        router.push("/");
+      } else {
+        console.error(err);
       }
-    })();
-  }, [router]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /** 3초마다 폴링 */
+  useEffect(() => {
+    // 초기 1회 호출
+    fetchStocks();
+
+    // 3초 간격 polling
+    const intervalId = setInterval(() => {
+      fetchStocks();
+    }, 3000);
+
+    // cleanup
+    return () => clearInterval(intervalId);
+  }, [mode]); // mode가 바뀌면 polling reset
 
   if (loading) {
     return (
@@ -79,8 +87,9 @@ function AllStocksContentInner() {
 
   const handleStockDetail = async (code: string) => {
     try {
+      console.log("Fetching stock detail for code:", code)
       const res = await api.get(requests.stockDetail(code))
-      const stock = (res.data as any).output[0]
+      const stock = res.data 
       setSelectedStock({
         productCode: stock.productCode,
         productName: stock.productName,
@@ -88,7 +97,6 @@ function AllStocksContentInner() {
         depositAmount: stock.depositAmount,
         maxBuyQuantity: stock.maxBuyQuantity,
       })
-      console.log(stock);
       setOpen(true)
     } catch (e) {
       const err = e as HttpError

@@ -22,6 +22,7 @@ const requests = {
   investMyAccount: `/investments/account`,
   investDashboard: `/investments/dashboard`,
   investAccount: `/investments/account/check-account`,
+  portfolioDates: "/investments/portfolio/dates",
 
   updateGoal: `/goal/update`,
   sellStock: `/investments/sellStock`,
@@ -33,6 +34,8 @@ const requests = {
   fetchNotice: `/notice`,
 
   stocks: `/investments/stocks`,
+  stocksBuy: `/investments/stocks/buy`,
+  stocksSell: `/investments/stocks/sell`,
   stockDetail: (code: string) => `/investments/stocks/detail/${code}`,
 
   fetchReport: (childId: number) =>

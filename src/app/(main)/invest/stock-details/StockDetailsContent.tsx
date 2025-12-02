@@ -19,6 +19,7 @@ interface StockDetail {
   accumulatedVolume: string;
   depositAmount: number;
   maxBuyQuantity: number;
+  holdingQuantity: number;
 }
 
 function StockDetailsContentInner() {
@@ -37,10 +38,15 @@ function StockDetailsContentInner() {
 
   useEffect(() => {
     if (!stck_shrn_iscd) return;
-    (async () => {
+
+    let intervalId: NodeJS.Timeout;
+
+    const fetchDetail = async () => {
       try {
         const res = await api.get(requests.stockDetail(stck_shrn_iscd));
+        console.log("Fetched stock detail:", res);
         const stockData = res.data;
+
         setStock({
           productCode: stockData.productCode,
           productName: stockData.productName,
@@ -49,24 +55,28 @@ function StockDetailsContentInner() {
           accumulatedVolume: stockData.accumulatedVolume,
           depositAmount: stockData.depositAmount,
           maxBuyQuantity: stockData.maxBuyQuantity,
+          holdingQuantity: stockData.holdingQuantity,
         });
+
       } catch (e) {
-        // 커스텀 에러관리
         const err = e as HttpError;
 
-        // 403일 경우 에러메시지를 반환하고 홈으로 라우팅
         if (err.statusCode === 403) {
           alert(err.message);
           router.push("/");
         } else {
-          // 필요 시 다른 에러 처리
           console.error(err);
         }
       } finally {
         setLoading(false);
       }
-    })();
-  }, [stck_shrn_iscd, router]);
+    };
+
+    fetchDetail();
+    intervalId = setInterval(fetchDetail, 3000);
+
+    return () => clearInterval(intervalId);
+  }, [stck_shrn_iscd, mode, router]);
 
   if (loading) {
     return (
@@ -177,7 +187,7 @@ function StockDetailsContentInner() {
           setOpen={setOpen}
           stck_prpr={Number(String(stock.currentPrice).replace(/,/g, ""))}
           availableStocks={stock.depositAmount}
-          maxQuantity={stock.maxBuyQuantity}
+          maxQuantity={stock.holdingQuantity}
           onConfirm={handleTradeOrder}
           onCancel={() => setOpen(false)}
         />
