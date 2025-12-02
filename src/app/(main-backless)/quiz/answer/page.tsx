@@ -25,7 +25,7 @@ export default function Page() {
     explanation
   } = useQuizStore()
 
-  const EDUCATION_COURSE_LAST_DAY = 14 //교육과정의 마지막 일차
+  const EDUCATION_COURSE_LAST_DAY = 15 //교육과정의 마지막 일차
 
   const quizActive = !courseCompleted && todaySolved < 2
 
@@ -64,6 +64,19 @@ export default function Page() {
     setQuizData({ courseCompleted: true })
   }
 
+  const updateQuizDate = async (quizDate: number) => {
+  const updatedDate = quizDate + 1
+
+  // DB 업데이트
+  await api.patch(requests.fetchProgress, { quizDate: updatedDate })
+
+  // 상태 업데이트
+  setQuizData({ quizDate: updatedDate })
+
+  return updatedDate
+}
+
+
   /**
  * 퀴즈 완료 처리 함수
  *
@@ -81,7 +94,9 @@ export default function Page() {
         router.push("/quiz/info")
       } else if (updatedSolved === 2) {
         // 보상 / 이동 처리 로직
-        if (quizDate === EDUCATION_COURSE_LAST_DAY && !courseCompleted) {
+        const updatedDate = await updateQuizDate(quizDate)
+        
+        if (updatedDate === EDUCATION_COURSE_LAST_DAY && !courseCompleted) {
           await updateCourseCompleted()
           router.push("/quiz/credit")
         } else {
