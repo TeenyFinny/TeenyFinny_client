@@ -54,6 +54,7 @@ const requests = {
   fetchProgress: "/quiz/progresses",
   fetchQuiz: "/quiz/info",
   fetchChildQuiz: (childId: number) => `/quiz/${childId}/progresses`,
+  investAccountRequest: "/quiz/investment-account/request",
 
   // Investments
   investmentsSummary: `/investments/summary`,
@@ -64,6 +65,7 @@ const requests = {
   sellStock: `/investments/sellStock`,
   tradeBuy: `/investments/trade/buy`,
   tradeSell: `/investments/trade/sell`,
+  
 
   // Children / Account
   fetchChild: `/account/children`,
