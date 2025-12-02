@@ -64,6 +64,19 @@ export default function Page() {
     setQuizData({ courseCompleted: true })
   }
 
+  const updateQuizDate = async (quiz_date: number) => {
+  const updatedDate = quiz_date + 1
+
+  // DB 업데이트
+  await api.patch(requests.fetchProgress, { quizDate: updatedDate })
+
+  // 상태 업데이트
+  setQuizData({ quizDate: updatedDate })
+
+  return updatedDate
+}
+
+
   /**
  * 퀴즈 완료 처리 함수
  *
@@ -81,6 +94,8 @@ export default function Page() {
         router.push("/quiz/info")
       } else if (updatedSolved === 2) {
         // 보상 / 이동 처리 로직
+        const updatedDate = await updateQuizDate(quizDate)
+        
         if (quizDate === EDUCATION_COURSE_LAST_DAY && !courseCompleted) {
           await updateCourseCompleted()
           router.push("/quiz/credit")
