@@ -12,6 +12,7 @@ import api from "@/lib/axios/axios";
 import { useRouter } from "next/navigation";
 import { CardDetail } from "../../allowance/card/CardDetail";
 import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog";
+import { AccountCardDisabled } from "../../account/AccountCardDisabled";
 
 type CardInfo = {
   hasCard: boolean;
@@ -30,18 +31,17 @@ export default function ChildDashboard() {
   const router = useRouter();
   const [user, setUser] = useState<UserDto | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
   const [cardOpen, setCardOpen] = useState(false);
   const [cardInfo, setCardInfo] = useState<CardInfo | null>(null);
   const [isCardWaitingOpen, setIsCardWaitingOpen] = useState(false);
   const [isReportWarningOpen, setIsReportWarningOpen] = useState(false); 
   const [isGoalWaitingOpen, setIsGoalWaitingOpen] = useState(false);
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getHomeData();
+        console.log(data);
         setUser(data.user);
       } catch (error) {
         console.error("데이터를 불러오지 못했습니다.:", error);
@@ -66,7 +66,7 @@ export default function ChildDashboard() {
    *
    * @param {string} accountType - 클릭한 계좌 타입
    */
-  const handleViewDetails = (accountType: string) => {
+  const handleViewAllowance = () => {
     // TODO: 계좌 타입에 따라 다른 페이지로 이동
     router.push(`/account/history`);
   };
@@ -80,6 +80,7 @@ export default function ChildDashboard() {
         const endpoint = requests.fetchChildCard(); // 자녀 본인 → /account/card
         const res = await api.get<ApiResponse<CardInfo>>(endpoint);
         const card = res.data as CardInfo;
+        console.log(card);
         if (card.hasCard) {
           setCardInfo(card);
           setCardOpen(true);
@@ -87,14 +88,43 @@ export default function ChildDashboard() {
           setIsCardWaitingOpen(true);
         }
       } catch (e) {
+        setIsCardWaitingOpen(true);
         console.error(e);
       }
     })();
   };
+
+  const handleViewGoal = async () => {
+    const savingBalance = user.savingBalance;
+    console.log(savingBalance);
+    if (savingBalance === "-1") {
+      try {
+        console.log("api 호출됨 : goal");
+        const pendingRes = await api.get(requests.fetchMyOngoingGoal);
+        router.push("/goal/intro");
+      } catch {
+        setIsGoalWaitingOpen(true);
+      }
+      return;
+    }
+
+    try {
+      const res = await api.get(requests.fetchMyOngoingGoal);
+      const goalId = res.data;
+      router.push(`/goal/${goalId}`);
+    } catch {
+      router.push("/home");
+    }
+  };
+
+  const handleViewInvest = () => {
+    router.push("/invest/portfolios");
+  };
+
   /**
    * 리포트 페이지 이동 이벤트
    */
-  const reportHandler = () => {
+  const handleViewReport = () => {
     // 카드가 없으면 경고 모달 표시
     if (!cardInfo?.hasCard) {
       setIsReportWarningOpen(true);
@@ -102,6 +132,9 @@ export default function ChildDashboard() {
     }
     router.push(`/allowance/report`);
   };
+
+   const hasInvest = user.investmentBalance !== "-1" && user.investmentBalance !== null;
+  const hasGoal = user.savingBalance !== "-1" && user.savingBalance !== null;
 
   return (
     <div className="max-h-screen px-[17px]">
@@ -123,7 +156,7 @@ export default function ChildDashboard() {
           accountName="용돈 계좌"
           balance={user.depositBalance ?? "0"}
           showCard={true}
-          onViewDetails={() => handleViewDetails("용돈 계좌")}
+          onViewDetails={() => handleViewAllowance()}
           onCardClick={() => handleViewCard()}
         />
 
@@ -136,59 +169,40 @@ export default function ChildDashboard() {
           cvc={cardInfo?.cvc ?? ""}
         />
 
-        {/* 계좌 카드: 투자 계좌 */}
-        <AccountCard
-          accountName="투자 계좌"
-          balance={user.investmentBalance ?? "0"}
-          onViewDetails={() => router.push("/invest")}
-          onCardClick={() => null}
-        />
 
-        {/* 계좌 카드: 목표 적금 */}
-        <AccountCard
-          accountName="목표 적금"
-          balance={user.savingBalance ?? "0"}
-          onViewDetails={async () => {
-            const savingBalance = user.savingBalance ?? "-1";
-            
-            if (savingBalance === "-1") {
-              // 계좌가 아직 개설되지 않은 경우
-              try {
-                // Pending goal이 있는지 확인
-                const pendingRes = await api.get(`/goal/pending`);
-                
-                if (pendingRes.data && pendingRes.data.goalId) {
-                  // 자녀가 목표 설정했고 부모 승인 대기 중
-                  setIsGoalWaitingOpen(true);
-                } else {
-                  // 목표 설정 전 - intro 페이지로 이동
-                  router.push("/goal/intro");
-                }
-              } catch (e) {
-                console.error("Pending 목표 조회 실패:", e);
-                // API 실패 시 기본적으로 intro로 이동
-                router.push("/goal/intro");
-              }
-            } else {
-              // 계좌가 개설된 경우 - ongoing goal로 이동
-              try {
-                const res = await api.get(requests.fetchMyOngoingGoal);
-                const goalId = res.data;
-                router.push(`/goal/${goalId}`);
-              } catch (e) {
-                console.error("목표 ID 조회 실패:", e);
-                router.push("/home");
-              }
-            }
-          }}
-          onCardClick={() => null}
-        />
+        {/* 투자 계좌 */}
+        {hasInvest ? (
+          <AccountCard
+            accountName="투자 계좌"
+            balance={user.investmentBalance ?? "0"}
+            onCardClick={() => handleViewInvest()}
+          />
+        ) : (
+          <AccountCardDisabled
+            accountName="투자 계좌"
+            onCardClick={()=>{}}
+          />
+        )}
+
+        {/* 목표 적금 */}
+        {hasGoal ? (
+          <AccountCard
+            accountName="목표 적금"
+            balance={user.savingBalance ?? "0"}
+            onCardClick={handleViewGoal}
+          />
+        ) : (
+          <AccountCardDisabled
+            accountName="목표 적금"
+            onCardClick={handleViewGoal}
+          />
+        )}
 
         {/* 소비 리포트 버튼 */}
         <button
           className="flex justify-start w-[335px] h-[48px] border-1 border-monochrome-gray
                      bg-neutral-7 rounded-4xl text-body-04 items-center mt-0"
-          onClick={() => reportHandler()}
+          onClick={() => handleViewReport()}
         >
           <img
             src="/images/account/illust_account_report.png"
