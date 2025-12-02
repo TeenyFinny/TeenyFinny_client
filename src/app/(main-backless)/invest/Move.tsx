@@ -1,8 +1,5 @@
-import api from "@/lib/axios/axios";
-import requests from "@/lib/axios/requests";
-import { useSelectedChildStore } from "@/store/selectedChildStore";
-import { useEffect } from "react";
 
+import { useEffect } from "react";
 
 export default function Move({
   onNext,
@@ -10,31 +7,15 @@ export default function Move({
   onNext: () => void;
 }) {
 
-  const MOVE_PAGE_DELAY = 2500;
-  const { selectedChildId } = useSelectedChildStore();
+  const MOVE_PAGE_DELAY = 1500;
 
   useEffect(() => {
-    const createAccount = async () => {
-      try {
-        // childId를 body에 담아서 POST
-        await api.post(requests.investMyAccount, { childId: selectedChildId });
+    const timer = setTimeout(() => {
+      onNext();
+    }, MOVE_PAGE_DELAY);
 
-          // 2) requestCompleted false로 PATCH
-    await api.patch(requests.fetchChildQuiz(Number(selectedChildId)));
-        // 계좌 생성 성공 → 다음 화면으로 이동
-
-        onNext();
-
-      } catch (err) {
-        console.error(err);
-        alert("계좌 생성 중 오류가 발생했습니다.");
-        window.history.back();
-      }
-    };
-
-    const t = setTimeout(createAccount, MOVE_PAGE_DELAY);
-    return () => clearTimeout(t);
-  }, [selectedChildId, onNext]);
+    return () => clearTimeout(timer);
+  }, [onNext]);
 
   return (
     <div className="flex flex-col items-center px-6 pt-13">

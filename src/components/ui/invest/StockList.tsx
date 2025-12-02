@@ -24,7 +24,7 @@ export function StockList({ stocks, onClickBtn, onClickRow, btnLab = "팔기" }:
     <div className="w-[376px] h-[267px] flex flex-col">
       <div className="flex items-center justify-between px-[16px] pt-[18px] pb-[12px]">
         <div className="text-neutral-2 text-body-07">종목명</div>
-        <div className="text-neutral-2 text-body-07">평균단가</div>
+        <div className="text-neutral-2 text-body-07">현재가</div>
       </div>
 
       <div className="flex flex-col">

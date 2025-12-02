@@ -42,28 +42,42 @@ const requests = {
   confirmCancel: (goalId: number | string) => `/goal/${goalId}/confirm-cancel`,
   confirmComplete: (goalId: number | string) =>
     `/goal/${goalId}/confirm-complete`,
+  approveGoal: (goalId: number | string) => `/goal/${goalId}/approve`,
   fetchChildGoal: (childId: number | string) =>
     `/goal/child/${childId}/ongoing`,
-  fetchGoalConfirm: `/goal/account/create`,
+  fetchChildPendingGoal: (childId: number | string) =>
+    `/goal/child/${childId}/pending`,
+  fetchGoalConfirm: (goalId: number | string) => `/goal/account/create?goalId=${goalId}`,
+  fetchMyOngoingGoal: `/goal/ongoing`,
 
   // Quiz
   fetchProgress: "/quiz/progresses",
   fetchQuiz: "/quiz/info",
+  fetchChildQuiz: (childId: number) => `/quiz/${childId}/progresses`,
+  investAccountRequest: "/quiz/investment-account/request",
 
   // Investments
   investmentsSummary: `/investments/summary`,
   investMyAccount: `/investments/account`,
   investDashboard: `/investments/dashboard`,
   investAccount: `/investments/account/check-account`,
-  stocks: `/investments/stocks`,
-  stockDetail: (code: string) => `/investments/stocks/${code}`,
-  portfolio: `/investments/portfolio`,
+  portfolioDates: "/investments/portfolio/dates",
   sellStock: `/investments/sellStock`,
   tradeBuy: `/investments/trade/buy`,
   tradeSell: `/investments/trade/sell`,
+  
 
   // Children / Account
   fetchChild: `/account/children`,
+
+  portfolio: `/investments/portfolio`,
+
+
+  stocks: `/investments/stocks`,
+  stocksBuy: `/investments/stocks/buy`,
+  stocksSell: `/investments/stocks/sell`,
+  stockDetail: (code: string) => `/investments/stocks/detail/${code}`,
+
   fetchMyHistory: "/account/history",
   fetchChildHistory: (childId: number) => `/account/${childId}/history`,
   fetchTransactionDetail: (transactionId: string) =>

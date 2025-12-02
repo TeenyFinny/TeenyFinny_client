@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/userStore";
+import { useSelectedChildStore } from "@/store/selectedChildStore";
 import { HttpError } from "@/types/axios/httpError.t";
 import ParentDashboard from "@/components/custom/home/parent-dashboard/ParentDashboard";
 import requests from "@/lib/axios/requests";
@@ -13,6 +14,7 @@ import ChildDashboard from "@/components/custom/home/child-dashboard/ChildDashbo
 import { useNotificationStore } from "@/store/notificationStore";
 import { PushNotification } from "@/components/ui/notice/PushNotification";
 import LoadingScreenSkeletonDashboard from "@/components/ui/LoadingScreenSkeletonDashboard";
+import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog";
 
 interface ParentDashboardState {
   balance: string;
@@ -41,6 +43,10 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+
+  // ⭐ 추가됨: requestCompleted true인 자녀 목록
+  const [completedChildren, setCompletedChildren] = useState<ChildDto[]>([]);
+  const [showCompletedModal, setShowCompletedModal] = useState(false);
   /**
    * message 변화 감지 → PushNotification 실행
    */
@@ -88,14 +94,14 @@ export default function Page() {
         // 자녀 목록 추출
         const children: ChildDto[] = Array.isArray(userPayload.children)
           ? userPayload.children.map((child) => ({
-              userId: Number(child.userId ?? 0),
-              name: child.name ?? "",
-              // 쉼표가 포함된 문자열일 경우 제거하여 숫자로 변환 가능하게 함
-              balance: String(child.balance ?? "0").replace(/,/g, ""),
-              gender: Number(child.gender ?? 1),
-            }))
+            userId: Number(child.userId ?? 0),
+            name: child.name ?? "",
+            // 쉼표가 포함된 문자열일 경우 제거하여 숫자로 변환 가능하게 함
+            balance: String(child.balance ?? "0").replace(/,/g, ""),
+            gender: Number(child.gender ?? 1),
+          }))
           : [];
-            console.log(children);
+        console.log(children);
         // Zustand 상태 갱신
         useUserStore
           .getState()
@@ -120,7 +126,11 @@ export default function Page() {
           });
           setChildData(null);
           setError(null);
+          // ⭐⭐ 부모일 때만 자녀 requestCompleted 조회 실행 ⭐⭐
+          // fetchCompletedChildren(children);
         } else if (normalizedRole === "child") {
+          // 자녀로 로그인 시 selectedChildStore 초기화
+          sessionStorage.removeItem('teenfinny-selected-child');
           setChildData(userPayload);
           setParentData(null);
           setError(null);
@@ -151,6 +161,43 @@ export default function Page() {
     return () => controller.abort();
   }, []);
 
+  // /**
+  //    * ⭐ requestCompleted 조회 함수
+  //    */
+  // const fetchCompletedChildren = async (children: ChildDto[]) => {
+  //   try {
+  //     const results = await Promise.all(
+  //       children.map(async (child) => {
+  //         try {
+  //           // 개별 요청 실패해도 전체 Promise.all 실패하지 않음
+  //           const res = await api.get(requests.fetchChildQuiz(child.userId));
+  //           console.log("응답", res.data);
+  //           return {
+  //             ...child,
+  //             requestCompleted: res.data.requestCompleted,
+  //           };
+  //         } catch (err) {
+  //           console.warn(`child ${child.userId} 조회 실패 (퀴즈 미생성일 수 있음)`, err);
+  //           return {
+  //             ...child,
+  //             requestCompleted: false, // 실패한 아이는 false로 처리
+  //           };
+  //         }
+  //       })
+  //     );
+
+  //     const completed = results.filter((child) => child.requestCompleted === true);
+
+  //     if (completed.length > 0) {
+  //       setCompletedChildren(completed);
+  //       setShowCompletedModal(true);
+  //     }
+  //   } catch (err) {
+  //     console.error("fetchCompletedChildren 전체 실패:", err);
+  //   }
+  // };
+
+
   // === 상태별 렌더링 분기 ===
   if (isLoading) {
     return (
@@ -180,6 +227,17 @@ export default function Page() {
         }}
         message={message ?? ""}
       />
+
+      {/* ⭐ requestCompleted 모달 표시
+      {showCompletedModal && (
+         <ConfirmationDialog
+        open={showCompletedModal}
+        onOpenChange={setShowCompletedModal}
+        title={`투자 계좌 개설 요청이 도착했어요!`}
+        description={`${completedChildren.map((c) => c.name).join(", ")}\n아이 관리 탭에서 계좌를 만들어주세요!`}
+        confirmText="확인"
+      />
+      )} */}
 
       {userType === "parent" && parentData ? (
         <div className="w-full bg-primary-4">

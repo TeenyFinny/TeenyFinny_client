@@ -4,6 +4,9 @@ import { NavigationBar } from "@/components/layout/bar/NavigationBar"
 import HeaderbarWrapper from "@/components/layout/headerbar/HeaderbarWrapper"
 import { useRequireAuth } from "@/hooks/useRequireAuth"
 import { useUserStore } from "@/store/userStore"
+import { useSse } from "@/hooks/useSse"
+import { PushNotification } from "@/components/ui/notice/PushNotification"
+import { useNotificationStore } from "@/store/notificationStore"
 import type React from "react"
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
@@ -14,11 +17,20 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   if (!isAuthenticated) {
     return null
   }
+  const { message, setMessage } = useNotificationStore()
+  useSse()
 
   return (
     // 전체를 중앙에 고정된 375×812 모바일 프레임으로
     <div className="flex justify-center bg-primary-4 min-h-screen">
       <div className="w-[375px] h-[812px] bg-primary-4 flex flex-col overflow-hidden">
+        <PushNotification
+          open={!!message}
+          setOpen={(open) => {
+            if (!open) setMessage(null)
+          }}
+          message={message || ""}
+        />
         {/* ✅ 상태바 */}
         <div className="h-[44px] w-full relative flex-shrink-0">
           <img src="/images/common/illust_common_status_bar.png" alt="status bar" className="w-full h-full object-cover" />

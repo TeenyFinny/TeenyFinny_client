@@ -9,6 +9,7 @@ import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 import { BottomSheetPassword } from "@/components/ui/bottom-sheet/BottomSheetPassword";
 import { useRouter } from "next/navigation";
+import { useSelectedChildStore } from "@/store/selectedChildStore";
 
 interface ChildrenCarouselProps {
   /** 표시할 자녀 계좌 목록 */
@@ -69,7 +70,7 @@ export default function ChildrenCarousel({
   const handlePasswordComplete = async (simplePassword: string) => {
     try {
       const res = await api.post(requests.simplePassword, {
-        password: simplePassword,
+        password: String(simplePassword),
       });
 
       if (res.data?.matched === true) {
@@ -228,9 +229,12 @@ export default function ChildrenCarousel({
 
               <button
                 className="mt-auto flex items-center justify-end gap-1"
-                onClick={() =>
-                  router.push(`/account?childId=${Number(item.userId)}`)
-                }
+                onClick={() => {
+                  // Store selected child info before navigation
+                  const { setChildBaseInfo } = useSelectedChildStore.getState();
+                  setChildBaseInfo(Number(item.userId), item.name);
+                  router.push(`/account`);
+                }}
               >
                 <span className="text-body-02 text-primary-1">
                   상세 내역 보기

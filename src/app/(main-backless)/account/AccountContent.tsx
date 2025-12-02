@@ -5,7 +5,7 @@ import { AccountCardDisabled } from "@/components/custom/account/AccountCardDisa
 import { CardDetail } from "@/components/custom/allowance/card/CardDetail";
 import { ChildrenBadge } from "@/components/ui/badge/ChildrenBadge";
 import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { DeleteConfirmDialog } from "@/components/ui/modal/DeleteConfirmDialog";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 import { useSelectedChildStore } from "@/store/selectedChildStore";
@@ -14,6 +14,7 @@ import { ApiResponse } from "@/types/axios/apiRes.t";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense, useCallback } from "react";
 import { ChildDto } from "@/types/home";
+import { AccountCard2 } from "@/components/custom/account/AccountCard2";
 
 type Accounts = {
   total: string | null;
@@ -41,7 +42,7 @@ const ACCOUNT_TYPES = {
 function AccountContentInner() {
   const router = useRouter();
   const { children, userType } = useUserStore();
-  const { setHistoryData, setInvestAccountExists, setChildBaseInfo } = useSelectedChildStore();
+  const { setHistoryData, setInvestAccountExists, setChildBaseInfo, selectedChildId } = useSelectedChildStore();
   const searchParams = useSearchParams();
 
   const [data, setData] = useState<ChildDto[] | null>(children ?? null);
@@ -58,6 +59,15 @@ function AccountContentInner() {
   const [isCardCreateOpen, setIsCardCreateOpen] = useState<boolean>(false);
   const [isInvestOpen, setIsInvestOpen] = useState<boolean>(false);
   const [isSavingOpen, setIsSavingOpen] = useState<boolean>(false);
+  const [isReportWarningOpen, setIsReportWarningOpen] = useState<boolean>(false);
+  const [showInvestCreateButton, setShowInvestCreateButton] = useState(false);
+  const handleReportClick = () => {
+    if (!accountData?.card?.hasCard) {
+      setIsReportWarningOpen(true);
+      return;
+    }
+    router.push(`/allowance/report`);
+  };
 
   const [cardOpen, setCardOpen] = useState(false);
   const [cardInfo, setCardInfo] = useState<CardInfo | null>(null);
@@ -82,14 +92,14 @@ function AccountContentInner() {
       const endpoint = requests.fetchTotalAccount(childId);
       const res = await api.get<ApiResponse<Accounts>>(endpoint);
       const accounts = res.data as Accounts;
-      
+
       // 서버에서 받은 데이터를 state에 설정 (-1은 null로 변환)
       setTotal(accounts.total);
       setAllowance(accounts.allowance === "-1" ? null : accounts.allowance);
       setInvest(accounts.invest === "-1" ? null : accounts.invest);
       setGoal(accounts.goal === "-1" ? null : accounts.goal);
       setInvestAccountExists(accounts.invest !== null && accounts.invest !== "-1");
-      
+
       setAccountData(accounts);
     } catch (e) {
       console.error(e);
@@ -101,6 +111,13 @@ function AccountContentInner() {
   }, [setInvestAccountExists]);
 
   const childHandler = (id: number) => {
+    // Find the child object to get the name
+    const child = data?.find((c) => c.userId === id);
+    if (!child) return;
+
+    // Update store with selected child info
+    setChildBaseInfo(id, child.name);
+
     if (currentChild === id) {
       // 이미 선택된 자녀를 다시 클릭하면 로딩 없이 백그라운드에서 갱신
       fetchAccountData(id, false);
@@ -120,8 +137,14 @@ function AccountContentInner() {
     // 현재 선택된 자녀 객체 찾기
     const currentChildObj = data?.find((c) => c.userId === currentChild);
     if (!currentChildObj) return; // 안전 체크
+    
+    // 투자 계좌 존재 여부 확인
+    const hasInvest = accountData?.invest !== "-1";
+    
     // store에 저장
     setChildBaseInfo(currentChildObj.userId, currentChildObj.name);
+    setInvestAccountExists(hasInvest);
+    
     router.push(`/account/auto-transfer`);
   };
 
@@ -146,13 +169,19 @@ function AccountContentInner() {
     })();
   };
 
-  const handleViewDetails = (accountType: string) => {
+  const handleViewDetails = async (accountType: string) => {
     if (accountType === ACCOUNT_TYPES.INVEST) {
       router.push("/invest/portfolios");
       return;
     }
     if (accountType === ACCOUNT_TYPES.GOAL) {
-      router.push("/goal");
+      try {
+        const res = await api.get(requests.fetchChildGoal(currentChild));
+        const goalId = res.data;
+        router.push(`/goal/${goalId}`);
+      } catch (e) {
+        console.error("Failed to fetch ongoing goal ID:", e);
+      }
       return;
     }
 
@@ -186,8 +215,25 @@ function AccountContentInner() {
     if (children && children.length > 0) setData(children);
   }, [children]);
 
+  useEffect(() => {
+    if (!data || data.length === 0 || currentChild === 0) return;
 
-  /** URL childId 우선 선택 → 없으면 첫 번째 아이 fallback */
+    const fetchRequestCompleted = async () => {
+      try {
+        const res = await api.get(requests.fetchChildQuiz(currentChild));
+        const completed = res.data.requestCompleted;
+        setShowInvestCreateButton(completed);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    fetchRequestCompleted();
+  }, [data, currentChild]);
+
+
+
+  /** URL childId 우선 선택 → 없으면 store의 selectedChildId → 없으면 첫 번째 아이 fallback */
   useEffect(() => {
     if (!data || data.length === 0) return;
 
@@ -197,13 +243,21 @@ function AccountContentInner() {
       data.some((c) => c.userId === presetChildId);
 
     if (isValidPreset) {
-      setCurrentChild(presetChildId);
+      const child = data.find((c) => c.userId === presetChildId);
+      if (child) {
+        setCurrentChild(presetChildId);
+        setChildBaseInfo(presetChildId, child.name);
+      }
+    } else if (selectedChildId && data.some((c) => c.userId === selectedChildId)) {
+      // URL 파라미터가 없으면 store에 저장된 selectedChildId 사용
+      setCurrentChild(selectedChildId);
     } else if (currentChild === 0) {
-      // 현재 선택된 자녀가 없고(0) 프리셋도 없으면 첫 번째 자녀 선택
+      // 현재 선택된 자녀가 없고(0) 프리셋/스토어 값도 없으면 첫 번째 자녀 선택
       setCurrentChild(data[0].userId);
+      setChildBaseInfo(data[0].userId, data[0].name);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [presetChildId, data]);
+  }, [presetChildId, data, selectedChildId]);
 
 
 
@@ -270,17 +324,37 @@ function AccountContentInner() {
           cvc={cardInfo?.cvc ?? ""}
         />
 
-        {(loading || invest) ? (
+        {/* 투자 계좌 카드 */}
+        {loading ? (
           <AccountCard
             accountName={ACCOUNT_TYPES.INVEST}
-            balance={loading ? "불러오는 중..." : invest!}
+            balance="불러오는 중..."
             onViewDetails={() => handleViewDetails(ACCOUNT_TYPES.INVEST)}
             onCardClick={() => null}
             isLoading={loading}
           />
+        ) : invest ? (
+          <AccountCard
+            accountName={ACCOUNT_TYPES.INVEST}
+            balance={invest}
+            onViewDetails={() => handleViewDetails(ACCOUNT_TYPES.INVEST)}
+          />
+        ) : showInvestCreateButton ? (
+          <AccountCard2
+            accountName={ACCOUNT_TYPES.INVEST}
+            balance="투자 계좌 개설 요청 중!"
+            onViewDetails={() => {
+              router.push(`/invest/create-invest-account`);
+            }}
+          />
         ) : (
-          <AccountCardDisabled accountName={ACCOUNT_TYPES.INVEST} onCardClick={() => setIsInvestOpen(true)} />
+          <AccountCardDisabled
+            accountName={ACCOUNT_TYPES.INVEST}
+            onCardClick={() => setIsInvestOpen(true)}
+          />
         )}
+
+
 
         {(loading || goal) ? (
           <AccountCard
@@ -294,9 +368,9 @@ function AccountContentInner() {
           <AccountCardDisabled accountName="목표 계좌" onCardClick={() => setIsSavingOpen(true)} />
         )}
 
-        <button 
-        onClick={() => router.push(`/allowance/report`)}
-        className="flex justify-start w-[335px] h-[48px] border border-monochrome-gray bg-neutral-7 rounded-4xl text-body-04 items-center mt-0">
+        <button
+          onClick={handleReportClick}
+          className="flex justify-start w-[335px] h-[48px] border border-monochrome-gray bg-neutral-7 rounded-4xl text-body-04 items-center mt-0">
           <img
             src="/images/account/illust_account_report.png"
             alt="리포트 아이콘"
@@ -307,66 +381,24 @@ function AccountContentInner() {
       </div>
 
       {/* 모달 */}
-      <Dialog open={isAllowanceCreateOpen} onOpenChange={setIsAllowanceCreateOpen}>
-        <DialogContent
-          className="w-[270px] p-0 gap-0 rounded-[14px] bg-white backdrop-blur-[27.1828px]"
-          showCloseButton={false}
-          onInteractOutside={(e) => e.preventDefault()}
-        >
-          <div className="flex flex-col justify-between items-start w-[270px]">
-            <div className="flex flex-col justify-between items-center w-[270px] pt-[24px] pb-[16px]">
-              <h2 className="text-head-06 text-neutral-1 text-center">용돈 계좌를 개설하시겠어요?</h2>
-            </div>
-            <div className="relative w-[270px] h-[44px]">
-              <div className="flex w-full h-[44px] border-t border-neutral-4">
-                <button
-                  onClick={() => setIsAllowanceCreateOpen(false)}
-                  className="flex-1 flex items-center justify-center h-full text-body-04 text-info text-center"
-                >
-                  취소
-                </button>
-                <div className="w-[1px] h-[16px] self-center bg-neutral-4" />
-                <button
-                  onClick={() => { setIsAllowanceCreateOpen(false); router.push(`/allowance/account/create`); }}
-                  className="flex-1 flex items-center justify-center h-full text-head-06 text-error text-center"
-                >
-                  확인
-                </button>
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-      <Dialog open={isCardCreateOpen} onOpenChange={setIsCardCreateOpen}>
-        <DialogContent
-          className="w-[270px] p-0 gap-0 rounded-[14px] bg-white backdrop-blur-[27.1828px]"
-          showCloseButton={false}
-          onInteractOutside={(e) => e.preventDefault()}
-        >
-          <div className="flex flex-col justify-between items-start w-[270px]">
-            <div className="flex flex-col justify-between items-center w-[270px] pt-[24px] pb-[16px]">
-              <h2 className="text-head-06 text-neutral-1 text-center">카드를 발급하시겠어요?</h2>
-            </div>
-            <div className="relative w-[270px] h-[44px]">
-              <div className="flex w-full h-[44px] border-t border-neutral-4">
-                <button
-                  onClick={() => setIsCardCreateOpen(false)}
-                  className="flex-1 flex items-center justify-center h-full text-body-04 text-info text-center"
-                >
-                  취소
-                </button>
-                <div className="w-[1px] h-[16px] self-center bg-neutral-4" />
-                <button
-                  onClick={() => { setIsCardCreateOpen(false); router.push(`/allowance/card/create`); }}
-                  className="flex-1 flex items-center justify-center h-full text-head-06 text-error text-center"
-                >
-                  확인
-                </button>
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <DeleteConfirmDialog
+        open={isAllowanceCreateOpen}
+        onOpenChange={setIsAllowanceCreateOpen}
+        title="용돈 계좌를 개설하시겠어요?"
+        description="계좌를 개설해서 자녀의 용돈 관리를 시작해요!"
+        ltBtnTxt="취소"
+        rtBtnTxt="확인"
+        onClickRtBtn={() => router.push(`/allowance/account/create`)}
+      />
+      <DeleteConfirmDialog
+        open={isCardCreateOpen}
+        onOpenChange={setIsCardCreateOpen}
+        title="카드를 발급하시겠어요?"
+        description="자녀의 카드를 발급해주세요!"
+        ltBtnTxt="취소"
+        rtBtnTxt="확인"
+        onClickRtBtn={() => router.push(`/allowance/card/create`)}
+      />
       <ConfirmationDialog
         open={isInvestOpen}
         onOpenChange={() => setIsInvestOpen(false)}
@@ -379,6 +411,13 @@ function AccountContentInner() {
         onOpenChange={() => setIsSavingOpen(false)}
         title="아직 목표 적금 계좌가 없어요!"
         description={`아이가 계좌 개설을 요청할 때까지 기다려주세요!`}
+        confirmText="확인"
+      />
+      <ConfirmationDialog
+        open={isReportWarningOpen}
+        onOpenChange={() => setIsReportWarningOpen(false)}
+        title="카드가 없어요!"
+        description="카드를 발급해야 확인할 수 있습니다."
         confirmText="확인"
       />
     </div>
@@ -398,4 +437,3 @@ export default function AccountContent() {
     </Suspense>
   );
 }
-

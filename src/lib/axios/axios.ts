@@ -98,7 +98,14 @@ const attemptTokenRefresh = async (
   try {
     // refresh token 요청 (현재 토큰으로 인증 필요)
     // refresh 요청은 인터셉터를 거치지 않도록 별도 axios 인스턴스 사용
-    const refreshResponse = await axios.get(requests.refresh, {
+    // baseURL에 이미 /channel이 포함되어 있는지 확인
+    const baseURL = process.env.NEXT_PUBLIC_BASE_URL || "";
+    const hasChannelInBaseURL = baseURL.includes("/channel");
+    const refreshUrl =
+      hasChannelInBaseURL || requests.refresh.startsWith("/channel")
+        ? requests.refresh
+        : `/channel${requests.refresh}`;
+    const refreshResponse = await axios.get(refreshUrl, {
       baseURL: process.env.NEXT_PUBLIC_BASE_URL,
       headers: {
         Authorization: getAuthorizationHeader() || "",
@@ -129,7 +136,7 @@ const attemptTokenRefresh = async (
 };
 
 /**
- * 요청 인터셉터: 모든 요청에 Authorization 헤더를 자동으로 주입합니다.
+ * 요청 인터셉터: 모든 요청에 Authorization 헤더를 자동으로 주입하고, /channel 프리픽스를 추가합니다.
  */
 api.interceptors.request.use((config) => {
   const authHeader = getAuthorizationHeader();
@@ -137,6 +144,20 @@ api.interceptors.request.use((config) => {
     config.headers = config.headers ?? {};
     config.headers.Authorization = authHeader;
   }
+
+  // baseURL에 이미 /channel이 포함되어 있는지 확인
+  const baseURL = config.baseURL || process.env.NEXT_PUBLIC_BASE_URL || "";
+  const hasChannelInBaseURL = baseURL.includes("/channel");
+
+  // baseURL에 /channel이 없고, URL도 /channel로 시작하지 않으면 프리픽스 추가
+  if (
+    config.url &&
+    !hasChannelInBaseURL &&
+    !config.url.startsWith("/channel")
+  ) {
+    config.url = `/channel${config.url}`;
+  }
+
   return config;
 });
 

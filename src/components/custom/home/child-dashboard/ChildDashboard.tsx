@@ -11,6 +11,7 @@ import { ApiResponse } from "@/types/axios/apiRes.t";
 import api from "@/lib/axios/axios";
 import { useRouter } from "next/navigation";
 import { CardDetail } from "../../allowance/card/CardDetail";
+import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog";
 
 type CardInfo = {
   hasCard: boolean;
@@ -32,6 +33,10 @@ export default function ChildDashboard() {
 
   const [cardOpen, setCardOpen] = useState(false);
   const [cardInfo, setCardInfo] = useState<CardInfo | null>(null);
+  const [isCardWaitingOpen, setIsCardWaitingOpen] = useState(false);
+  const [isReportWarningOpen, setIsReportWarningOpen] = useState(false); 
+  const [isGoalWaitingOpen, setIsGoalWaitingOpen] = useState(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,7 +67,8 @@ export default function ChildDashboard() {
    * @param {string} accountType - 클릭한 계좌 타입
    */
   const handleViewDetails = (accountType: string) => {
-    router.push(`/account/history?accountType=${accountType}`);
+    // TODO: 계좌 타입에 따라 다른 페이지로 이동
+    router.push(`/account/history`);
   };
 
   /**
@@ -78,7 +84,7 @@ export default function ChildDashboard() {
           setCardInfo(card);
           setCardOpen(true);
         } else {
-          router.push(`/allowance/card/create`);
+          setIsCardWaitingOpen(true);
         }
       } catch (e) {
         console.error(e);
@@ -89,6 +95,11 @@ export default function ChildDashboard() {
    * 리포트 페이지 이동 이벤트
    */
   const reportHandler = () => {
+    // 카드가 없으면 경고 모달 표시
+    if (!cardInfo?.hasCard) {
+      setIsReportWarningOpen(true);
+      return;
+    }
     router.push(`/allowance/report`);
   };
 
@@ -137,12 +148,37 @@ export default function ChildDashboard() {
         <AccountCard
           accountName="목표 적금"
           balance={user.savingBalance ?? "0"}
-          onViewDetails={() => {
+          onViewDetails={async () => {
             const savingBalance = user.savingBalance ?? "-1";
+            
             if (savingBalance === "-1") {
-              router.push("/goal/intro");
+              // 계좌가 아직 개설되지 않은 경우
+              try {
+                // Pending goal이 있는지 확인
+                const pendingRes = await api.get(`/goal/pending`);
+                
+                if (pendingRes.data && pendingRes.data.goalId) {
+                  // 자녀가 목표 설정했고 부모 승인 대기 중
+                  setIsGoalWaitingOpen(true);
+                } else {
+                  // 목표 설정 전 - intro 페이지로 이동
+                  router.push("/goal/intro");
+                }
+              } catch (e) {
+                console.error("Pending 목표 조회 실패:", e);
+                // API 실패 시 기본적으로 intro로 이동
+                router.push("/goal/intro");
+              }
             } else {
-              router.push("/goal");
+              // 계좌가 개설된 경우 - ongoing goal로 이동
+              try {
+                const res = await api.get(requests.fetchMyOngoingGoal);
+                const goalId = res.data;
+                router.push(`/goal/${goalId}`);
+              } catch (e) {
+                console.error("목표 ID 조회 실패:", e);
+                router.push("/home");
+              }
             }
           }}
           onCardClick={() => null}
@@ -161,6 +197,32 @@ export default function ChildDashboard() {
           />
           소비 리포트 보러가기
         </button>
+
+        {/* 카드 대기 모달 */}
+        <ConfirmationDialog
+          open={isCardWaitingOpen}
+          onOpenChange={() => setIsCardWaitingOpen(false)}
+          title="아직 카드가 없어요!"
+          description="부모가 카드를 발급해줄 때까지 기다려주세요!"
+          confirmText="확인"
+        />
+
+        {/* 리포트 접근 제한 모달 */}
+        <ConfirmationDialog
+          open={isReportWarningOpen}
+          onOpenChange={() => setIsReportWarningOpen(false)}
+          title="카드가 없어요!"
+          description="카드를 발급해야 확인할 수 있습니다."
+          confirmText="확인"
+        />
+        {/* 부모가 목표 통장 만들때까지 대기 모달 */}
+        <ConfirmationDialog
+          open={isGoalWaitingOpen}
+          onOpenChange={() => setIsGoalWaitingOpen(false)}
+          title="부모 승인 대기 중"
+          description="부모가 목표 통장 만들때까지 기다려주세요!"
+          confirmText="확인"
+        />
       </div>
     </div>
   );
