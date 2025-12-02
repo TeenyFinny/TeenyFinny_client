@@ -1,6 +1,5 @@
 "use client";
 
-import { DonutChart } from "@/components/ui/invest/DonutChart";
 import ChartSection from "./ChartSection";
 
 interface Props {
@@ -22,9 +21,11 @@ export default function SummaryCard({ loading, report, comparedTypeText, selecte
           {loading ? (
             <div className="h-[32px] w-[120px] bg-neutral-4 rounded animate-pulse mb-[12px]" />
           ) : (
-            <p className="text-head-01 text-neutral-1 mb-[12px] whitespace-nowrap">
-              {report?.totalAmount || "0"} 원
-            </p>
+            <div className="h-[32px] mb-[12px] flex items-center">
+              <p className="text-head-05 text-neutral-1 whitespace-nowrap">
+                {report?.totalAmount || "0"} 원
+              </p>
+            </div>
           )}
 
           <div className="pt-[21px] border-t border-neutral-4">
