@@ -109,7 +109,7 @@ export default function Page() {
           setChildData(null);
           setError(null);
           // ⭐⭐ 부모일 때만 자녀 requestCompleted 조회 실행 ⭐⭐
-          fetchCompletedChildren(children);
+          // fetchCompletedChildren(children);
         } else if (normalizedRole === "child") {
           // 자녀로 로그인 시 selectedChildStore 초기화
           sessionStorage.removeItem('teenfinny-selected-child');
@@ -143,41 +143,41 @@ export default function Page() {
     return () => controller.abort();
   }, []);
 
-  /**
-     * ⭐ requestCompleted 조회 함수
-     */
-  const fetchCompletedChildren = async (children: ChildDto[]) => {
-    try {
-      const results = await Promise.all(
-        children.map(async (child) => {
-          try {
-            // 개별 요청 실패해도 전체 Promise.all 실패하지 않음
-            const res = await api.get(requests.fetchChildQuiz(child.userId));
-            console.log("응답", res.data);
-            return {
-              ...child,
-              requestCompleted: res.data.requestCompleted,
-            };
-          } catch (err) {
-            console.warn(`child ${child.userId} 조회 실패 (퀴즈 미생성일 수 있음)`, err);
-            return {
-              ...child,
-              requestCompleted: false, // 실패한 아이는 false로 처리
-            };
-          }
-        })
-      );
+  // /**
+  //    * ⭐ requestCompleted 조회 함수
+  //    */
+  // const fetchCompletedChildren = async (children: ChildDto[]) => {
+  //   try {
+  //     const results = await Promise.all(
+  //       children.map(async (child) => {
+  //         try {
+  //           // 개별 요청 실패해도 전체 Promise.all 실패하지 않음
+  //           const res = await api.get(requests.fetchChildQuiz(child.userId));
+  //           console.log("응답", res.data);
+  //           return {
+  //             ...child,
+  //             requestCompleted: res.data.requestCompleted,
+  //           };
+  //         } catch (err) {
+  //           console.warn(`child ${child.userId} 조회 실패 (퀴즈 미생성일 수 있음)`, err);
+  //           return {
+  //             ...child,
+  //             requestCompleted: false, // 실패한 아이는 false로 처리
+  //           };
+  //         }
+  //       })
+  //     );
 
-      const completed = results.filter((child) => child.requestCompleted === true);
+  //     const completed = results.filter((child) => child.requestCompleted === true);
 
-      if (completed.length > 0) {
-        setCompletedChildren(completed);
-        setShowCompletedModal(true);
-      }
-    } catch (err) {
-      console.error("fetchCompletedChildren 전체 실패:", err);
-    }
-  };
+  //     if (completed.length > 0) {
+  //       setCompletedChildren(completed);
+  //       setShowCompletedModal(true);
+  //     }
+  //   } catch (err) {
+  //     console.error("fetchCompletedChildren 전체 실패:", err);
+  //   }
+  // };
 
 
   // === 상태별 렌더링 분기 ===
@@ -210,7 +210,7 @@ export default function Page() {
         message={message ?? ""}
       />
 
-      {/* ⭐ requestCompleted 모달 표시 */}
+      {/* ⭐ requestCompleted 모달 표시
       {showCompletedModal && (
          <ConfirmationDialog
         open={showCompletedModal}
@@ -219,7 +219,7 @@ export default function Page() {
         description={`${completedChildren.map((c) => c.name).join(", ")}\n아이 관리 탭에서 계좌를 만들어주세요!`}
         confirmText="확인"
       />
-      )}
+      )} */}
 
       {userType === "parent" && parentData ? (
         <div className="w-full bg-primary-4">

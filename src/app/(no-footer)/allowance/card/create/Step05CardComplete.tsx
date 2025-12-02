@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 export default function Step05CardComplete() {
   const router = useRouter();
   const handleClick = () => {
-    router.push("/home");
+    router.push("/account");
   }
   return (
     <div className="flex h-[712px] flex-col overflow-hidden bg-primary-4">
@@ -38,7 +38,7 @@ export default function Step05CardComplete() {
 
         {/* 버튼 */}
         <div className="fixed bottom-[56px] left-1/2 -translate-x-1/2 w-[327px]">
-          <BigButtonActivated label="홈으로 돌아가기" onClick={handleClick} />
+          <BigButtonActivated label="아이관리로 돌아가기" onClick={handleClick} />
         </div>
       </main>
     </div>
