@@ -31,8 +31,8 @@ interface VerificationFormProps {
  *
  * 본인인증 폼 공통 컴포넌트
  * - signup 모드: 회원가입 플로우에서 사용 (registerStore 사용)
- * - verify 모드: 본인인증 후 프로필 수정 (주민등록번호 + 인증번호)
- * - update 모드: 프로필 정보만 업데이트 (이름/전화번호만, 인증번호 없음)
+ * - verify 모드: 본인인증 후 넘어감 (알림 팝업 표시 없이 넘어감) (이름 + 전화번호 + 주민등록번호 + 인증번호)
+ * - update 모드: 모든 프로필 정보 입력 후 업데이트 (이름 + 전화번호 + 주민등록번호 + 인증번호)
  */
 export default function VerificationForm({
   mode,
@@ -207,20 +207,8 @@ export default function VerificationForm({
       onNext?.();
     } else if (mode === "verify") {
       if (!isOtpVerified) return;
-      // verify 모드: 본인인증 후 프로필 업데이트 API 호출
-      try {
-        await updateProfileInfo({
-          name: currentName,
-          phoneNumber: currentPhoneNumber,
-        });
-        setMessage("프로필 정보가 업데이트되었습니다.");
-        onSuccess?.();
-      } catch (error: any) {
-        console.error("프로필 업데이트 실패:", error);
-        setMessage(
-          error?.response?.data?.message || "프로필 업데이트에 실패했습니다."
-        );
-      }
+      // verify 모드: 본인인증만 하고 알림 없이 넘어감
+      onSuccess?.();
     } else if (mode === "update") {
       // update 모드: 인증번호 없이 바로 프로필 업데이트
       try {
