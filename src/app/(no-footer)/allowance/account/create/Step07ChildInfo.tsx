@@ -32,8 +32,8 @@ export default function Step07ChildInfoInput({
 }: {
   onNext: () => void;
 }) {
-  const { selectedChildId } = useSelectedChildStore();
-  const [childName, setChildName] = useState("");
+  const { selectedChildId, selectedChildName } = useSelectedChildStore();
+  const [childName, setChildName] = useState(selectedChildName || "");
   const [childPhone, setChildPhone] = useState("");
   const [birth, setBirth] = useState("");
   const [address, setAddress] = useState("");
@@ -102,14 +102,28 @@ export default function Step07ChildInfoInput({
     phoneError === "" &&
     birthError === "";
 
+  // 로딩 상태
+  const [isLoading, setIsLoading] = useState(false);
+  const [savedPassword, setSavedPassword] = useState<string>("");
+
   /** "모두 입력했어요" 버튼 클릭 시 바텀시트 열기 */
   const handleButtonClick = () => {
     setIsPasswordSheetOpen(true);
   };
 
-  /** 비밀번호 입력 완료 시 다음 단계 이동 */
+  /** 비밀번호 입력 완료 시 API 호출 */
   const handlePasswordComplete = async (password: string) => {
-    console.log(selectedChildId)
+    console.log(selectedChildId);
+    
+    // 비밀번호 저장
+    setSavedPassword(password);
+    
+    // 바텀시트 먼저 닫기
+    setIsPasswordSheetOpen(false);
+    
+    // 로딩 시작
+    setIsLoading(true);
+    
     try {
       const req = {
         childId: selectedChildId,
@@ -122,19 +136,21 @@ export default function Step07ChildInfoInput({
       };
 
       const res = await api.post(requests.submitChildInfo, req);
+      console.log("응답:", res);
 
-      if (res.status === 200) {
-        setIsPasswordSheetOpen(false);
-        console.log("개설완료")
-        onNext();
-      } else {
-        // 서버에서 인증 실패 응답을 받은 경우 에러를 발생시켜 비밀번호 재입력을 유도합니다.
-        throw new Error(res.data?.message);
+      // 실패 조건: 응답 body에 message 존재할 때만
+      if (res.data?.message) {
+        console.warn("에러 메시지 감지! → 비밀번호 재입력");
+        setIsPasswordSheetOpen(true);
+        return;
       }
-    } catch (err) {
+
+      // 이외에는 성공 처리
+      onNext();
+
+    } catch (err: any) {
       console.error("자녀 정보 제출 실패:", err);
-      // API 호출 실패 또는 인증 실패 시 BottomSheetPassword 컴포넌트의 에러 처리를 트리거하기 위해 에러를 다시 던집니다.
-      throw err;
+      setIsPasswordSheetOpen(true);
     }
   };
 
@@ -238,6 +254,7 @@ export default function Step07ChildInfoInput({
         onComplete={handlePasswordComplete}
         shouldOverlayBottomBar={true}
       />
+
     </div>
   );
 }

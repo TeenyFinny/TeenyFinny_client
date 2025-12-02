@@ -11,6 +11,7 @@ import { ApiResponse } from "@/types/axios/apiRes.t";
 import api from "@/lib/axios/axios";
 import { useRouter } from "next/navigation";
 import { CardDetail } from "../../allowance/card/CardDetail";
+import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog";
 
 type CardInfo = {
   hasCard: boolean;
@@ -32,6 +33,8 @@ export default function ChildDashboard() {
 
   const [cardOpen, setCardOpen] = useState(false);
   const [cardInfo, setCardInfo] = useState<CardInfo | null>(null);
+  const [isCardWaitingOpen, setIsCardWaitingOpen] = useState(false);
+  const [isReportWarningOpen, setIsReportWarningOpen] = useState(false); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,7 +65,8 @@ export default function ChildDashboard() {
    * @param {string} accountType - 클릭한 계좌 타입
    */
   const handleViewDetails = (accountType: string) => {
-    router.push(`/account/history?accountType=${accountType}`);
+    // TODO: 계좌 타입에 따라 다른 페이지로 이동
+    router.push(`/account/history`);
   };
 
   /**
@@ -78,7 +82,7 @@ export default function ChildDashboard() {
           setCardInfo(card);
           setCardOpen(true);
         } else {
-          router.push(`/allowance/card/create`);
+          setIsCardWaitingOpen(true);
         }
       } catch (e) {
         console.error(e);
@@ -89,6 +93,11 @@ export default function ChildDashboard() {
    * 리포트 페이지 이동 이벤트
    */
   const reportHandler = () => {
+    // 카드가 없으면 경고 모달 표시
+    if (!cardInfo?.hasCard) {
+      setIsReportWarningOpen(true);
+      return;
+    }
     router.push(`/allowance/report`);
   };
 
@@ -168,6 +177,24 @@ export default function ChildDashboard() {
           />
           소비 리포트 보러가기
         </button>
+
+        {/* 카드 대기 모달 */}
+        <ConfirmationDialog
+          open={isCardWaitingOpen}
+          onOpenChange={() => setIsCardWaitingOpen(false)}
+          title="아직 카드가 없어요!"
+          description="부모가 카드를 발급해줄 때까지 기다려주세요!"
+          confirmText="확인"
+        />
+
+        {/* 리포트 접근 제한 모달 */}
+        <ConfirmationDialog
+          open={isReportWarningOpen}
+          onOpenChange={() => setIsReportWarningOpen(false)}
+          title="카드가 없어요!"
+          description="카드를 발급해야 확인할 수 있습니다."
+          confirmText="확인"
+        />
       </div>
     </div>
   );

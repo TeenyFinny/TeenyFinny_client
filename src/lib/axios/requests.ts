@@ -47,7 +47,7 @@ const requests = {
     `/goal/child/${childId}/ongoing`,
   fetchChildPendingGoal: (childId: number | string) =>
     `/goal/child/${childId}/pending`,
-  fetchGoalConfirm: `/goal/account/create`,
+  fetchGoalConfirm: (goalId: number | string) => `/goal/account/create?goalId=${goalId}`,
   fetchMyOngoingGoal: `/goal/ongoing`,
 
   // Quiz
