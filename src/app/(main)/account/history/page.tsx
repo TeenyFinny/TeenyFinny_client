@@ -1,18 +1,19 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
-import Image from "next/image";
+import { useEffect, useState, Suspense, useMemo } from "react";
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 import { useUserStore } from "@/store/userStore";
 import { StateBadge } from "@/components/ui/badge/StateBadge";
 import { BottomSheetDetail } from "@/components/custom/account/BottomSheetDetail";
+import { BottomSheetHistoryFilter } from "@/components/custom/account/BottomSheetHistoryFilter";
 import { useSelectedChildStore } from "@/store/selectedChildStore";
 import { useSearchParams } from "next/navigation";
+import { Settings } from "lucide-react";
 
 interface Transaction {
   transactionId: string;
-  type: "deposit" | "withdrawal";
+  code: "DEPOSIT" | "WITHDRAW"; // 입금/출금 구분
   merchant: string;
   amount: string;
   balanceAfter: string;
@@ -23,7 +24,8 @@ interface DetailData {
   merchant: string;
   amount: string;
   date: string;
-  type: string;
+  code: string; // 입금/출금
+  type: string; // 결제 방식
   category: string;
   approveAmount: string;
   balanceAfter: string;
@@ -32,90 +34,123 @@ interface DetailData {
 function HistoryPageContent() {
   const { userType } = useUserStore();
   const searchParams = useSearchParams();
-  const type = searchParams.get("accountType");
 
-  /** Zustand 전역 State (완전 stateful) */
+  /** Zustand 전역 State */
   const {
     selectedChildId,
     selectedChildName,
     accountName,
     accountType,
     balance,
-    year,
-    month,
-    setHistoryData,
   } = useSelectedChildStore();
 
   /** 거래내역 */
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  /** 상세 시트 */
+  /** 필터 및 상세 시트 상태 */
+  const [filterOpen, setFilterOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<DetailData | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
 
-  /** yyyy-mm UI용 변수 */
-  const currentMonth = `${year}-${String(month).padStart(2, "0")}`;
+  /** 조회 기간 필터 (기본값: 3개월) */
+  const [timeRange, setTimeRange] = useState("3m");
+  const [customStartDate, setCustomStartDate] = useState<string | null>(null);
+  const [customEndDate, setCustomEndDate] = useState<string | null>(null);
+
+  /** 기간에 따른 시작일/종료일 계산 */
+  const { startDate, endDate } = useMemo(() => {
+    // Custom date range takes priority
+    if (customStartDate && customEndDate) {
+      return {
+        startDate: customStartDate,
+        endDate: customEndDate,
+      };
+    }
+
+    const end = new Date();
+    const start = new Date();
+
+    switch (timeRange) {
+      case "1m":
+        // 이번 달 (1일 ~ 현재)
+        start.setDate(1);
+        break;
+      case "3m":
+        // 3개월 전
+        start.setMonth(start.getMonth() - 3);
+        break;
+      case "6m":
+        // 6개월 전
+        start.setMonth(start.getMonth() - 6);
+        break;
+      case "1y":
+        // 1년 전
+        start.setFullYear(start.getFullYear() - 1);
+        break;
+      default:
+        start.setMonth(start.getMonth() - 3);
+    }
+
+    const formatDate = (date: Date) => {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    };
+
+    return {
+      startDate: formatDate(start),
+      endDate: formatDate(end),
+    };
+  }, [timeRange, customStartDate, customEndDate]);
 
   /* ----------------------------
-   *  월 이동 → Zustand 업데이트만 함
-   * ---------------------------- */
-  const goPrevMonth = () => {
-    const newMonth = month === 1 ? 12 : month - 1;
-    const newYear = month === 1 ? year - 1 : year;
-    setHistoryData({ year: newYear, month: newMonth });
-  };
-
-  const goNextMonth = () => {
-    const newMonth = month === 12 ? 1 : month + 1;
-    const newYear = month === 12 ? year + 1 : year;
-    setHistoryData({ year: newYear, month: newMonth });
-  };
-
-  /* ----------------------------
-   *  거래내역 API 호출 (완전 state 기반)
-   * ---------------------------- */
-  /* ----------------------------
-   *  거래내역 API 호출 (완전 state 기반)
+   *  거래내역 API 호출
    * ---------------------------- */
   useEffect(() => {
     if (!selectedChildId || !accountType) return;
 
     const fetchHistory = async () => {
+      setIsLoading(true);
       try {
         const isParent = userType === "parent";
         const url = isParent
           ? requests.fetchChildHistory(selectedChildId) // 부모 → /account/{childId}/history
           : requests.fetchMyHistory; // 자녀 → /account/history
+        
         const res = await api.get(url, {
           params: {
-            accountType: accountType.toUpperCase(),
-            year,
-            month,
+            startDate,
+            endDate,
           },
         });
 
+        console.log("Transaction API Response:", res.data);
         setTransactions(res.data);
       } catch (error) {
         console.error("거래 내역 조회 중 오류가 발생했습니다:", error);
-        setTransactions([]); // 오류 발생 시 목록을 비워 사용자에게 피드백
+        setTransactions([]);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchHistory();
-  }, [selectedChildId, accountType, year, month]);
+  }, [selectedChildId, accountType, startDate, endDate, userType]);
 
   /* ----------------------------
    *  상세 클릭 → API
    * ---------------------------- */
   const handleTransactionClick = async (t: Transaction) => {
     setSelectedId(t.transactionId);
+    setDetail(null); // 이전 데이터 초기화
     setSheetOpen(true);
     setLoadingDetail(true);
 
     try {
       const res = await api.get(requests.fetchTransactionDetail(t.transactionId));
-      console.log(res.data);
       setDetail(res.data);
     } finally {
       setLoadingDetail(false);
@@ -123,8 +158,36 @@ function HistoryPageContent() {
   };
 
   /* ----------------------------
-   *  JSX
+   *  필터 핸들러
    * ---------------------------- */
+  const handleSelectRange = (range: string) => {
+    setTimeRange(range);
+    setCustomStartDate(null);
+    setCustomEndDate(null);
+  };
+
+  const handleSelectCustom = (start: string, end: string) => {
+    setCustomStartDate(start);
+    setCustomEndDate(end);
+    setTimeRange("custom");
+  };
+
+  /* ----------------------------
+   *  기간 표시 텍스트
+   * ---------------------------- */
+  const rangeLabel = useMemo(() => {
+    if (customStartDate && customEndDate) {
+      return `${customStartDate} ~ ${customEndDate}`;
+    }
+    switch (timeRange) {
+      case "1m": return "이번 달";
+      case "3m": return "3개월";
+      case "6m": return "6개월";
+      case "1y": return "1년";
+      default: return "3개월";
+    }
+  }, [timeRange, customStartDate, customEndDate]);
+
   return (
     <div className="flex flex-col h-full">
       {/* 헤더 카드 */}
@@ -147,41 +210,25 @@ function HistoryPageContent() {
           <p className="text-account-title text-neutral-1">{balance} 원</p>
         </div>
 
-        {/* 월 선택 */}
-        <div className="mx-[20px] mt-[36px] flex justify-between items-center">
-          {month !== 1 ? (
-            <Image
-              src="/icons/arrow-left.png"
-              width={24}
-              height={24}
-              alt="prev"
-              onClick={goPrevMonth}
-              className="cursor-pointer"
-            />
-          ) : (
-            <div style={{ width: 24 }} />
-          )}
-
-          <span className="text-head-06 text-neutral-1">{currentMonth}</span>
-
-          {month !== 12 ? (
-            <Image
-              src="/icons/arrow-left.png"
-              width={24}
-              height={24}
-              alt="next"
-              className="rotate-180 cursor-pointer"
-              onClick={goNextMonth}
-            />
-          ) : (
-            <div style={{ width: 24 }} />
-          )}
+        {/* 필터 설정 영역 */}
+        <div className="mx-[20px] mt-[24px] flex justify-end items-center">
+          <button 
+            onClick={() => setFilterOpen(true)}
+            className="flex items-center gap-1 text-body-04 text-neutral-2"
+          >
+            <span>{rangeLabel}</span>
+            <Settings className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
       {/* 거래 리스트 */}
-      <div className="flex-1 overflow-y-auto px-[20px]">
-        {transactions.length > 0 ? (
+      <div className="flex-1 overflow-y-auto px-[20px] mt-[12px]">
+        {isLoading ? (
+          <div className="flex justify-center items-center py-10 text-body-04 text-neutral-2">
+            불러오는 중...
+          </div>
+        ) : transactions.length > 0 ? (
           transactions.map((t) => (
             <div
               key={t.transactionId}
@@ -191,7 +238,7 @@ function HistoryPageContent() {
               <div className="flex items-center gap-[12px]">
                 <div
                   className={`w-[12px] h-[12px] rounded-full ${
-                    t.type === "deposit" ? "bg-chart-3" : "bg-chart-10"
+                    t.code === "DEPOSIT" ? "bg-chart-3" : "bg-chart-10"
                   }`}
                 />
                 <div>
@@ -216,14 +263,23 @@ function HistoryPageContent() {
       </div>
 
       {/* 상세 바텀시트 */}
-      {sheetOpen && (
-        <BottomSheetDetail
-          open={sheetOpen}
-          setOpen={setSheetOpen}
-          detail={detail}
-          shouldOverlayBottomBar
-        />
-      )}
+      <BottomSheetDetail
+        open={sheetOpen}
+        setOpen={setSheetOpen}
+        detail={detail}
+        shouldOverlayBottomBar
+      />
+
+      {/* 필터 바텀시트 */}
+      <BottomSheetHistoryFilter
+        open={filterOpen}
+        setOpen={setFilterOpen}
+        selectedRange={timeRange}
+        customStartDate={customStartDate}
+        customEndDate={customEndDate}
+        onSelectRange={handleSelectRange}
+        onSelectCustom={handleSelectCustom}
+      />
     </div>
   );
 }
@@ -235,3 +291,4 @@ export default function Page() {
     </Suspense>
   );
 }
+

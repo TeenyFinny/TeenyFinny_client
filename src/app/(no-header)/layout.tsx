@@ -4,6 +4,7 @@
 import React from "react";
 import { useUserStore } from "@/store/userStore";
 import { NavigationBar } from "@/components/layout/bar/NavigationBar"
+import { useSse } from "@/hooks/useSse"
 
 export default function NoHeaderLayout({
   children,
@@ -11,6 +12,7 @@ export default function NoHeaderLayout({
   children: React.ReactNode;
 }) {
   const { userType } = useUserStore();
+  useSse(); // SSE 연결 활성화
 
   return (
     // 전체 화면: 상단 상태바 + 컨텐츠 + 하단 네비게이션

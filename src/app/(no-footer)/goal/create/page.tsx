@@ -6,6 +6,9 @@ import { NormalInput2 } from "@/components/ui/input/NormalInput2"
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled"
 import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog" // ✅ 모달 import
+import api from "@/lib/axios/axios"
+import requests from "@/lib/axios/requests"
+import { HttpError } from "@/types/axios/httpError.t"
 
 export default function GoalSettingPage() {
   const router = useRouter()
@@ -40,8 +43,33 @@ export default function GoalSettingPage() {
 
   // ✅ “확인” 버튼 클릭 시 페이지 이동
   const handleConfirm = () => {
+    // 
     router.push("/home")
   }
+
+  const handleSendRequest = async () => {
+    try {
+      const reqBody = {
+        name: goalName,
+        targetAmount: Number(totalAmount.replace(/,/g, "")),
+        monthlyAmount: Number(monthlyAmount.replace(/,/g, "")),
+        payDay: Number(payDay),
+      }
+
+      const res = await api.post(requests.createGoal, reqBody)
+
+      console.log("목표 생성 성공:", res.data)
+
+      // 모달 열기
+      setIsDialogOpen(true)
+
+    } catch (e) {
+      const err = e as HttpError
+      console.error("목표 생성 실패:", err)
+      alert(err.message || "목표 생성 중 문제가 발생했습니다.")
+    }
+  }
+
 
   return (
     <div className="flex h-[712px] flex-col bg-primary-4">
@@ -117,7 +145,7 @@ export default function GoalSettingPage() {
           {isAllFilled ? (
             <BigButtonActivated
               label="부모님께 허락 받기"
-              onClick={() => setIsDialogOpen(true)} // ✅ 모달 열기
+              onClick={() => handleSendRequest()} // ✅ 모달 열기
             />
           ) : (
             <BigButtonDisabled label="부모님께 허락 받기" onClick={() => { }} />

@@ -120,19 +120,19 @@ export function RatioSlider({
 
   return (
     <div className="w-[329px] h-[72px] space-y-4">
-      {/* 상단 레이블 영역: 투자/용돈 금액 표시 */}
+      {/* 상단 레이블 영역: 용돈/투자 금액 표시 */}
       <div className="flex items-center justify-between">
         <span>
-          <span className="text-body-06 text-error">투자 비율</span>
+          <span className="text-body-06 text-info">용돈 비율</span>
           <span className="text-body-08 text-neutral-4 ml-[5px]">
-            {formatAmount(investmentAmount)}
+            {formatAmount(allowanceAmount)}
           </span>
         </span>
         <span>
           <span className="text-body-08 text-neutral-4">
-            {formatAmount(allowanceAmount)}
+            {formatAmount(investmentAmount)}
           </span>
-          <span className="text-body-06 text-info ml-[5px]">용돈 비율</span>
+          <span className="text-body-06 text-error ml-[5px]">투자 비율</span>
         </span>
       </div>
 
@@ -142,6 +142,7 @@ export function RatioSlider({
           type="range"
           min="0"
           max="100"
+          step="10"
           value={clampedInvestmentRatio}
           onChange={handleSliderChange}
           disabled={disabled}
@@ -149,13 +150,13 @@ export function RatioSlider({
         />
       </div>
 
-      {/* 하단 퍼센트 표시 (투자/용돈 비율 %) */}
+      {/* 하단 퍼센트 표시 (용돈/투자 비율 %) */}
       <div className="flex items-center justify-between">
-        <span className="text-head-03 text-error font-bold whitespace-pre-line">
-          {clampedInvestmentRatio}%
-        </span>
         <span className="text-head-03 text-info font-bold whitespace-pre-line">
           {allowanceRatio}%
+        </span>
+        <span className="text-head-03 text-error font-bold whitespace-pre-line">
+          {clampedInvestmentRatio}%
         </span>
       </div>
     </div>

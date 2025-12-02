@@ -62,8 +62,9 @@ export default function StockTerms() {
 
     // 약관 HTML 로드 및 파싱
     useEffect(() => {
-        if (!openModalId) {
+        if (!openModalId || openModalId === "null") {
             setModalHtmlContent("");
+            setModalLoading(false);
             return;
         }
 

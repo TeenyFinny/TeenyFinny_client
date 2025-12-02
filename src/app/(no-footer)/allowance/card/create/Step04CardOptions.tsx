@@ -9,6 +9,7 @@ import { BottomSheetPassword } from "@/components/ui/bottom-sheet/BottomSheetPas
 import api from "@/lib/axios/axios";
 import requests from "@/lib/axios/requests";
 import { HttpError } from "@/types/axios/httpError.t";
+import { useSelectedChildStore } from "@/store/selectedChildStore";
 
 /**
  * Step04CardOptions
@@ -47,11 +48,10 @@ import { HttpError } from "@/types/axios/httpError.t";
 
 export default function Step04CardOptions({
   onNext,
-  childId,
 }: {
   onNext: () => void;
-  childId: number;
 }) {
+  const { selectedChildId } = useSelectedChildStore();
   const [selectedCard, setSelectedCard] = useState<"bear" | "rabbit">("bear");
   const [englishName, setEnglishName] = useState("");
   const [nameError, setNameError] = useState("");
@@ -85,22 +85,23 @@ const handlePasswordComplete = async (password: string) => {
 
     try {
       const res = await api.post(requests.submitCardInfo, {
-        childId,
+        childId: selectedChildId,
         cardType: selectedCard,
         englishName,
         transit: useTransitCard === "yes",
         password,
       });
 
-      const cardData = res.data?.data; // 👉 변경된 응답 적용
-
-      if (!cardData) {
-        throw new Error("카드 발급 요청 실패");
-      }
-
       // 카드 발급 성공 → 다음 단계로 이동
       onNext();
 
+      // 실패 조건: 응답 body에 message 존재할 때만
+      if (res?.data?.message) {
+        console.warn("에러 메시지 감지! → 비밀번호 재입력");
+        setIsPasswordSheetOpen(true);
+        return;
+      }
+      
     } catch (err) {
       if (err instanceof HttpError) {
         console.error("카드 발급 실패:", err.message);

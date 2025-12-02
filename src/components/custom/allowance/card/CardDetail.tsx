@@ -104,18 +104,6 @@ export function CardDetail({
     setDragStartY(0);
     setDragCurrentY(0);
   };
-
-  /** 수정 아이콘 클릭 → 수정 모드 진입 */
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
-
-  /** 수정 완료 처리 (Enter 또는 blur 시) */
-  const handleEditComplete = () => {
-    if (cardName.trim() === "") return;
-    setIsEditing(false);
-  };
-
   /** 드래그 시 바텀시트 이동 스타일 적용 */
   const sheetStyle = isDragging
     ? { transform: `translateY(${dragCurrentY}px)`, transition: "none" }
@@ -165,45 +153,14 @@ export function CardDetail({
           <div>
             {/* 카드 이름 라벨 + 수정 버튼 */}
             <div className="flex items-center gap-[4px] mt-[46px]">
-              <p className="text-body-04 text-neutral-3">카드 이름</p>
-              <button onClick={handleEditClick} aria-label="수정">
-                <Image
-                  src="/icons/edit-small.png"
-                  alt="수정"
-                  width={18}
-                  height={17}
-                  unoptimized
-                />
-              </button>
+              <p className="text-body-04 text-neutral-3">영문 이름</p>
             </div>
-
-            {/* 수정 모드 */}
-            {isEditing ? (
-              <>
-                <input
-                  type="text"
-                  value={cardName}
-                  onChange={(e) => setCardName(e.target.value)}
-                  onBlur={handleEditComplete}
-                  onKeyDown={(e) => e.key === "Enter" && handleEditComplete()}
-                  className="mt-[17px] text-head-08 text-neutral-1 bg-transparent outline-none w-full"
-                  autoFocus
-                />
-                {/* 기존 밑줄에 포커스 효과 추가 */}
-                <div
-                  className={`mt-[12px] border-b transition-colors duration-200 ${
-                    isEditing ? "border-primary-1" : "border-monochrome-gray"
-                  }`}
-                />
-              </>
-            ) : (
-              <>
-                <p className="text-head-08 text-neutral-1 mt-[17px]">
-                  {cardName}
-                </p>
-                <div className="mt-[12px] border-b border-monochrome-gray" />
-              </>
-            )}
+            <>
+              <p className="text-head-08 text-neutral-1 mt-[17px]">
+                {cardName}
+              </p>
+              <div className="mt-[12px] border-b border-monochrome-gray" />
+            </>
           </div>
 
           {/* 카드 번호 */}

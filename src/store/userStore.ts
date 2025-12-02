@@ -101,6 +101,8 @@ export const useUserStore = create<UserState>()(
        */
       clearUser: () => {
         clearAuthToken();
+        // Clear selectedChild store on logout
+        sessionStorage.removeItem('teenfinny-selected-child');
         set({
           userName: "",
           userId: null,

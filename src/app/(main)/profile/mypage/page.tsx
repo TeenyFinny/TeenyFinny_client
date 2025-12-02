@@ -32,12 +32,13 @@ export default function MyPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // userId가 없으면 API 호출하지 않음 (sessionStorage에서 복원 중일 수 있음)
+    if (!userId) return;
+
     const controller = new AbortController();
 
     const loadUser = async () => {
       try {
-        if (!userId) throw new Error("사용자 ID가 없습니다.");
-
         const data = await getProfileInfo(controller.signal);
 
         if (controller.signal.aborted) return;
@@ -62,6 +63,42 @@ export default function MyPage() {
   const handleChangeInfo = () => {
     router.push("/verify");
   };
+
+  // verify 페이지에서 돌아왔을 때 프로필 정보 다시 불러오기
+  useEffect(() => {
+    let controller: AbortController;
+
+    const handleFocus = () => {
+      if (userId) {
+        // 이전 요청이 있다면 취소
+        controller?.abort();
+
+        controller = new AbortController();
+        const { signal } = controller;
+
+        const loadUser = async () => {
+          try {
+            const data = await getProfileInfo(signal);
+            if (!signal.aborted) {
+              setProfileInfo(data);
+            }
+          } catch (err: any) {
+            if (!signal.aborted && process.env.NODE_ENV === "development") {
+              console.error("사용자 정보를 불러오지 못했습니다.", err);
+            }
+          }
+        };
+        loadUser();
+      }
+    };
+
+    window.addEventListener("focus", handleFocus);
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+      // 컴포넌트 언마운트 시 진행 중인 요청 취소
+      controller?.abort();
+    };
+  }, [userId]);
 
   return (
     <main className="px-6 overflow-y-auto">

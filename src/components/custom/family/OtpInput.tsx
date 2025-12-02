@@ -11,17 +11,20 @@ import { useState, useRef, useEffect } from "react";
  * @param value - 현재 입력된 OTP 값
  * @param onChange - OTP 값이 변경될 때 호출되는 콜백
  * @param error - 에러 상태 (true일 경우 입력 필드에 에러 스타일 적용)
+ * @param disabled - 비활성화 상태 (true일 경우 입력 불가)
  */
 type OtpInputProps = Readonly<{
   value: string;
   onChange: (value: string) => void;
   error?: boolean;
+  disabled?: boolean;
 }>;
 
 export default function OtpInput({
   value,
   onChange,
   error = false,
+  disabled = false,
 }: OtpInputProps) {
   const [digits, setDigits] = useState<string[]>(Array(6).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -39,6 +42,9 @@ export default function OtpInput({
    * 특정 인덱스의 숫자를 업데이트하고 다음 입력 필드로 포커스 이동
    */
   const handleChange = (index: number, newValue: string) => {
+    // 비활성화 상태면 입력 불가
+    if (disabled) return;
+
     // 숫자만 허용
     if (newValue && !/^\d$/.test(newValue)) return;
 
@@ -73,6 +79,12 @@ export default function OtpInput({
    * 붙여넣기 처리
    */
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    // 비활성화 상태면 붙여넣기 불가
+    if (disabled) {
+      e.preventDefault();
+      return;
+    }
+
     e.preventDefault();
     const pastedData = e.clipboardData.getData("text").slice(0, 6);
     const pastedDigits = pastedData
@@ -95,7 +107,7 @@ export default function OtpInput({
   };
 
   return (
-    <div className="flex justify-center items-center gap-[12px] mt-[4px] pb-[182px]">
+    <div className="flex justify-center items-center gap-[12px] mt-[4px]">
       {digits.map((digit, index) => (
         <input
           key={`otp-input-${index}`}
@@ -109,9 +121,12 @@ export default function OtpInput({
           onChange={(e) => handleChange(index, e.target.value)}
           onKeyDown={(e) => handleKeyDown(index, e)}
           onPaste={handlePaste}
+          disabled={disabled}
           className={`w-[37px] h-[70px] rounded-[10px] bg-monochrome-lightgray border ${
             error ? "border-error" : "border-monochrome-gray"
-          } flex items-center justify-center text-center text-head-00 text-neutral-1 focus:outline-none focus:ring-2 focus:ring-primary-1 shadow-[0_8px_24px_-6px_rgba(0,0,0,0.04)]`}
+          } flex items-center justify-center text-center text-head-00 text-neutral-1 focus:outline-none focus:ring-2 focus:ring-primary-1 shadow-[0_8px_24px_-6px_rgba(0,0,0,0.04)] ${
+            disabled ? "opacity-50 cursor-not-allowed" : ""
+          }`}
           aria-label={`OTP ${index + 1}번째 자리`}
         />
       ))}

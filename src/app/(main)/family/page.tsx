@@ -3,6 +3,7 @@
 
 import { useUserStore } from "@/store/userStore";
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
+import { BigButtonDisabled } from "@/components/ui/button/BigButtonDisabled";
 import ParentOtpSection from "@/components/custom/family/ParentOtpSection";
 import ChildOtpSection from "@/components/custom/family/ChildOtpSection";
 import { useParentOtp } from "./hooks/useParentOtp";
@@ -66,20 +67,37 @@ export default function FamilyPage() {
         </div>
 
         {isParent ? (
-          <ParentOtpSection otp={parent.otp} />
-        ) : (
-          <ChildOtpSection
-            value={child.value}
-            onChange={child.onChange}
-            error={child.inputError}
+          <ParentOtpSection
+            otp={parent.otp}
+            timeRemaining={parent.timeRemaining}
           />
+        ) : (
+          <>
+            <ChildOtpSection
+              value={child.value}
+              onChange={child.onChange}
+              error={child.inputError}
+              disabled={child.attemptCount >= child.maxAttempts}
+            />
+            <div className="mt-[12px] pb-[140px] flex justify-center">
+              <p className="text-body-06 text-neutral-3">
+                남은 시도 횟수:{" "}
+                <span className="text-error">{child.remainingAttempts}</span> /{" "}
+                <span className="text-neutral-1">{child.maxAttempts}</span>
+              </p>
+            </div>
+          </>
         )}
 
-        <div className="max-w-[327px]">
-          <BigButtonActivated
-            label={isChild && child.isSubmitting ? "인증 중..." : "확인"}
-            onClick={handleConfirm}
-          />
+        <div className="fixed bottom-[134px] w-full max-w-[327px]">
+          {isChild && child.attemptCount >= child.maxAttempts ? (
+            <BigButtonDisabled label="시도 횟수 초과" onClick={() => {}} />
+          ) : (
+            <BigButtonActivated
+              label={isChild && child.isSubmitting ? "인증 중..." : "확인"}
+              onClick={handleConfirm}
+            />
+          )}
         </div>
       </main>
       {/* 자녀 OTP 실패 모달 */}

@@ -10,6 +10,7 @@ import SummaryCard from "@/components/custom/allowance/report/SummaryCard";
 import { useUserStore } from "@/store/userStore";
 import CategoryList from "@/components/custom/allowance/report/CategoryList";
 import { useSelectedChildStore } from "@/store/selectedChildStore";
+import YearMonthSelector from "@/components/custom/allowance/report/YearMonthSelector";
 interface Category {
   category: string;
   amount: string;
@@ -24,22 +25,37 @@ interface ReportData {
 }
 export default function Page() {
   const now = new Date();
-  const [month, setMonth] = useState(now.getMonth());
-const router = useRouter();
+  
+  // Calculate previous month for initial state
+  let initialYear = now.getFullYear();
+  let initialMonth = now.getMonth(); // 0-based
+  
+  if (initialMonth === 0) {
+    // If current month is January, previous month is December of last year
+    initialYear = now.getFullYear() - 1;
+    initialMonth = 12;
+  }
+  // Otherwise initialMonth is already the previous month (e.g., December=11 means November)
+  
+  const [year, setYear] = useState(initialYear);
+  const [month, setMonth] = useState(initialMonth);
+  const router = useRouter();
   const [report, setReport] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
   const { selectedChildName, selectedChildId } = useSelectedChildStore();
   const { userType } = useUserStore();
   const isChild = userType === "child";
+
   const fetchUrl = isChild
     ? `/allowance/report`
     : `/allowance/${selectedChildId}/report`;
+console.log("selectedChildId", selectedChildId);
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
         const res = await api.get<ApiResponse<ReportData>>(fetchUrl, {
-          params: { month },
+          params: { year, month },
         });
         const data = res.data as ReportData;
         if (!data) throw new Error("No Report data found");
@@ -56,36 +72,34 @@ const router = useRouter();
         setLoading(false);
       }
     })();
-  }, [month, router]);
-  const prevMonth = () => setMonth((prev) => (prev === 1 ? 12 : prev - 1));
-  const nextMonth = () => setMonth((prev) => (prev === 12 ? 1 : prev + 1));
+  }, [year, month, router]);
+
+  const handleDateChange = (newYear: number, newMonth: number) => {
+    setYear(newYear);
+    setMonth(newMonth);
+    setReport(null); // Clear report data immediately when date changes
+  };
+
   const comparedTypeText =
     report?.comparedType === "more" ? "더 썼어요" : "아꼈어요";
+
   return (
     <div className="px-[27px] pb-[20px]">
       {/* ------ 상단 Header ------ */}
-      <div className="flex flex-col items-center gap-[8px] mt-[16px]">
-        <div className="flex items-center gap-[4px] text-head-01 text-neutral-1">
+      <div className="flex flex-col mt-[16px]">
+        <div className="flex items-center justify-between">
+          <YearMonthSelector
+            year={year}
+            month={month}
+            onChange={handleDateChange}
+          />
+          <span className="text-body-08 text-neutral-3">
+            * 최근 1년(12개월)만 조회 가능
+          </span>
+        </div>
+        <div className="flex items-center justify-center gap-[4px] text-head-01 text-neutral-1 mt-[12px]">
           <span>{selectedChildName}의</span>
-          {month > 1 ? (
-            <Triangle
-              size={17}
-              className="cursor-pointer text-neutral-2 fill-neutral-2 rotate-270"
-              onClick={prevMonth}
-            />
-          ) : (
-            <span className="w-[17px] h-[17px]" />
-          )}
           <span>{month}월</span>
-          {month < now.getMonth() ? (
-            <Triangle
-              size={17}
-              className="cursor-pointer text-neutral-2 fill-neutral-2 rotate-90"
-              onClick={nextMonth}
-            />
-          ) : (
-            <span className="w-[17px] h-[17px]" />
-          )}
           <span>소비리포트</span>
         </div>
       </div>
@@ -94,6 +108,7 @@ const router = useRouter();
         loading={loading}
         report={report}
         comparedTypeText={comparedTypeText}
+        selectedMonth={month}
       />
       {/* ------ 카테고리 리스트 ------ */}
       <CategoryList loading={loading} report={report} />
