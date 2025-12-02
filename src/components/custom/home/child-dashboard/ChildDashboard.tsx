@@ -35,6 +35,8 @@ export default function ChildDashboard() {
   const [cardInfo, setCardInfo] = useState<CardInfo | null>(null);
   const [isCardWaitingOpen, setIsCardWaitingOpen] = useState(false);
   const [isReportWarningOpen, setIsReportWarningOpen] = useState(false); 
+  const [isGoalWaitingOpen, setIsGoalWaitingOpen] = useState(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -148,16 +150,34 @@ export default function ChildDashboard() {
           balance={user.savingBalance ?? "0"}
           onViewDetails={async () => {
             const savingBalance = user.savingBalance ?? "-1";
+            
             if (savingBalance === "-1") {
-              router.push("/goal/intro");
+              // 계좌가 아직 개설되지 않은 경우
+              try {
+                // Pending goal이 있는지 확인
+                const pendingRes = await api.get(`/goal/pending`);
+                
+                if (pendingRes.data && pendingRes.data.goalId) {
+                  // 자녀가 목표 설정했고 부모 승인 대기 중
+                  setIsGoalWaitingOpen(true);
+                } else {
+                  // 목표 설정 전 - intro 페이지로 이동
+                  router.push("/goal/intro");
+                }
+              } catch (e) {
+                console.error("Pending 목표 조회 실패:", e);
+                // API 실패 시 기본적으로 intro로 이동
+                router.push("/goal/intro");
+              }
             } else {
+              // 계좌가 개설된 경우 - ongoing goal로 이동
               try {
                 const res = await api.get(requests.fetchMyOngoingGoal);
                 const goalId = res.data;
                 router.push(`/goal/${goalId}`);
               } catch (e) {
                 console.error("목표 ID 조회 실패:", e);
-                router.push("/home"); // Fallback
+                router.push("/home");
               }
             }
           }}
@@ -193,6 +213,14 @@ export default function ChildDashboard() {
           onOpenChange={() => setIsReportWarningOpen(false)}
           title="카드가 없어요!"
           description="카드를 발급해야 확인할 수 있습니다."
+          confirmText="확인"
+        />
+        {/* 부모가 목표 통장 만들때까지 대기 모달 */}
+        <ConfirmationDialog
+          open={isGoalWaitingOpen}
+          onOpenChange={() => setIsGoalWaitingOpen(false)}
+          title="부모 승인 대기 중"
+          description="부모가 목표 통장 만들때까지 기다려주세요!"
           confirmText="확인"
         />
       </div>
