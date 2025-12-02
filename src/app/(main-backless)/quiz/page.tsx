@@ -89,7 +89,7 @@ export default function Page() {
     카드 영역 (중앙 콘텐츠 - 출석 스탬프)
    =============================== */}
       <div className="relative w-[327px] mx-auto bg-neutral-7 rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col items-center justify-center pt-[40px] pb-[51px] mb-[32px]">
-        <p className="text-center text-primary-1 text-head-02 font-bold text-neutral-1 w-[231px] mt-5 mb-13">
+        <p className="text-center text-primary-1 text-head-00 font-bold text-neutral-1 w-[231px] mt-5 mb-13">
           퀴즈 {quizDate + 1}일차 도전 중!
         </p>
 
@@ -128,7 +128,7 @@ export default function Page() {
                             src="/images/saving/illust_saving_2.png"
                             alt={`도장 ${stampIndex + 1}`}
                             fill
-                            className="object-cover rounded-[6px] grayscale"
+                            className="object-cover rounded-[6px] grayscale opacity-30"
                           />
                         </div>
                       )}
@@ -141,9 +141,9 @@ export default function Page() {
           ))}
         </div>
 
-        <p className="whitespace-normal break-words text-center text-body-02 text-neutral-1 w-[270px] mt-16 mb-6">
+        <p className="whitespace-normal break-words text-center text-head-03 text-neutral-1 w-[290px] mt-16 mb-3">
           15일간의 퀴즈를 모두 풀면{" "}
-          <span className="text-primary-1 text-body-01 font-bold">주식 크레딧</span>
+          <span className="text-primary-1 text-head-02 font-bold">주식 크레딧</span>
           을<br /> 받고 투자 계좌를 만들 수 있어요!
         </p>
       </div>
