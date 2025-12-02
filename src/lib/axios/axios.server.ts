@@ -10,8 +10,16 @@ const axiosServer = axios.create({
 
 // 요청 인터셉터: 모든 요청에 /channel 프리픽스를 추가합니다.
 axiosServer.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  // URL이 /channel로 시작하지 않으면 프리픽스 추가
-  if (config.url && !config.url.startsWith('/channel')) {
+  // baseURL에 이미 /channel이 포함되어 있는지 확인
+  const baseURL = config.baseURL || process.env.NEXT_PUBLIC_BASE_URL || "";
+  const hasChannelInBaseURL = baseURL.includes("/channel");
+
+  // baseURL에 /channel이 없고, URL도 /channel로 시작하지 않으면 프리픽스 추가
+  if (
+    config.url &&
+    !hasChannelInBaseURL &&
+    !config.url.startsWith("/channel")
+  ) {
     config.url = `/channel${config.url}`;
   }
   return config;
