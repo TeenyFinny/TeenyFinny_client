@@ -86,14 +86,14 @@ export default function GoalSettingPage() {
         <div className="mt-10 space-y-6">
           <NormalInput2
             label="적금 이름을 지어주세요"
-            placeholder="현징이의 더현대 적금"
+            placeholder="예) 닌텐도 적금"
             value={goalName}
             onChange={setGoalName}
           />
 
           <NormalInput2
             label="총 얼마를 모을까요?"
-            placeholder="325,000"
+            placeholder="예) 100,000"
             value={totalAmount}
             onChange={(value) => {
               setTotalAmount(formatNumber(value))
@@ -104,7 +104,7 @@ export default function GoalSettingPage() {
 
           <NormalInput2
             label="한 달에 얼마를 모을까요?"
-            placeholder="10,000"
+            placeholder="예) 10,000"
             value={monthlyAmount}
             onChange={(value) => {
               setMonthlyAmount(formatNumber(value))
