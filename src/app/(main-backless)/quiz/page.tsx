@@ -90,7 +90,9 @@ export default function Page() {
    =============================== */}
       <div className="relative w-[327px] mx-auto bg-neutral-7 rounded-[16px] shadow-[0_16px_64px_-32px_rgba(0,0,0,0.16)] flex flex-col items-center justify-center pt-[40px] pb-[51px] mb-[32px]">
         <p className="text-center text-primary-1 text-head-00 font-bold text-neutral-1 w-[231px] mt-5 mb-13">
-          퀴즈 {quizDate + 1}일차 도전 중!
+          {todaySolved === 2
+            ? `퀴즈 ${quizDate}일차 도전 완료!`
+            : `퀴즈 ${quizDate + 1}일차 도전 중!`}
         </p>
 
         <div className="flex flex-col gap-4 justify-center items-center">
