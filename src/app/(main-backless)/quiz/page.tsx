@@ -97,7 +97,7 @@ export default function Page() {
 
         <div className="flex flex-col gap-4 justify-center items-center">
           {Array.from({ length: 3 }).map((_, rowIndex) => (
-            <div key={rowIndex} className="flex gap-4">
+            <div key={rowIndex} className="flex gap-4 mb-2">
               {Array.from({ length: 5 }).map((_, colIndex) => {
                 const stampIndex = rowIndex * 5 + colIndex
                 const isStamped = stampIndex < quizDate
@@ -143,7 +143,7 @@ export default function Page() {
           ))}
         </div>
 
-        <p className="whitespace-normal break-words text-center text-head-03 text-neutral-1 w-[290px] mt-16 mb-3">
+        <p className="whitespace-normal break-words text-center text-head-03 text-neutral-1 w-[290px] mt-10 mb-3">
           15일간의 퀴즈를 모두 풀면{" "}
           <span className="text-primary-1 text-head-02 font-bold">주식 크레딧</span>
           을<br /> 받고 투자 계좌를 만들 수 있어요!
