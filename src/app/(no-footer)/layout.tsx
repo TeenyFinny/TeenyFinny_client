@@ -1,21 +1,18 @@
-// app/(auth)/layout.tsx
-"use client";
+// app/(no-footer)/layout.tsx
+"use client"
 
-import HeaderbarWrapper from "@/components/layout/headerbar/HeaderbarWrapper";
-import { useUserStore } from "@/store/userStore";
-import { useSse } from "@/hooks/useSse";
-import { PushNotification } from "@/components/ui/notice/PushNotification";
-import { useNotificationStore } from "@/store/notificationStore";
-import React from "react";
+import HeaderbarWrapper from "@/components/layout/headerbar/HeaderbarWrapper"
+import { useUserStore } from "@/store/userStore"
+import { useSse } from "@/hooks/useSse"
+import { PushNotification } from "@/components/ui/notice/PushNotification"
+import { useNotificationStore } from "@/store/notificationStore"
+import { useRequireAuth } from "@/hooks/useRequireAuth"
+import React from "react"
 
-export default function MainLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const { userType } = useUserStore();
-  const { message, setMessage } = useNotificationStore();
-  useSse();
+export default function MainLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  useRequireAuth("/login") // 리다이렉트만 처리, 반환값은 사용하지 않음
+  const { message, setMessage } = useNotificationStore()
+  useSse()
 
   return (
     // 화면 전체를 '상태바 44px + 헤더 56px + 컨텐츠' 3행으로 분리
@@ -30,11 +27,7 @@ export default function MainLayout({
         />
         {/* Row 1: 상태바 */}
         <div className="w-full h-[44px] relative">
-          <img
-            src="/images/common/illust_common_status_bar.png"
-            alt="status bar"
-            className="w-full h-full object-cover"
-          />
+          <img src="/images/common/illust_common_status_bar.png" alt="status bar" className="w-full h-full object-cover" />
         </div>
 
         {/* Row 2: 헤더 */}
@@ -50,5 +43,5 @@ export default function MainLayout({
         </section>
       </div>
     </div>
-  );
+  )
 }

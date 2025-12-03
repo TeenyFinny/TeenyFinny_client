@@ -180,7 +180,7 @@ export default function StockTerms() {
                 {/* 안내 텍스트 */}
                 <div className="pt-0 pb-[26px] text-left">
                     <p className="text-body-06 text-neutral-2">
-                        미성년자는 투자계좌를 만들려면 부모님의 도움이 {"\n"}필요해요.
+                        미성년자는 투자계좌를 만들려면 <br /> 부모님의 도움이 필요해요.
                     </p>
                 </div>
 
