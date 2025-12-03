@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { CardDetail } from "../../allowance/card/CardDetail";
 import { ConfirmationDialog } from "@/components/ui/modal/ConfirmationDialog";
 import { AccountCardDisabled } from "../../account/AccountCardDisabled";
+import { DeleteConfirmDialog } from "@/components/ui/modal/DeleteConfirmDialog";
 
 type CardInfo = {
   hasCard: boolean;
@@ -36,6 +37,8 @@ export default function ChildDashboard() {
   const [isCardWaitingOpen, setIsCardWaitingOpen] = useState(false);
   const [isReportWarningOpen, setIsReportWarningOpen] = useState(false); 
   const [isGoalWaitingOpen, setIsGoalWaitingOpen] = useState(false);
+
+  const [isInvestDialogOpen, setIsInvestDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -118,7 +121,17 @@ export default function ChildDashboard() {
   };
 
   const handleViewInvest = () => {
-    router.push("/invest/portfolios");
+    console.log("clicked")
+    if(user.investmentBalance == "-1"){ // 투자 계좌가 없을 경우 퀴즈 풀기 모달
+      setIsInvestDialogOpen(true);
+    }
+    else{ // 계좌가 있을 경우 포트폴리오로 이동
+      router.push("/invest/portfolios");
+    }
+  };
+
+  const handleQuizConfirm = () => {
+    router.push("/quiz");
   };
 
   /**
@@ -176,11 +189,12 @@ export default function ChildDashboard() {
             accountName="투자 계좌"
             balance={user.investmentBalance ?? "0"}
             onCardClick={() => handleViewInvest()}
+            onViewDetails={() => handleViewInvest()}
           />
         ) : (
           <AccountCardDisabled
             accountName="투자 계좌"
-            onCardClick={()=>{}}
+            onCardClick={() => handleViewInvest()}
           />
         )}
 
@@ -236,6 +250,18 @@ export default function ChildDashboard() {
           title="부모 승인 대기 중"
           description="부모가 목표 통장 만들때까지 기다려주세요!"
           confirmText="확인"
+        />
+
+        {/* 투자 계좌 퀴즈 유도 모달 */}
+        <DeleteConfirmDialog
+          open={isInvestDialogOpen}
+          onOpenChange={setIsInvestDialogOpen}
+          title="금융 퀴즈를 풀면 계좌를 만들 수 있어요!"
+          description="퀴즈를 풀러 가볼까요?"
+          ltBtnTxt="네"
+          rtBtnTxt="아니요"
+          onClickLtBtn={handleQuizConfirm}
+          onClickRtBtn={() => setIsInvestDialogOpen(false)}
         />
       </div>
     </div>
