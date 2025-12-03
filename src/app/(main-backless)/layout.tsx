@@ -7,11 +7,21 @@ import { useUserStore } from "@/store/userStore"
 import { useSse } from "@/hooks/useSse"
 import { PushNotification } from "@/components/ui/notice/PushNotification"
 import { useNotificationStore } from "@/store/notificationStore"
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
 import type React from "react"
 
 export default function MainLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const router = useRouter()
   const { userType } = useUserStore()
   useRequireAuth("/login") // 리다이렉트만 처리, 반환값은 사용하지 않음
+
+  // ADMIN 계정은 일반 메인 레이아웃 접근 불가 → 관리자 페이지로 이동
+  useEffect(() => {
+    if (userType === "admin") {
+      router.replace("/admin")
+    }
+  }, [userType, router])
 
   const { message, setMessage } = useNotificationStore()
   useSse()

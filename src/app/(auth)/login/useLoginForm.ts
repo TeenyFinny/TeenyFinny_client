@@ -116,7 +116,7 @@ export function useLoginForm() {
       saveAuthToken(tokenType, accessToken);
 
       const role = user.role?.toLowerCase();
-      if (role !== "parent" && role !== "child") {
+      if (role !== "parent" && role !== "child" && role !== "admin") {
         if (process.env.NODE_ENV === "development") {
           console.error(
             "서버로부터 받은 사용자 역할이 유효하지 않습니다.",
@@ -132,7 +132,7 @@ export function useLoginForm() {
       // 상태 갱신 (Zustand)
       setUser(
         user.name,
-        user.role.toLowerCase() as "parent" | "child",
+        role as "parent" | "child" | "admin",
         user.userId,
         Array.isArray(user.children) && user.children.length > 0
       );
@@ -148,8 +148,12 @@ export function useLoginForm() {
         }
       }
 
-      // 로그인 성공 후 홈으로 이동
-      router.replace("/home");
+      // 역할별로 초기 진입 페이지 분기
+      if (role === "admin") {
+        router.replace("/admin");
+      } else {
+        router.replace("/home");
+      }
     } catch (err) {
       if (err instanceof HttpError) {
         setError(err.message || "로그인에 실패했습니다.");
