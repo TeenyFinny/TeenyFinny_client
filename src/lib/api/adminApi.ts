@@ -13,7 +13,7 @@ export interface AutoTransfer {
   memo: string;
   transferDay: number;
   nextTransferDay: string;
-  status: 'PROCESSING' | 'SUCCESS' | 'FAIL';
+  status: "PROCESSING" | "SUCCESS" | "FAIL";
   createdAt: string;
 }
 
@@ -55,13 +55,7 @@ export const getAutoTransferList = async (params: {
   page?: number;
   size?: number;
 }): Promise<PageResponse<AutoTransfer>> => {
-  /**
-   * ⚠️ 주의: `api` 래퍼는 런타임에서 `res.data`만 반환하지만,
-   * 타입 시그니처는 여전히 AxiosResponse 기반이라서 바로 캐스팅 시 TS 에러가 발생합니다.
-   * 따라서 `any`로 한 번 우회 캐스팅한 뒤, 해당 엔드포인트가
-   * Spring `Page<AdminAutoTransferRes>`를 그대로 반환한다고 가정하고 `PageResponse<AutoTransfer>`로 사용합니다.
-   */
-  const response = (await api.get('/admin/auto-transfer', {
+  const response = (await api.get("/admin/auto-transfer", {
     params,
   })) as any;
   return response as PageResponse<AutoTransfer>;
@@ -70,7 +64,9 @@ export const getAutoTransferList = async (params: {
 /**
  * 자동이체 수동 실행
  */
-export const executeAutoTransfer = async (autoTransferId: number): Promise<void> => {
+export const executeAutoTransfer = async (
+  autoTransferId: number
+): Promise<void> => {
   await api.post(`/admin/auto-transfer/${autoTransferId}/execute`);
 };
 
@@ -82,7 +78,7 @@ export const getFailedTransactions = async (params: {
   page?: number;
   size?: number;
 }): Promise<PageResponse<FailedTransaction>> => {
-  const response = (await api.get('/admin/transaction/failed', {
+  const response = (await api.get("/admin/transaction/failed", {
     params,
   })) as any;
   return response as PageResponse<FailedTransaction>;
