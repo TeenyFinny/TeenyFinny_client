@@ -150,13 +150,13 @@ api.interceptors.request.use((config) => {
   const hasChannelInBaseURL = baseURL.includes("/channel");
 
   // baseURL에 /channel이 없고, URL도 /channel로 시작하지 않으면 프리픽스 추가
-  if (
-    config.url &&
-    !hasChannelInBaseURL &&
-    !config.url.startsWith("/channel")
-  ) {
-    config.url = `/channel${config.url}`;
-  }
+  // if (
+  //   config.url &&
+  //   !hasChannelInBaseURL &&
+  //   !config.url.startsWith("/channel")
+  // ) {
+  //   config.url = `/channel${config.url}`;
+  // }
 
   return config;
 });
