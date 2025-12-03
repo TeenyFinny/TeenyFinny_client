@@ -100,10 +100,10 @@ export default function ChildDashboard() {
     if (savingBalance === "-1") {
       try {
         console.log("api 호출됨 : goal");
-        const pendingRes = await api.get(requests.fetchMyOngoingGoal);
-        router.push("/goal/intro");
-      } catch {
+        const pendingRes = await api.get(requests.fetchMyPendingGoal);
         setIsGoalWaitingOpen(true);
+      } catch {
+         router.push("/goal/intro");
       }
       return;
     }
