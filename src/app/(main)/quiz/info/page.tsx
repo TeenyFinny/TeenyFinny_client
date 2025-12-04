@@ -92,16 +92,25 @@ export default function Page() {
     const rightBadgeText = `${todaySolved + 1} / 2 문제`
   
     // **...** 패턴을 찾아 특정 스타일의 <span> 태그로 변환하는 함수
-    const renderWithHighlights = (line) => {
-      // 1. ** 와 ** 사이의 모든 문자열을 찾고, <span> 태그로 감싸줍니다.
-      const htmlString = line.replace(
-        /\*\*(.*?)\*\*/g, // 정규표현식: **(키워드)** 패턴
-        // 키워드에 적용할 강조 스타일: 굵게(font-extrabold) + 눈에 띄는 색상(예: text-yellow-500)
-        '<span class="text-head-03 font-bold text-neatural-1">$1</span>'
-      ); 
-      // 2. HTML 문자열을 렌더링하기 위해 dangerouslySetInnerHTML 사용
-      return <div dangerouslySetInnerHTML={{ __html: htmlString }} />;
-    };
+      const renderWithHighlights = (line) => {
+    // `**`로 감싸인 부분을 찾아 분리합니다.
+    const parts = line.split(/(\*\*.*?\*\*)/g);
+
+    return (
+      <>
+        {parts.map((part, index) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return (
+              <span key={index} className="text-head-03 font-bold text-neutral-1">
+                {part.slice(2, -2)}
+              </span>
+            );
+          }
+          return part;
+        })}
+      </>
+    );
+  };
   
     return (
       <main
@@ -154,9 +163,9 @@ export default function Page() {
                     className={`
                           text-left leading-snug tracking-wide break-all whitespace-normal
                           ${!isBody
-                        // ✅ 짝수 Index (제목): 큰 글씨, 두꺼운 볼드, 위 여백 추가
+                        // ✅ Index (제목): 큰 글씨, 두꺼운 볼드, 위 여백 추가
                         ? 'text-head-01 font-extrabold text-primary-1 mt-6'
-                        // ✅ 홀수 Index (설명): 일반 크기, 일반 볼드, 들여쓰기
+                        // ✅ Index (설명): 일반 크기, 일반 볼드, 들여쓰기
                         : 'text-body-04 font-medium text-neutral-1 indent-0'
                       }
                           mb-3 // 각 라인 아래 여백
