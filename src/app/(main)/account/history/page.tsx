@@ -32,7 +32,7 @@ interface DetailData {
 }
 
 function HistoryPageContent() {
-  const { userType } = useUserStore();
+  const { userType, userName } = useUserStore();
   const searchParams = useSearchParams();
 
   /** Zustand 전역 State */
@@ -128,7 +128,6 @@ function HistoryPageContent() {
           },
         });
 
-        console.log("Transaction API Response:", res.data);
         setTransactions(res.data);
       } catch (error) {
         console.error("거래 내역 조회 중 오류가 발생했습니다:", error);
@@ -195,7 +194,7 @@ function HistoryPageContent() {
         <div className="h-[130px] mx-[18px] p-[24px] rounded-[16px] bg-primary-1/12">
           <div className="flex justify-between mb-[10px]">
             <p className="text-body-05 text-neutral-3">
-              {selectedChildName}님의 {accountName}
+              {userType === "child" ? userName : selectedChildName}님의 {accountName}
             </p>
 
             {userType === "child" && (
