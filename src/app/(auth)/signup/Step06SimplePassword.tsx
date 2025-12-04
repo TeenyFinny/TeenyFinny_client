@@ -17,6 +17,7 @@ export default function Step06SimplePassword({
   const [isPasswordSheetOpen, setIsPasswordSheetOpen] = useState(false);
   const [isConfirmSheetOpen, setIsConfirmSheetOpen] = useState(false);
   const [isPasswordSet, setIsPasswordSet] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
 
   // 컴포넌트 마운트 시 첫 번째 바텀시트 자동 열기
   useEffect(() => {
@@ -39,7 +40,11 @@ export default function Step06SimplePassword({
 
     // 비밀번호 확인
     if (pin === password) {
-      onComplete(pin);
+      // 중복 실행 방지
+      if (!isCompleting) {
+        setIsCompleting(true);
+        onComplete(pin);
+      }
     } else {
       // 비밀번호가 일치하지 않으면 다시 첫 번째부터 시작
       setPassword("");
@@ -56,7 +61,11 @@ export default function Step06SimplePassword({
 
   const handleNext = () => {
     if (isValid) {
-      onComplete(password);
+      // 중복 실행 방지
+      if (!isCompleting) {
+        setIsCompleting(true);
+        onComplete(password);
+      }
     } else if (isPasswordSet) {
       setIsConfirmSheetOpen(true);
     } else {

@@ -11,7 +11,7 @@ import { clearAuthToken } from "@/lib/auth/token";
  * @typedef UserState
  * @property {string} userName - 사용자 표시 이름
  * @property {number | null} userId - 사용자 ID
- * @property {"parent" | "child"} userType - 사용자 유형
+ * @property {"parent" | "child" | "admin" | null} userType - 사용자 유형
  *   - parent : 부모 사용자
  *   - child  : 자녀 사용자
  *   - admin  : 관리자 계정
@@ -25,12 +25,12 @@ import { clearAuthToken } from "@/lib/auth/token";
 interface UserState {
   userName: string;
   userId: number | null;
-  userType: "parent" | "child" | null;
+  userType: "parent" | "child" | "admin" | null;
   hasChildren: boolean;
   children: ChildDto[];
   setUser: (
     userName: string,
-    userType: "parent" | "child" | null,
+    userType: "parent" | "child" | "admin" | null,
     userId?: number,
     hasChildren?: boolean,
     children?: ChildDto[]
@@ -63,7 +63,7 @@ export const useUserStore = create<UserState>()(
       /**
        * 사용자 정보를 통합 설정합니다.
        * @param {string} userName - 사용자 이름
-       * @param {"parent" | "child" | null} userType - 사용자 유형
+       * @param {"parent" | "child" | "admin" | null} userType - 사용자 유형
        * @param {number} [userId] - 사용자 ID (optional)
        * @param {boolean} [hasChildren=false] - 부모의 자녀 연결 여부 (optional)
        */

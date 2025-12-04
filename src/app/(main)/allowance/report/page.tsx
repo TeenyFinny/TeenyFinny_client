@@ -1,8 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Triangle } from "lucide-react";
 import api from "@/lib/axios/axios";
-import requests from "@/lib/axios/requests";
 import { useRouter } from "next/navigation";
 import { HttpError } from "@/types/axios/httpError.t";
 import { ApiResponse } from "@/types/axios/apiRes.t";
@@ -11,6 +9,7 @@ import { useUserStore } from "@/store/userStore";
 import CategoryList from "@/components/custom/allowance/report/CategoryList";
 import { useSelectedChildStore } from "@/store/selectedChildStore";
 import YearMonthSelector from "@/components/custom/allowance/report/YearMonthSelector";
+
 interface Category {
   category: string;
   amount: string;
@@ -43,7 +42,7 @@ export default function Page() {
   const [report, setReport] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
   const { selectedChildName, selectedChildId } = useSelectedChildStore();
-  const { userType } = useUserStore();
+  const { userType, userName } = useUserStore();
   const isChild = userType === "child";
 
   const fetchUrl = isChild
@@ -84,7 +83,7 @@ console.log("selectedChildId", selectedChildId);
     report?.comparedType === "more" ? "더 썼어요" : "아꼈어요";
 
   return (
-    <div className="px-[27px] pb-[20px]">
+    <div className="h-full overflow-y-auto [&::-webkit-scrollbar]:hidden px-[27px] pb-[20px]">
       {/* ------ 상단 Header ------ */}
       <div className="flex flex-col mt-[16px]">
         <div className="flex items-center justify-between">
@@ -97,8 +96,8 @@ console.log("selectedChildId", selectedChildId);
             * 최근 1년(12개월)만 조회 가능
           </span>
         </div>
-        <div className="flex items-center justify-center gap-[4px] text-head-01 text-neutral-1 mt-[12px]">
-          <span>{selectedChildName}의</span>
+        <div className="flex items-center justify-center gap-[4px] text-head-01 text-neutral-1 mt-[20px]">
+          <span>{isChild ? userName : selectedChildName}의</span>
           <span>{month}월</span>
           <span>소비리포트</span>
         </div>

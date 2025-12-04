@@ -33,9 +33,16 @@ export default function RegisterPage() {
   /** 모달 상태 */
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   /** 회원가입 POST 요청 */
   const handleSignup = async (simplePassword: string) => {
+    // 중복 실행 방지
+    if (isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
       // 카카오 회원가입 여부 확인
       const isKakaoSignup =
@@ -85,11 +92,11 @@ export default function RegisterPage() {
           birthDate: form.birthDate,
           gender: form.gender,
           phoneNumber: form.phoneNumber,
-        }
+        };
 
         // 회원가입 요청만 수행 (로그인은 완료 페이지에서 처리)
-        await api.post(requests.signup, payload)
-        res = null // 로그인 요청 제거
+        await api.post(requests.signup, payload);
+        res = null; // 로그인 요청 제거
       }
 
       // 완료 페이지로 이동하면서 이메일, 비밀번호, 역할 전달
@@ -120,7 +127,7 @@ export default function RegisterPage() {
             form.role
           );
         }
-        sessionStorage.removeItem("register-form-storage")
+        sessionStorage.removeItem("register-form-storage");
         reset();
         router.push("/signup/complete");
         return;
@@ -140,6 +147,7 @@ export default function RegisterPage() {
       }
       setModalMessage("서버 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.");
       setModalOpen(true);
+      setIsSubmitting(false);
     }
   };
 

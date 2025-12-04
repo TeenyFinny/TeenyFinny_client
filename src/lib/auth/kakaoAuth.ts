@@ -48,6 +48,11 @@ export function getKakaoAuthUrl(): string {
  * 카카오 인증 페이지로 리다이렉트됩니다.
  */
 export function startKakaoLogin(): void {
-  const kakaoAuthUrl = getKakaoAuthUrl();
-  window.location.href = kakaoAuthUrl;
+  try {
+    const kakaoAuthUrl = getKakaoAuthUrl();
+    window.location.href = kakaoAuthUrl;
+  } catch (error) {
+    console.error("카카오 로그인 시작 실패:", error);
+    alert(error instanceof Error ? error.message : "카카오 로그인을 시작할 수 없습니다.");
+  }
 }

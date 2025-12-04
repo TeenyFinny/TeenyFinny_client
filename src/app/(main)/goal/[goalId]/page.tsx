@@ -206,17 +206,23 @@ export default function SavingsDetailScreen() {
         </h2>
 
         <div>
-          {transactions
-            .slice()
-            .map((tx) => (
-              <TransactionHistory
-                key={tx.id}
-                transactionName={tx.type}
-                time={tx.date}
-                Price={tx.amount.toLocaleString()}
-                isDeposit={false}
-              />
-            ))}
+          {transactions.length === 0 ? (
+            <div className="text-center py-10 text-body-05 text-neutral-2">
+              거래 내역이 없습니다.
+            </div>
+          ) : (
+            transactions
+              .slice()
+              .map((tx) => (
+                <TransactionHistory
+                  key={tx.id}
+                  transactionName={tx.type}
+                  time={tx.date}
+                  Price={tx.amount.toLocaleString()}
+                  isDeposit={false}
+                />
+              ))
+          )}
         </div>
       </div>
     </div>

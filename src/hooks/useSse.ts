@@ -3,7 +3,7 @@ import { useNotificationStore } from "@/store/notificationStore";
 import { hasAuthToken, loadAuthToken } from "@/lib/auth/token";
 import { EventSourcePolyfill } from "event-source-polyfill";
 
-const SSE_URL = `${process.env.NEXT_PUBLIC_BASE_URL}/notifications/subscribe`;
+const SSE_URL = `${process.env.NEXT_PUBLIC_BASE_URL}/channel/notifications/subscribe`;
 
 export const useSse = () => {
   const { setMessage, setHasUnread } = useNotificationStore();

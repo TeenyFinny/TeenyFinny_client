@@ -89,7 +89,7 @@ function KakaoCallbackContent() {
 
           // 사용자 상태 저장
           const role = user.role?.toLowerCase();
-          if (role !== "parent" && role !== "child") {
+          if (role !== "parent" && role !== "child" && role !== "admin") {
             throw new HttpError({
               message: "잘못된 사용자 역할입니다.",
               statusCode: 500,
@@ -98,7 +98,7 @@ function KakaoCallbackContent() {
 
           setUser(
             user.name,
-            role as "parent" | "child",
+            role as "parent" | "child" | "admin",
             user.userId,
             Array.isArray(user.children) && user.children.length > 0
           );
@@ -114,15 +114,28 @@ function KakaoCallbackContent() {
             }
           }
 
-          // 홈으로 이동
-          router.replace("/home");
+          // 역할에 따른 리다이렉트
+          if (role === "admin") {
+            router.replace("/admin");
+          } else {
+            router.replace("/home");
+          }
         }
       } catch (err) {
         console.error("카카오 로그인 처리 실패:", err);
         if (err instanceof HttpError) {
-          setError(err.message || "로그인에 실패했습니다.");
+          const errorMessage = err.message || "로그인에 실패했습니다.";
+          setError(errorMessage);
+          console.error("HttpError 상세:", {
+            statusCode: err.statusCode,
+            message: err.message,
+            url: err.url,
+            method: err.method,
+          });
         } else {
-          setError("예기치 못한 오류가 발생했습니다.");
+          const errorMessage = err instanceof Error ? err.message : "예기치 못한 오류가 발생했습니다.";
+          setError(errorMessage);
+          console.error("알 수 없는 에러:", err);
         }
         setTimeout(() => router.push("/login"), 3000);
       }

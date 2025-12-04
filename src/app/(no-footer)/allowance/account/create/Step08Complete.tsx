@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated";
 import { useRouter } from "next/navigation";

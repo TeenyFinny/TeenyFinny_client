@@ -155,10 +155,7 @@ export default function StockTerms() {
             setQuizData({ requestCompleted: true });
 
             // // 3️⃣ (선택) 부모님 푸시 알림 보내기
-            // await api.post(requests.sendParentNotification(user_id), {
-            //     type: "account_request",
-            //     message: "자녀가 투자 계좌 생성을 요청했습니다.",
-            // });
+            await api.post(requests.investAccountRequest);
 
             // 4️⃣ 홈으로 이동
             router.push("/home");
@@ -183,7 +180,7 @@ export default function StockTerms() {
                 {/* 안내 텍스트 */}
                 <div className="pt-0 pb-[26px] text-left">
                     <p className="text-body-06 text-neutral-2">
-                        미성년자는 투자계좌를 만들려면 부모님의 도움이 {"\n"}필요해요.
+                        미성년자는 투자계좌를 만들려면 <br /> 부모님의 도움이 필요해요.
                     </p>
                 </div>
 

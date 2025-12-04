@@ -49,11 +49,13 @@ const requests = {
     `/goal/child/${childId}/pending`,
   fetchGoalConfirm: (goalId: number | string) => `/goal/account/create?goalId=${goalId}`,
   fetchMyOngoingGoal: `/goal/ongoing`,
+  fetchMyPendingGoal: `/goal/pending`,
 
   // Quiz
   fetchProgress: "/quiz/progresses",
   fetchQuiz: "/quiz/info",
   fetchChildQuiz: (childId: number) => `/quiz/${childId}/progresses`,
+  investAccountRequest: "/quiz/investment-account/request",
 
   // Investments
   investmentsSummary: `/investments/summary`,
@@ -78,6 +80,15 @@ const requests = {
 
   // Children / Account
   fetchChild: `/account/children`,
+
+  portfolio: `/investments/portfolio`,
+
+
+  stocks: `/investments/stocks`,
+  stocksBuy: `/investments/stocks/buy`,
+  stocksSell: `/investments/stocks/sell`,
+  stockDetail: (code: string) => `/investments/stocks/detail/${code}`,
+
   fetchMyHistory: "/account/history",
   fetchChildHistory: (childId: number) => `/account/${childId}/history`,
   fetchTransactionDetail: (transactionId: string) =>
