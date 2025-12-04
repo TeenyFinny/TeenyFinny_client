@@ -124,9 +124,18 @@ function KakaoCallbackContent() {
       } catch (err) {
         console.error("카카오 로그인 처리 실패:", err);
         if (err instanceof HttpError) {
-          setError(err.message || "로그인에 실패했습니다.");
+          const errorMessage = err.message || "로그인에 실패했습니다.";
+          setError(errorMessage);
+          console.error("HttpError 상세:", {
+            statusCode: err.statusCode,
+            message: err.message,
+            url: err.url,
+            method: err.method,
+          });
         } else {
-          setError("예기치 못한 오류가 발생했습니다.");
+          const errorMessage = err instanceof Error ? err.message : "예기치 못한 오류가 발생했습니다.";
+          setError(errorMessage);
+          console.error("알 수 없는 에러:", err);
         }
         setTimeout(() => router.push("/login"), 3000);
       }
