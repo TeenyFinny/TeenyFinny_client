@@ -89,7 +89,9 @@ export default function Page() {
         // role → userType 변환
         const rawRole = userPayload.role?.toLowerCase() ?? null;
         const normalizedRole =
-          rawRole === "parent" || rawRole === "child" ? rawRole : null;
+          rawRole === "parent" || rawRole === "child" || rawRole === "admin"
+            ? (rawRole as "parent" | "child" | "admin")
+            : null;
 
         // 자녀 목록 추출
         const children: ChildDto[] = Array.isArray(userPayload.children)

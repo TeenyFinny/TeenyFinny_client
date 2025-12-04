@@ -41,7 +41,7 @@ export default function Step01Checklist({ onNext }: Step01ChecklistProps) {
             알아서 준비해주는 서류
           </h2>
           <p className="text-body-07 text-neutral-1">
-            필요한 서류는 스크래핑을 통해 대부분에서 자동으로 발급해주니까, <span className="text-primary-1">부모님 본인 명의 휴대폰, 신분증</span>만 준비하면 빠른 개설이 가능해요
+            필요한 서류는 스크래핑을 통해 대부분에서 자동으로 발급해주니까, <span className="text-primary-1 text-body-01">부모님 본인 명의 휴대폰, 신분증</span>만 준비하면 빠른 개설이 가능해요
           </p>
         </div>
       </div>
