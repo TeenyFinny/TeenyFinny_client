@@ -97,7 +97,7 @@ const handlePasswordComplete = async (password: string) => {
 
       // 실패 조건: 응답 body에 message 존재할 때만
       if (res?.data?.message) {
-        console.warn("에러 메시지 감지! → 비밀번호 재입력");
+        console.error("에러 메시지 감지! → 비밀번호 재입력");
         setIsPasswordSheetOpen(true);
         return;
       }
