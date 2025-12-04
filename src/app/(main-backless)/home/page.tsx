@@ -56,6 +56,24 @@ export default function Page() {
     }
   }, [message]);
 
+  /** 브라우저 뒤로가기 차단 */
+  useEffect(() => {
+    // 히스토리에 현재 페이지를 추가하여 뒤로가기 시 같은 페이지에 머물도록 함
+    window.history.pushState(null, "", window.location.href);
+
+    const handlePopState = (event: PopStateEvent) => {
+      // 뒤로가기 시 다시 현재 페이지로 push
+      window.history.pushState(null, "", window.location.href);
+      event.preventDefault();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
   /** 사용자 정보 로드 */
   useEffect(() => {
     const controller = new AbortController();
@@ -71,7 +89,9 @@ export default function Page() {
         // role → userType 변환
         const rawRole = userPayload.role?.toLowerCase() ?? null;
         const normalizedRole =
-          rawRole === "parent" || rawRole === "child" ? rawRole : null;
+          rawRole === "parent" || rawRole === "child" || rawRole === "admin"
+            ? (rawRole as "parent" | "child" | "admin")
+            : null;
 
         // 자녀 목록 추출
         const children: ChildDto[] = Array.isArray(userPayload.children)

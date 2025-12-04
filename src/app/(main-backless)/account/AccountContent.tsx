@@ -203,8 +203,6 @@ function AccountContentInner() {
       accountName: accountType,
       accountType: typeMap[accountType],
       balance: balanceMap[accountType] ?? "0",
-      year: new Date().getFullYear(),
-      month: new Date().getMonth() + 1,
     });
 
     router.push("/account/history");

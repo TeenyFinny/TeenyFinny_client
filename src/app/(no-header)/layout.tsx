@@ -1,21 +1,30 @@
 // app/(no-header)/layout.tsx
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useUserStore } from "@/store/userStore";
 import { NavigationBar } from "@/components/layout/bar/NavigationBar"
 import { useSse } from "@/hooks/useSse"
 import { PushNotification } from "@/components/ui/notice/PushNotification";
 import { useNotificationStore } from "@/store/notificationStore";
+import { useRouter } from "next/navigation";
 
 export default function NoHeaderLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   const { userType } = useUserStore();
   const { message, setMessage } = useNotificationStore();
   useSse(); // SSE 연결 활성화
+
+  // ADMIN 계정은 이 레이아웃(퀴즈 등)에 접근 불가 → 관리자 페이지로 이동
+  useEffect(() => {
+    if (userType === "admin") {
+      router.replace("/admin");
+    }
+  }, [userType, router]);
 
   return (
     // 전체 화면: 상단 상태바 + 컨텐츠 + 하단 네비게이션
