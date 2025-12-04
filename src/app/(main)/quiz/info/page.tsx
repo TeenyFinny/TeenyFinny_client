@@ -92,7 +92,7 @@ export default function Page() {
     const rightBadgeText = `${todaySolved + 1} / 2 문제`
   
     // **...** 패턴을 찾아 특정 스타일의 <span> 태그로 변환하는 함수
-      const renderWithHighlights = (line) => {
+      const renderWithHighlights = (line: string) => {
     // `**`로 감싸인 부분을 찾아 분리합니다.
     const parts = line.split(/(\*\*.*?\*\*)/g);
 
