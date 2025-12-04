@@ -24,6 +24,7 @@ interface HoldingItem {
 interface InvestDashboardRes {
   userId: number;
   depositAmount: string;
+  totalAssetAmount: string;
   totEvluAmt: string;
   totalProfitAmount: string;
   totalProfitRate: number;
@@ -124,7 +125,7 @@ export default function Page() {
         {/* Current Amount */}
         <div>
           <p className="text-landing-01 text-neutral-1 leading-none tracking-tight">
-            {dashboardData.totEvluAmt} <span className="text-body-06">원</span>
+            {dashboardData.totalAssetAmount} <span className="text-body-06">원</span>
           </p>
         </div>
 
