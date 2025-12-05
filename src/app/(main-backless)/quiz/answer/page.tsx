@@ -147,7 +147,7 @@ export default function Page() {
         </div>
 
         {/* 하단 설명 텍스트 */}
-        <p className="absolute top-[387px] left-[45px] text-center text-head-02 font-bold text-primary-1 w-[237px] mb-13 leading-relaxed">
+        <p className="absolute top-[387px] left-[45px] text-center text-head-02 font-bold text-primary-1 w-[237px] mb-13 leading-relaxed whitespace-pre-line">
           {explanation}
         </p>
       </div>
