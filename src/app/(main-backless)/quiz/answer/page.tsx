@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import { useQuizStore } from "@/store/quizStore"
 import api from "@/lib/axios/axios"
 import requests from "@/lib/axios/requests"
+import LoadingScreenSkeletonQuiz from "@/components/ui/LoadingScreenSkeletonQuiz"
 
 /**
  * QuizAnswerPage
@@ -24,6 +25,8 @@ export default function Page() {
     todaySolved,
     explanation
   } = useQuizStore()
+
+  const [loading, setLoading] = useState(false)
 
   const EDUCATION_COURSE_LAST_DAY = 15 //교육과정의 마지막 일차
 
@@ -88,6 +91,8 @@ export default function Page() {
  */
   const handleCompleteQuiz = async () => {
     try {
+      setLoading(true) // 🔥 로딩 시작
+
       const updatedSolved = await updateTodaySolved(todaySolved)
 
       if (updatedSolved === 1) {
@@ -106,6 +111,11 @@ export default function Page() {
     } catch (err) {
       console.error("진행도 업데이트 실패:", err)
     }
+  }
+
+  // 🔥 로딩 중이면 스켈레톤 UI 표시
+  if (loading) {
+    return <LoadingScreenSkeletonQuiz />
   }
 
 
