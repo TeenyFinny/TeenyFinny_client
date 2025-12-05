@@ -6,13 +6,14 @@ import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 import { DeleteConfirmDialog } from "@/components/ui/modal/DeleteConfirmDialog"
 import api from "@/lib/axios/axios" // axios 인스턴스
 import requests from "@/lib/axios/requests" // API endpoint
+import LoadingScreenSkeletonDetail from "@/components/ui/LoadingScreenSkeletonDetail"
 
 export default function DeleteReconfirmationPage() {
     const router = useRouter()
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [courseCompleted, setCourseCompleted] = useState(false)
     const [loading, setLoading] = useState(true)
-    
+
 
     // 1️⃣ 마운트 시 quiz progress 조회
     useEffect(() => {
@@ -28,7 +29,7 @@ export default function DeleteReconfirmationPage() {
         })()
     }, [])
 
-    if (loading) return <div>로딩중...</div>
+    if (loading) return <LoadingScreenSkeletonDetail />
 
     // 2️⃣ 버튼 클릭 핸들러
     const handleConfirmClick = () => {
@@ -61,20 +62,30 @@ export default function DeleteReconfirmationPage() {
 
                 {/* 버튼 영역 */}
                 <div className="mt-[42px] flex gap-2.5 px-6">
-                    <DeleteConfirmDialog
-                        trigger={
-                            <BigButtonActivated
-                                label="투자 계좌 만들러 가기"
-                                onClick={handleConfirmClick}
-                            />
-                        }
-                        title={`금융 퀴즈를 풀면 계좌를 만들 수 있어요!`}
-                        description="퀴즈를 풀러 가볼까요?"
-                        ltBtnTxt="네"
-                        rtBtnTxt="아니요"
-                        onClickLtBtn={handleConfirm}
-                    />
+                    {courseCompleted ? (
+                        // 1️⃣ 이미 완료한 경우 → 모달 없이 바로 이동하는 버튼
+                        <BigButtonActivated
+                            label="투자 계좌 만들러 가기"
+                            onClick={() => router.push("/quiz/credit")}
+                        />
+                    ) : (
+                        // 2️⃣ 미완료 → 모달 필요
+                        <DeleteConfirmDialog
+                            trigger={
+                                <BigButtonActivated
+                                    label="투자 계좌 만들러 가기"
+                                    onClick={() => { }}  // ❌ 여기서 onClick 쓰면 안 됨
+                                />
+                            }
+                            title="금융 퀴즈를 풀면 계좌를 만들 수 있어요!"
+                            description="퀴즈를 풀러 가볼까요?"
+                            ltBtnTxt="아니요"
+                            rtBtnTxt="네"
+                            onClickRtBtn={() => router.push("/quiz")}
+                        />
+                    )}
                 </div>
+
             </main>
         </div>
     )

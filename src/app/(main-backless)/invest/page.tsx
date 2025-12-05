@@ -8,6 +8,7 @@ import { TradeHistory } from "@/components/ui/tx-history-ui/TradeHistory";
 import Move from "./Move";
 
 import { useUserStore } from "@/store/userStore";
+import LoadingScreenSkeletonDetail from "@/components/ui/LoadingScreenSkeletonDetail";
 
 interface HoldingItem {
   productCode: string;
@@ -93,9 +94,7 @@ export default function Page() {
 
   if (loading) {
     return (
-      <main className="min-h-screen flex justify-center items-center">
-        로딩중...
-      </main>
+      <LoadingScreenSkeletonDetail/>
     );
   }
 
