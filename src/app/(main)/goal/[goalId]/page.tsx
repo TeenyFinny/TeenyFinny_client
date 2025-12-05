@@ -1,121 +1,120 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useCallback } from "react"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { TransactionHistory } from "@/components/ui/tx-history-ui/TransactionHistory"
-import { useUserStore } from "@/store/userStore"
-import { useRouter, useParams } from "next/navigation"
-import api from "@/lib/axios/axios"
-import requests from "@/lib/axios/requests"
-import { HttpError } from "@/types/axios/httpError.t"
-import { useNotificationStore } from "@/store/notificationStore"
+import { useEffect, useState, useCallback } from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { TransactionHistory } from "@/components/ui/tx-history-ui/TransactionHistory";
+import { useUserStore } from "@/store/userStore";
+import { useRouter, useParams } from "next/navigation";
+import api from "@/lib/axios/axios";
+import requests from "@/lib/axios/requests";
+import { HttpError } from "@/types/axios/httpError.t";
+import { useNotificationStore } from "@/store/notificationStore";
 
 interface GoalSaving {
-  goalId: number
-  userId: number
-  name: string
-  targetAmount: string
-  currentAmount: string
-  period: number
-  progress: number
-  userName: string
-  depositAmount: string[]
-  depositDatetime: string[]
+  goalId: number;
+  userId: number;
+  name: string;
+  targetAmount: string;
+  currentAmount: string;
+  period: number;
+  progress: number;
+  userName: string;
+  depositAmount: string[];
+  depositDatetime: string[];
 }
 
 export default function SavingsDetailScreen() {
-  const router = useRouter()
-  const params = useParams()
-  const goalId = params.goalId as string
+  const router = useRouter();
+  const params = useParams();
+  const goalId = params.goalId as string;
 
-  const [goal, setGoal] = useState<GoalSaving | null>(null)
+  const [goal, setGoal] = useState<GoalSaving | null>(null);
   const [transactions, setTransactions] = useState<
     { id: string; type: string; amount: number; date: string }[]
-  >([])
+  >([]);
 
-  const userType = useUserStore((state) => state.userType)
-  const { message } = useNotificationStore()
+  const userType = useUserStore((state) => state.userType);
+  const { message } = useNotificationStore();
 
-  const handleDelete = () => router.push(`/goal/delete?goalId=${goalId}`)
-  const handleEdit = () => router.push(`/goal/edit?goalId=${goalId}`)
+  const handleDelete = () => router.push(`/goal/delete?goalId=${goalId}`);
+  const handleEdit = () => router.push(`/goal/edit?goalId=${goalId}`);
 
   // 목표 데이터를 불러오는 함수
   const fetchGoalData = useCallback(async () => {
     try {
-      const res = await api.get(requests.fetchGoal(goalId))
-      const data: GoalSaving = res.data
-      if (!data) throw new Error("데이터가 비어 있습니다.")
-      
-      setGoal(data)
+      const res = await api.get(requests.fetchGoal(goalId));
+      const data: GoalSaving = res.data;
+      if (!data) throw new Error("데이터가 비어 있습니다.");
+
+      setGoal(data);
 
       const tx = data.depositAmount.map((amount, idx) => ({
         id: String(idx + 1),
         type: `${data.userName} 입금`,
         amount: Number(amount.replace(/,/g, "")),
         date: data.depositDatetime[idx],
-      }))
-      setTransactions(tx)
+      }));
+      setTransactions(tx);
     } catch (e) {
-      const err = e as HttpError
-      console.error("[GOAL] 데이터 요청 실패:", err)
+      const err = e as HttpError;
+      console.error("[GOAL] 데이터 요청 실패:", err);
       if (err.statusCode === 403) {
-        alert(err.message)
-        router.push("/")
+        alert(err.message);
+        router.push("/");
       }
     }
-  }, [goalId, router])
+  }, [goalId, router]);
 
   // 초기 데이터 로드
   useEffect(() => {
-    const controller = new AbortController()
+    const controller = new AbortController();
 
-    ;(async () => {
+    (async () => {
       try {
         const res = await api.get(requests.fetchGoal(goalId), {
           signal: controller.signal,
-        })
+        });
 
-        const data: GoalSaving = res.data
-        if (!data) throw new Error("데이터가 비어 있습니다.")
-        setGoal(data)
+        const data: GoalSaving = res.data;
+        if (!data) throw new Error("데이터가 비어 있습니다.");
+        setGoal(data);
 
         const tx = data.depositAmount.map((amount, idx) => ({
           id: String(idx + 1),
           type: `${data.userName} 입금`,
           amount: Number(amount.replace(/,/g, "")),
           date: data.depositDatetime[idx],
-        }))
-        setTransactions(tx)
+        }));
+        setTransactions(tx);
       } catch (e) {
-        const err = e as HttpError
-        console.error("[GOAL] 데이터 요청 실패:", err)
+        const err = e as HttpError;
+        console.error("[GOAL] 데이터 요청 실패:", err);
         if (err.statusCode === 403) {
-          alert(err.message)
-          router.push("/")
+          alert(err.message);
+          router.push("/");
         }
       }
-    })()
+    })();
 
-    return () => controller.abort()
-  }, [router, goalId])
+    return () => controller.abort();
+  }, [router, goalId]);
 
   // 알림이 올 때 목표 데이터 자동 업데이트 (프로그레스 바 동기화)
   useEffect(() => {
-    if (!message) return // 알림이 없으면 스킵
+    if (!message) return; // 알림이 없으면 스킵
     // 목표 관련 알림인지 확인 (입금, 달성 등)
-    const isGoalRelated = 
-      message.includes("목표") || 
-      message.includes("입금") || 
-      message.includes("달성") ||
-      message.includes("적금")
+    const GOAL_RELATED_KEYWORDS = ["목표", "입금", "달성", "적금"];
+    const isGoalRelated = GOAL_RELATED_KEYWORDS.some((keyword) =>
+      message.includes(keyword)
+    );
     if (isGoalRelated) {
       // 알림과 동시에 프로그레스 바 업데이트
-      fetchGoalData()
+      fetchGoalData();
     }
-  }, [message, fetchGoalData])
-  
-  if (!goal) return <div className="text-center mt-10">로딩중...</div>
+  }, [message, fetchGoalData]);
+
+  if (!goal) return <div className="text-center mt-10">로딩중...</div>;
 
   return (
     <div className="w-[375px] mx-auto flex-1 flex flex-col">
@@ -282,5 +281,5 @@ export default function SavingsDetailScreen() {
         </div>
       )}
     </div>
-  )
+  );
 }
