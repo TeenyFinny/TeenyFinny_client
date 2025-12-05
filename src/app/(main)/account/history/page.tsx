@@ -194,7 +194,7 @@ function HistoryPageContent() {
         <div className="h-[130px] mx-[18px] p-[24px] rounded-[16px] bg-primary-1/12">
           <div className="flex justify-between mb-[10px]">
             <p className="text-body-05 text-neutral-3">
-              {userType === "child" ? userName : selectedChildName}님의 {accountName}
+              {userType === "child" ? userName : selectedChildName}님의 계좌
             </p>
           </div>
 

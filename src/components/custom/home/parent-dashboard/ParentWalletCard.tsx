@@ -24,7 +24,6 @@ export default function ParentWalletCard({ balance }: ParentWalletCardProps) {
         onClick={() => console.log("Navigate to parent wallet details")}
       >
         <span className="text-head-03 text-neutral-3">부모님의 지갑</span>
-        <ChevronRight className="size-5 text-neutral-3" />
       </button>
 
       {/* Divider */}
