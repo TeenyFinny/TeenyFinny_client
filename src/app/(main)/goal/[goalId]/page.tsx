@@ -102,21 +102,19 @@ export default function SavingsDetailScreen() {
 
   // 알림이 올 때 목표 데이터 자동 업데이트 (프로그레스 바 동기화)
   useEffect(() => {
-    if (!message || !goal) return // 알림이 없거나 목표 데이터가 없으면 스킵
-
+    if (!message) return // 알림이 없으면 스킵
     // 목표 관련 알림인지 확인 (입금, 달성 등)
     const isGoalRelated = 
       message.includes("목표") || 
       message.includes("입금") || 
       message.includes("달성") ||
       message.includes("적금")
-
     if (isGoalRelated) {
       // 알림과 동시에 프로그레스 바 업데이트
       fetchGoalData()
     }
-  }, [message, goal, fetchGoalData])
-
+  }, [message, fetchGoalData])
+  
   if (!goal) return <div className="text-center mt-10">로딩중...</div>
 
   return (

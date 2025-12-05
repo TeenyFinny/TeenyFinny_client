@@ -60,9 +60,9 @@ export const useSse = () => {
     /**
      * 2) 커스텀 'notification' 이벤트 (서버가 event: notification 을 쓰는 경우)
      */
-    eventSource.addEventListener("notification", (e: any) => {
+    eventSource.addEventListener("notification", (e: MessageEvent) => {
       try {
-        const data = JSON.parse(e.data);
+        const data = JSON.parse(e.data as string);
         if (!data?.content) return;
 
         // 알림 상태 업데이트
@@ -78,14 +78,11 @@ export const useSse = () => {
      * EventSourcePolyfill은 기본적으로 자동 재연결을 시도합니다.
      * 명시적으로 close()를 호출하면 재연결 메커니즘이 중단됩니다.
      */
-    eventSource.onerror = (e) => {
-      console.error(
-        "SSE Error detected. EventSource will attempt to reconnect.",
-        e
-      );
-
+    eventSource.onerror = (e: any) => {
+      console.error("SSE Error detected.", e);
       // 인증 오류(401) 등 치명적인 오류 발생 시에만 close() 처리 가능
-      if (e.status === 401) {
+      if (e && e.status === 401) {
+        console.log("인증 오류(401)로 인해 SSE 연결이 종료되었습니다.");
         eventSource.close();
       }
     };
