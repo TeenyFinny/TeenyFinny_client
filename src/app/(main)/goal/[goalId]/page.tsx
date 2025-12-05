@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { TransactionHistory } from "@/components/ui/tx-history-ui/TransactionHistory"
@@ -9,6 +9,7 @@ import { useRouter, useParams } from "next/navigation"
 import api from "@/lib/axios/axios"
 import requests from "@/lib/axios/requests"
 import { HttpError } from "@/types/axios/httpError.t"
+import { useNotificationStore } from "@/store/notificationStore"
 
 interface GoalSaving {
   goalId: number
@@ -34,42 +35,87 @@ export default function SavingsDetailScreen() {
   >([])
 
   const userType = useUserStore((state) => state.userType)
+  const { message } = useNotificationStore()
 
   const handleDelete = () => router.push(`/goal/delete?goalId=${goalId}`)
   const handleEdit = () => router.push(`/goal/edit?goalId=${goalId}`)
 
+  // 목표 데이터를 불러오는 함수
+  const fetchGoalData = useCallback(async () => {
+    try {
+      const res = await api.get(requests.fetchGoal(goalId))
+      const data: GoalSaving = res.data
+      if (!data) throw new Error("데이터가 비어 있습니다.")
+      
+      setGoal(data)
+
+      const tx = data.depositAmount.map((amount, idx) => ({
+        id: String(idx + 1),
+        type: `${data.userName} 입금`,
+        amount: Number(amount.replace(/,/g, "")),
+        date: data.depositDatetime[idx],
+      }))
+      setTransactions(tx)
+    } catch (e) {
+      const err = e as HttpError
+      console.error("[GOAL] 데이터 요청 실패:", err)
+      if (err.statusCode === 403) {
+        alert(err.message)
+        router.push("/")
+      }
+    }
+  }, [goalId, router])
+
+  // 초기 데이터 로드
   useEffect(() => {
     const controller = new AbortController()
 
-      ; (async () => {
-        try {
-          const res = await api.get(requests.fetchGoal(goalId), {
-            signal: controller.signal,
-          })
+    ;(async () => {
+      try {
+        const res = await api.get(requests.fetchGoal(goalId), {
+          signal: controller.signal,
+        })
 
-          const data: GoalSaving = res.data
-          if (!data) throw new Error("데이터가 비어 있습니다.")
-          setGoal(data)
+        const data: GoalSaving = res.data
+        if (!data) throw new Error("데이터가 비어 있습니다.")
+        setGoal(data)
 
-          const tx = data.depositAmount.map((amount, idx) => ({
-            id: String(idx + 1),
-            type: `${data.userName} 입금`,
-            amount: Number(amount.replace(/,/g, "")),
-            date: data.depositDatetime[idx],
-          }))
-          setTransactions(tx)
-        } catch (e) {
-          const err = e as HttpError
-          console.error("[GOAL] 데이터 요청 실패:", err)
-          if (err.statusCode === 403) {
-            alert(err.message)
-            router.push("/")
-          }
+        const tx = data.depositAmount.map((amount, idx) => ({
+          id: String(idx + 1),
+          type: `${data.userName} 입금`,
+          amount: Number(amount.replace(/,/g, "")),
+          date: data.depositDatetime[idx],
+        }))
+        setTransactions(tx)
+      } catch (e) {
+        const err = e as HttpError
+        console.error("[GOAL] 데이터 요청 실패:", err)
+        if (err.statusCode === 403) {
+          alert(err.message)
+          router.push("/")
         }
-      })()
+      }
+    })()
 
     return () => controller.abort()
   }, [router, goalId])
+
+  // 알림이 올 때 목표 데이터 자동 업데이트 (프로그레스 바 동기화)
+  useEffect(() => {
+    if (!message || !goal) return // 알림이 없거나 목표 데이터가 없으면 스킵
+
+    // 목표 관련 알림인지 확인 (입금, 달성 등)
+    const isGoalRelated = 
+      message.includes("목표") || 
+      message.includes("입금") || 
+      message.includes("달성") ||
+      message.includes("적금")
+
+    if (isGoalRelated) {
+      // 알림과 동시에 프로그레스 바 업데이트
+      fetchGoalData()
+    }
+  }, [message, goal, fetchGoalData])
 
   if (!goal) return <div className="text-center mt-10">로딩중...</div>
 
@@ -225,6 +271,18 @@ export default function SavingsDetailScreen() {
           )}
         </div>
       </div>
+
+      {/* 진행률 100%인 자녀 계정일 때: 축하 화면으로 이동하는 버튼 */}
+      {userType === "child" && goal.progress >= 100 && (
+        <div className="w-full px-6 pb-6 mt-4">
+          <Button
+            className="w-full"
+            onClick={() => router.push("/goal/achieve")}
+          >
+            목표 달성 알림 보내기
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
