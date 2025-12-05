@@ -70,9 +70,9 @@ export default function DeleteReconfirmationPage() {
                         }
                         title={`금융 퀴즈를 풀면 계좌를 만들 수 있어요!`}
                         description="퀴즈를 풀러 가볼까요?"
-                        ltBtnTxt="네"
-                        rtBtnTxt="아니요"
-                        onClickLtBtn={handleConfirm}
+                        ltBtnTxt="아니요"
+                        rtBtnTxt="네"
+                        onClickRtBtn={handleConfirm}
                     />
                 </div>
             </main>
