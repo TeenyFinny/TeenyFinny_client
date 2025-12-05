@@ -1,6 +1,5 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
 import { MiddleButtonActivated } from "@/components/ui/button/MiddleButtonActivated";
 
 interface ParentWalletCardProps {
