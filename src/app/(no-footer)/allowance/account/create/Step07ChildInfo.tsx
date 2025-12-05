@@ -113,8 +113,6 @@ export default function Step07ChildInfoInput({
 
   /** 비밀번호 입력 완료 시 API 호출 */
   const handlePasswordComplete = async (password: string) => {
-    console.log(selectedChildId);
-    
     // 비밀번호 저장
     setSavedPassword(password);
     
@@ -136,11 +134,10 @@ export default function Step07ChildInfoInput({
       };
 
       const res = await api.post(requests.submitChildInfo, req);
-      console.log("응답:", res);
 
       // 실패 조건: 응답 body에 message 존재할 때만
       if (res.data?.message) {
-        console.warn("에러 메시지 감지! → 비밀번호 재입력");
+        console.error("에러 메시지 감지! → 비밀번호 재입력");
         setIsPasswordSheetOpen(true);
         return;
       }

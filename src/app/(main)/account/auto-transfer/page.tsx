@@ -131,7 +131,6 @@ export default function Page() {
           transferDate: date,
           ratio: investmentRatio,
         });
-        console.log("create request");
       } else {
         await api.put(
           requests.fetchAutoTransferById(Number(selectedChildId)),
@@ -142,7 +141,6 @@ export default function Page() {
             ratio: investmentRatio,
           }
         );
-        console.log("update request");
       }
 
       await fetchAutoTransferData();

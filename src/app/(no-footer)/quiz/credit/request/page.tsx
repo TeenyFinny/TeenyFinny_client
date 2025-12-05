@@ -161,7 +161,7 @@ export default function StockTerms() {
             router.push("/home");
         } catch (err) {
             console.error("투자계좌 요청 실패:", err);
-            alert("요청 중 오류가 발생했습니다. 다시 시도해주세요.");
+            //alert("요청 중 오류가 발생했습니다. 다시 시도해주세요.");
         }
     };
 
