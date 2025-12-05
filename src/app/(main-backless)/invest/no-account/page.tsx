@@ -6,6 +6,7 @@ import { BigButtonActivated } from "@/components/ui/button/BigButtonActivated"
 import { DeleteConfirmDialog } from "@/components/ui/modal/DeleteConfirmDialog"
 import api from "@/lib/axios/axios" // axios 인스턴스
 import requests from "@/lib/axios/requests" // API endpoint
+import LoadingScreenSkeletonDetail from "@/components/ui/LoadingScreenSkeletonDetail"
 
 export default function DeleteReconfirmationPage() {
     const router = useRouter()
@@ -28,7 +29,7 @@ export default function DeleteReconfirmationPage() {
         })()
     }, [])
 
-    if (loading) return <div>로딩중...</div>
+    if (loading) return <LoadingScreenSkeletonDetail/>
 
     // 2️⃣ 버튼 클릭 핸들러
     const handleConfirmClick = () => {
