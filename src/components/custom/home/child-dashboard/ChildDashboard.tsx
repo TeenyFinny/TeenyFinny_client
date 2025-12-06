@@ -132,9 +132,12 @@ export default function ChildDashboard() {
   /**
    * 리포트 페이지 이동 이벤트
    */
-  const handleViewReport = () => {
+  const handleViewReport = async () => {
+    const endpoint = requests.fetchChildCard(); // 자녀 본인 → /account/card
+    const res = await api.get<ApiResponse<CardInfo>>(endpoint);
+    const card = res.data as CardInfo;
     // 카드가 없으면 경고 모달 표시
-    if (!cardInfo?.hasCard) {
+    if (!card.hasCard) {
       setIsReportWarningOpen(true);
       return;
     }
