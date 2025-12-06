@@ -32,7 +32,7 @@ interface DetailData {
 }
 
 function HistoryPageContent() {
-  const { userType } = useUserStore();
+  const { userType, userName } = useUserStore();
   const searchParams = useSearchParams();
 
   /** Zustand 전역 State */
@@ -120,7 +120,7 @@ function HistoryPageContent() {
         const url = isParent
           ? requests.fetchChildHistory(selectedChildId) // 부모 → /account/{childId}/history
           : requests.fetchMyHistory; // 자녀 → /account/history
-        
+
         const res = await api.get(url, {
           params: {
             startDate,
@@ -128,7 +128,6 @@ function HistoryPageContent() {
           },
         });
 
-        console.log("Transaction API Response:", res.data);
         setTransactions(res.data);
       } catch (error) {
         console.error("거래 내역 조회 중 오류가 발생했습니다:", error);
@@ -195,16 +194,8 @@ function HistoryPageContent() {
         <div className="h-[130px] mx-[18px] p-[24px] rounded-[16px] bg-primary-1/12">
           <div className="flex justify-between mb-[10px]">
             <p className="text-body-05 text-neutral-3">
-              {selectedChildName}님의 {accountName}
+              {userType === "child" ? userName : selectedChildName}님의 계좌
             </p>
-
-            {userType === "child" && (
-              <StateBadge
-                enabled={true}
-                label="용돈조르기"
-                onClick={() => alert("버튼 클릭됨")}
-              />
-            )}
           </div>
 
           <p className="text-account-title text-neutral-1">{balance} 원</p>
@@ -212,7 +203,7 @@ function HistoryPageContent() {
 
         {/* 필터 설정 영역 */}
         <div className="mx-[20px] mt-[24px] flex justify-end items-center">
-          <button 
+          <button
             onClick={() => setFilterOpen(true)}
             className="flex items-center gap-1 text-body-04 text-neutral-2"
           >
@@ -237,9 +228,8 @@ function HistoryPageContent() {
             >
               <div className="flex items-center gap-[12px]">
                 <div
-                  className={`w-[12px] h-[12px] rounded-full ${
-                    t.code === "DEPOSIT" ? "bg-chart-3" : "bg-chart-10"
-                  }`}
+                  className={`w-[12px] h-[12px] rounded-full ${t.code === "DEPOSIT" ? "bg-chart-3" : "bg-chart-10"
+                    }`}
                 />
                 <div>
                   <p className="text-head-04 text-neutral-1">{t.merchant}</p>

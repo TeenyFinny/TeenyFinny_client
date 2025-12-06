@@ -83,7 +83,6 @@ export default function ChildDashboard() {
         const endpoint = requests.fetchChildCard(); // 자녀 본인 → /account/card
         const res = await api.get<ApiResponse<CardInfo>>(endpoint);
         const card = res.data as CardInfo;
-        console.log(card);
         if (card.hasCard) {
           setCardInfo(card);
           setCardOpen(true);
@@ -92,17 +91,14 @@ export default function ChildDashboard() {
         }
       } catch (e) {
         setIsCardWaitingOpen(true);
-        console.error(e);
       }
     })();
   };
 
   const handleViewGoal = async () => {
     const savingBalance = user.savingBalance;
-    console.log(savingBalance);
     if (savingBalance === "-1") {
       try {
-        console.log("api 호출됨 : goal");
         const pendingRes = await api.get(requests.fetchMyPendingGoal);
         setIsGoalWaitingOpen(true);
       } catch {
@@ -121,7 +117,6 @@ export default function ChildDashboard() {
   };
 
   const handleViewInvest = () => {
-    console.log("clicked")
     if(user.investmentBalance == "-1"){ // 투자 계좌가 없을 경우 퀴즈 풀기 모달
       setIsInvestDialogOpen(true);
     }
@@ -203,12 +198,13 @@ export default function ChildDashboard() {
           <AccountCard
             accountName="목표 적금"
             balance={user.savingBalance ?? "0"}
-            onCardClick={handleViewGoal}
+            onCardClick={() => handleViewGoal()}
+            onViewDetails={() => handleViewGoal()}
           />
         ) : (
           <AccountCardDisabled
             accountName="목표 적금"
-            onCardClick={handleViewGoal}
+            onCardClick={() => handleViewGoal()}
           />
         )}
 
@@ -225,7 +221,6 @@ export default function ChildDashboard() {
           />
           소비 리포트 보러가기
         </button>
-
         {/* 카드 대기 모달 */}
         <ConfirmationDialog
           open={isCardWaitingOpen}

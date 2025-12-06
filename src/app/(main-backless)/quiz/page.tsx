@@ -28,7 +28,7 @@ export default function Page() {
     progressId,        //퀴즈 진행도 id
   } = useQuizStore()
   const [loading, setLoading] = React.useState(true);
-
+const hasFetchedRef = React.useRef(false);
   // ✅ useEffect로 API 요청
   useEffect(() => {
     let isMounted = true; // 언마운트 여부 플래그
@@ -47,6 +47,8 @@ export default function Page() {
       } catch (e) {
         const err = e as HttpError;
 
+    if (hasFetchedRef.current) return;
+  hasFetchedRef.current = true;
         // 404 → progress 없음 → 생성
         if (err.statusCode === 404) {
           const created = await api.post(requests.fetchProgress);
