@@ -34,7 +34,9 @@ interface FeedbackData {
   message: string;
 }
 
-export default function Page() {
+import { Suspense } from "react";
+
+function ReportPageContent() {
   const searchParams = useSearchParams();
   const now = new Date();
 
@@ -235,5 +237,13 @@ export default function Page() {
         onConfirm={() => setIsDialogOpen(false)}
       />
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ReportPageContent />
+    </Suspense>
   );
 }
