@@ -1,6 +1,6 @@
 "use client"
 
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
 interface ConfirmationDialogProps {
   open: boolean
@@ -33,8 +33,8 @@ export function ConfirmationDialog({
       >
         <div className="flex flex-col items-start w-full min-h-[138px] rounded-[14px]">
           <div className="flex flex-col items-center w-full min-h-[94px] pt-6 pb-5 px-4 gap-[14px]">
-            <h2 className="text-head-06 text-neutral-1 text-center whitespace-pre-line">{title}</h2>
-            <p className="text-body-07 text-neutral-3 text-center whitespace-pre-line">{description}</p>
+            <DialogTitle className="text-head-06 text-neutral-1 text-center whitespace-pre-line">{title}</DialogTitle>
+            <DialogDescription className="text-body-07 text-neutral-3 text-center whitespace-pre-line">{description}</DialogDescription>
           </div>
 
           <div className="flex items-center justify-center w-full h-[44px]">

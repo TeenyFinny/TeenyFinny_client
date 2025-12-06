@@ -25,7 +25,8 @@ export default function NotificationsPage() {
   const [modalContent, setModalContent] = useState({ title: "", description: "" })
   const [selectedGoalId, setSelectedGoalId] = useState<number | null>(null)
   const [children, setChildren] = useState<any[]>([])
-  const [confirmAction, setConfirmAction] = useState<"CANCEL" | "COMPLETE" | null>(null)
+  const [feedbackTarget, setFeedbackTarget] = useState<{ year: number; month: number } | null>(null)
+  const [confirmAction, setConfirmAction] = useState<"CANCEL" | "COMPLETE" | "FEEDBACK" | null>(null)
   const [isGoalRequestModalOpen, setIsGoalRequestModalOpen] = useState(false)
   const [goalCreationData, setGoalCreationData] = useState({
     childName: "",
@@ -72,6 +73,26 @@ export default function NotificationsPage() {
             n.id === notification.id ? { ...n, isRead: true } : n
           )
         );
+
+      if (notification.type === "ALLOWANCE") {
+        console.log("clicked");
+        const match = notification.content.match(/(\d{4})년 (\d{1,2})월/)
+        if (match) {
+          const year = Number(match[1])
+          const month = Number(match[2])
+
+          setFeedbackTarget({ year, month })
+
+          setModalContent({
+            title: `소비리포트에 부모님의 피드백이 등록되었어요!`,
+            description: "확인하러 가볼까요?"
+          })
+          setConfirmAction("FEEDBACK")
+          setIsDialogOpen(true)
+          return
+        }
+      }
+        
 
         // 목표 생성 요청 알림 클릭 시 모달 띄우기
         if (notification.type === "GOAL" && notification.title === "목표 생성 요청") {
@@ -175,6 +196,12 @@ export default function NotificationsPage() {
   };
 
   const handleConfirm = async () => {
+    if (confirmAction === "FEEDBACK" && feedbackTarget) {
+      router.push(`/allowance/report?year=${feedbackTarget.year}&month=${feedbackTarget.month}`)
+      setIsDialogOpen(false)
+      return
+    }
+
     if (!selectedGoalId) return;
 
     try {
