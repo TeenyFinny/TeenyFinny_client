@@ -2,16 +2,18 @@ import { defineConfig } from "cypress";
 
 export default defineConfig({
   e2e: {
+    testIsolation: false,
     baseUrl: "http://localhost:3000",
     setupNodeEvents(on, config) {
       // implement node event listeners here
     },
+    watchForFileChanges: false, 
     specPattern: "cypress/e2e/**/*.cy.{js,jsx,ts,tsx}",
     supportFile: "cypress/support/e2e.ts",
     videosFolder: "cypress/videos",
     screenshotsFolder: "cypress/screenshots",
-    viewportWidth: 1280,
-    viewportHeight: 720,
+    viewportWidth: 375,
+    viewportHeight: 812,
     env: {
       apiUrl: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8080",
     },
@@ -21,6 +23,7 @@ export default defineConfig({
       framework: "next",
       bundler: "webpack",
     },
+    watchForFileChanges: false, 
     specPattern: "cypress/component/**/*.cy.{js,jsx,ts,tsx}",
     supportFile: "cypress/support/component.ts",
   },
