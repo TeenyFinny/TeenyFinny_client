@@ -35,7 +35,7 @@ export default function ChildDashboard() {
   const [cardOpen, setCardOpen] = useState(false);
   const [cardInfo, setCardInfo] = useState<CardInfo | null>(null);
   const [isCardWaitingOpen, setIsCardWaitingOpen] = useState(false);
-  const [isReportWarningOpen, setIsReportWarningOpen] = useState(false); 
+  const [isReportWarningOpen, setIsReportWarningOpen] = useState(false);
   const [isGoalWaitingOpen, setIsGoalWaitingOpen] = useState(false);
 
   const [isInvestDialogOpen, setIsInvestDialogOpen] = useState(false);
@@ -102,7 +102,7 @@ export default function ChildDashboard() {
         const pendingRes = await api.get(requests.fetchMyPendingGoal);
         setIsGoalWaitingOpen(true);
       } catch {
-         router.push("/goal/intro");
+        router.push("/goal/intro");
       }
       return;
     }
@@ -117,11 +117,12 @@ export default function ChildDashboard() {
   };
 
   const handleViewInvest = () => {
-    if(user.investmentBalance == "-1"){ // 투자 계좌가 없을 경우 퀴즈 풀기 모달
+    if (user.investmentBalance == "-1") {
+      // 투자 계좌가 없을 경우 퀴즈 풀기 모달
       setIsInvestDialogOpen(true);
-    }
-    else{ // 계좌가 있을 경우 포트폴리오로 이동
-      router.push("/invest/portfolios");
+    } else {
+      // 계좌가 있을 경우 투자 페이지로 이동동
+      router.push("/invest");
     }
   };
 
@@ -144,7 +145,8 @@ export default function ChildDashboard() {
     router.push(`/allowance/report`);
   };
 
-   const hasInvest = user.investmentBalance !== "-1" && user.investmentBalance !== null;
+  const hasInvest =
+    user.investmentBalance !== "-1" && user.investmentBalance !== null;
   const hasGoal = user.savingBalance !== "-1" && user.savingBalance !== null;
 
   return (
@@ -179,7 +181,6 @@ export default function ChildDashboard() {
           expiry={cardInfo?.expiredAt ?? ""}
           cvc={cardInfo?.cvc ?? ""}
         />
-
 
         {/* 투자 계좌 */}
         {hasInvest ? (
