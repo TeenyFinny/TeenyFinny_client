@@ -94,6 +94,8 @@ const requests = {
   submitCardInfo: `/allowance/cards`,
   fetchReport: (childId?: number) =>
     childId ? `/allowance/${childId}/report` : `/allowance/report`,
+  saveFeedback: `/allowance/feedback`,
+  fetchFeedback: `/allowance/feedback`,
 
   // Notice
   fetchNotice: `/notice`,

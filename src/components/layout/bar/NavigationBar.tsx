@@ -73,7 +73,7 @@ export function NavigationBar({
       path: "/home",
       label: "홈",
       iconPath: "/icons/home.png",
-      activePaths: ["/home", "/family"],
+      activePaths: ["/home", "/family", "/allowance"],
     },
     {
       path: "/quiz",

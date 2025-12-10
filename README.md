@@ -1,36 +1,194 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 👑 TeenyFinny (티니피니)
 
-## Getting Started
+> **모든 아이가 워렌버핏이 되는 세상**
 
-First, run the development server:
+TeenyFinny는 부모와 자녀가 함께 사용하는 어린이 금융 교육 플랫폼입니다. 목표 저금, 투자, 용돈 관리를 통해 아이들이 올바른 금융 습관을 자연스럽게 배울 수 있도록 돕습니다.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🌟 프로젝트 소개
+
+아이에게 금융을 가르치는 것이 어려우셨나요? TeenyFinny는 아이들이 직접 목표를 정하고 저금하며, 투자를 체험하고, 용돈을 관리하는 과정을 통해 금융을 배울 수 있도록 설계된 서비스입니다.
+
+### 누구를 위한 서비스인가요?
+
+- 👨‍👩‍👧‍👦 **부모님**: 아이의 금융 교육을 체계적으로 관리하고 싶으신 분
+- 🧒 **아이들**: 목표를 달성하기 위해 저금하고, 투자를 배우고 싶은 어린이
+- 🏫 **교육자**: 금융 교육 콘텐츠와 도구가 필요하신 분
+
+## ✨ 주요 기능
+
+### 🎯 목표 저금 (Goal)
+
+아이가 원하는 것을 목표로 삼고, 계획적으로 저금하는 습관을 길러줍니다.
+
+- **목표 설정**: 아이가 직접 목표 이름, 목표 금액, 월 저축액, 저금일을 설정
+- **부모 승인 시스템**: 부모가 목표를 검토하고 승인하여 계좌 개설
+- **자동이체**: 매월 설정한 날짜에 자동으로 저금
+- **진행 상황 확인**: 목표 달성까지의 진행률을 시각적으로 확인
+- **목표 수정/삭제**: 부모 승인을 통한 안전한 목표 관리
+
+```
+아이: "닌텐도 스위치를 사고 싶어요!"
+→ 목표 설정: 300,000원, 월 50,000원 저축
+→ 부모 승인
+→ 매월 15일에 자동이체
+→ 6개월 후 목표 달성! 🎉
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 💰 용돈 관리 (Allowance)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+용돈을 통한 기본적인 소비 습관과 예산 관리 능력을 기릅니다.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **용돈 계좌 개설**: 아이만의 용돈 계좌 생성
+- **용돈 카드 발급**: 실제 사용 가능한 카드 발급
+- **자동이체 설정**: 매월 정해진 날짜에 용돈 자동 입금
+- **용돈 리포트**: 소비 패턴을 분석하여 부모에게 리포트 제공
+- **피드백 시스템**: 부모가 아이의 소비에 대한 피드백 제공
 
-## Learn More
+### 📈 투자 (Investment)
 
-To learn more about Next.js, take a look at the following resources:
+주식을 통한 투자의 개념을 쉽고 재미있게 배울 수 있습니다.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **투자 계좌 개설**: 우리투자증권 계좌 개설 (계좌 개설 시 주식 크레딧 증정)
+- **주식 매수/매도**: 실제 주식 거래 체험
+- **포트폴리오 관리**: 내가 산 주식들의 현황을 한눈에 확인
+- **투자 대시보드**: 투자 수익률, 보유 주식 등을 차트로 확인
+- **주식 상세 정보**: 각 주식의 상세 정보와 차트 확인
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+퀴즈를 완료하면 투자 계좌 개설 요청 가능
+→ 부모 승인
+→ 계좌 개설 및 주식 크레딧 지급
+→ 주식 구매 및 매매 체험
+```
 
-## Deploy on Vercel
+### 🧩 금융 퀴즈 (Quiz)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+게임처럼 재미있게 금융 지식을 배우고, 퀴즈 완료 시 투자 계좌 개설 기회를 얻습니다.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **금융 지식 퀴즈**: 주식, 적금, 신용카드 등 다양한 금융 주제 학습
+- **진행 상황 추적**: 각 퀴즈의 완료 상태 확인
+- **크레딧 획득**: 퀴즈 완료 시 크레딧 획득
+- **투자 계좌 개설 요청**: 일정 퀴즈 완료 후 투자 계좌 개설 요청 가능
+
+### 👨‍👩‍👧‍👦 가족 관리
+
+부모와 자녀가 안전하게 연결되어 함께 금융을 관리합니다.
+
+- **가족 인증**: OTP 검증을 통한 안전한 가족 연결
+- **자녀 계정 관리**: 부모가 여러 자녀의 계정을 관리
+- **역할별 대시보드**: 부모와 자녀 각각의 맞춤형 홈 화면
+
+### 📊 계좌 관리
+
+모든 거래 내역을 투명하게 확인하고 관리할 수 있습니다.
+
+- **계좌 내역 조회**: 입금, 출금, 자동이체 등 모든 거래 확인
+- **거래 내역 상세**: 각 거래의 상세 정보 확인
+- **계좌 요약**: 총 잔액, 저축액, 투자 금액 등 요약 정보
+
+### 🔔 실시간 알림
+
+부모와 자녀 간의 소통을 위한 알림 시스템입니다.
+
+- **목표 승인 요청 알림**: 아이가 목표를 설정하면 부모에게 알림
+- **투자 계좌 개설 요청**: 퀴즈 완료 후 투자 계좌 개설 요청 알림
+- **거래 알림**: 입출금, 자동이체 등 중요한 거래 알림
+- **실시간 푸시 알림**: Server-Sent Events 기반 실시간 알림
+
+## 🎨 서비스 특징
+
+### 1. **안전한 부모-자녀 협업**
+
+- 모든 중요한 금융 활동은 부모의 승인이 필요합니다
+- OTP 검증을 통한 안전한 가족 인증
+- 투명한 거래 내역 공유
+
+### 2. **직관적인 UI/UX**
+
+- 어린이도 쉽게 사용할 수 있는 친근한 디자인
+- 단계별 가이드를 통한 쉬운 이해
+- 시각적 피드백 (차트, 진행률 표시 등)
+
+### 3. **실전 금융 체험**
+
+- 실제 은행 계좌 개설 및 카드 발급
+- 실제 주식 거래 체험
+- 현실적인 금융 시나리오 경험
+
+### 4. **교육적 가치**
+
+- 목표를 세우고 계획적으로 저금하는 습관 형성
+- 투자를 통한 금융 시장 이해
+- 소비 패턴 분석을 통한 예산 관리 학습
+
+## 📱 사용 시나리오
+
+### 시나리오 1: 목표 저금으로 원하는 장난감 사기
+
+```
+1. 아이가 "로봇 장난감" 목표 설정 (50,000원)
+2. 월 10,000원씩 5개월 저축 계획
+3. 부모가 목표 승인 및 계좌 개설
+4. 매월 자동이체로 저축
+5. 5개월 후 목표 달성! 로봇 장난감 구매 ✨
+```
+
+### 시나리오 2: 금융 퀴즈로 투자 배우기
+
+```
+1. 아이가 금융 퀴즈 30개 완료
+2. 투자 계좌 개설 요청
+3. 부모 승인 후 계좌 개설
+4. 주식 크레딧으로 첫 주식 구매
+5. 포트폴리오를 통해 투자 수익 확인
+```
+
+### 시나리오 3: 용돈으로 소비 습관 기르기
+
+```
+1. 용돈 계좌 개설 (월 30,000원)
+2. 용돈 카드로 소비
+3. 부모가 소비 리포트 확인
+4. 부모가 건전한 소비에 피드백 제공
+5. 아이가 예산 관리 방법 학습
+```
+
+## 🚀 시작하기
+
+### 빠른 시작
+
+```bash
+# 1. 의존성 설치
+npm install
+
+# 2. 환경 변수 설정 (.env.local 파일 생성)
+NEXT_PUBLIC_BASE_URL=your_api_url
+
+# 3. 개발 서버 실행
+npm run dev
+```
+
+브라우저에서 [http://localhost:3000](http://localhost:3000)을 열어 확인하세요.
+
+### 더 자세한 기술 문서
+
+개발자 가이드, API 문서, 프로젝트 구조 등 자세한 기술 문서는 **[src/README.md](./src/README.md)**를 참조하세요.
+
+## 🛠 기술 스택
+
+- **Frontend**: Next.js 16, React 19, TypeScript
+- **스타일링**: Tailwind CSS
+- **상태 관리**: Zustand
+- **테스트**: Cypress (E2E)
+
+자세한 기술 스택 정보는 [src/README.md](./src/README.md)에서 확인할 수 있습니다.
+
+## 👥 팀 소개
+
+| <img alt="profile" src ="https://github.com/yes2489.png" width ="100" height ="100" style="border-radius: 50%; object-fit: cover;"> | <img alt="profile" src ="https://github.com/JBL28.png" width ="100" height ="100" style="border-radius: 50%; object-fit: cover;"> | <img alt="profile" src ="https://github.com/mingQ28.png" width ="100" height ="100" style="border-radius: 50%; object-fit: cover;"> | <img alt="profile" src ="https://github.com/hyojeongbae.png" width ="100" height ="100" style="border-radius: 50%; object-fit: cover;"> | <img alt="profile" src ="https://github.com/yangyanghyunjung.png" width ="100" height ="100" style="border-radius: 50%; object-fit: cover;"> | <img alt="profile" src ="https://github.com/CHICHIT.png" width ="100" height ="100" style="border-radius: 50%; object-fit: cover;"> |
+| :---------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: |
+|                                                             양은서 (PM)                                                             |                                                            이정복(PL)                                                             |                                                               박민서                                                                |                                                                 배효정                                                                  |                                                                    양현정                                                                    |                                                               이의섭                                                                |
+|                                                [yes2489](https://github.com/yes2489)                                                |                                                 [JBL28](https://github.com/JBL28)                                                 |                                                [mingQ28](https://github.com/mingQ28)                                                |                                              [hyojeongbae](https://github.com/hyojeongbae)                                              |                                           [yangyanghyunjung](https://github.com/yangyanghyunjung)                                            |                                                [CHICHIT](https://github.com/CHICHIT)                                                |
+
+---
+**TeenyFinny와 함께 아이들의 금융 교육을 시작해보세요! 💰✨**
