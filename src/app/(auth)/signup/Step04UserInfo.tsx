@@ -38,6 +38,8 @@ const getEmailError = (value: string) => {
 const getPasswordError = (value: string) => {
   if (!value) return "비밀번호를 입력해주세요.";
   if (value.length < 8) return "비밀번호는 8자 이상이어야 합니다.";
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(value))
+    return "비밀번호에 특수문자를 1개 이상 포함해주세요.";
   return undefined;
 };
 
